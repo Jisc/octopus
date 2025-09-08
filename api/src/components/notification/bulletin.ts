@@ -411,9 +411,6 @@ export const createBulletin = async (
         }
 
         case I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_SUCCESSOR: {
-            console.log("CURRENT", currentPublishedVersion.title);
-            console.log("PREVIOUS", previousPublishedVersion?.title);
-
             // We use the previous version because this is the one with the link
             if (!previousPublishedVersion) {
                 break;
@@ -425,10 +422,6 @@ export const createBulletin = async (
                 'PEER_REVIEW',
                 'exclude'
             );
-
-            console.log("ID", previousPublishedVersion.id);
-            console.log("USERS TO BE NOTIFIED", usersToBeNotified.length);
-            console.log("EXCLUDED IDS", metadata?.excludedUserIds);
 
             entries = usersToBeNotified.map((user) => ({
                 userId: user.id,
