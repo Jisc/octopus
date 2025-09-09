@@ -546,7 +546,7 @@ export const getUsersWithOutstandingFlagsInTimeInterval = async (
 };
 
 export const getUsersWithDirectLinkToVersion = async (
-    publicationVersionId: string,
+    publicationId: string,
     type?: I.PublicationType,
     typeFilter: 'include' | 'exclude' = 'include'
 ) => {
@@ -560,7 +560,7 @@ export const getUsersWithDirectLinkToVersion = async (
                         ...typeCondition,
                         linkedTo: {
                             some: {
-                                versionToId: publicationVersionId
+                                publicationToId: publicationId
                             }
                         }
                     }
@@ -575,7 +575,7 @@ export const getUsersWithDirectLinkToVersion = async (
                         ...typeCondition,
                         linkedTo: {
                             some: {
-                                versionToId: publicationVersionId
+                                publicationToId: publicationId
                             }
                         }
                     }

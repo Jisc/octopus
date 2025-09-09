@@ -383,7 +383,7 @@ export const createBulletin = async (
             }
 
             const usersToBeNotified = await userService.getUsersWithDirectLinkToVersion(
-                previousPublishedVersion.id,
+                previousPublishedVersion.versionOf,
                 'PEER_REVIEW',
                 'include'
             );
@@ -398,12 +398,7 @@ export const createBulletin = async (
         }
 
         case I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_PREDECESSOR: {
-            // We use the previous version because this is the one with the link
-            if (!previousPublishedVersion) {
-                break;
-            }
-
-            const usersToBeNotified = await userService.getUsersWithDirectLinkFromVersion(previousPublishedVersion.id);
+            const usersToBeNotified = await userService.getUsersWithDirectLinkFromVersion(currentPublishedVersion.id);
 
             entries = usersToBeNotified.map((user) => ({
                 userId: user.id,
@@ -423,7 +418,7 @@ export const createBulletin = async (
 
             // Exclude peer review as that case is handled above in PUBLICATION_VERSION_PEER_REVIEWED
             const usersToBeNotified = await userService.getUsersWithDirectLinkToVersion(
-                previousPublishedVersion.id,
+                previousPublishedVersion.versionOf,
                 'PEER_REVIEW',
                 'exclude'
             );
