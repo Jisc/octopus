@@ -568,22 +568,7 @@ export const getUsersWithDirectLinkToVersion = async (
             }
         },
         select: {
-            id: true,
-            publicationVersions: {
-                where: {
-                    publication: {
-                        ...typeCondition,
-                        linkedTo: {
-                            some: {
-                                publicationToId: publicationId
-                            }
-                        }
-                    }
-                },
-                select: {
-                    title: true
-                }
-            }
+            id: true
         }
     });
 
@@ -619,28 +604,7 @@ export const getUsersWithDirectLinkFromVersion = async (
             }
         },
         select: {
-            id: true,
-            publicationVersions: {
-                where: {
-                    publication: {
-                        ...typeCondition,
-                        linkedFrom: {
-                            some: {
-                                publicationFrom: {
-                                    versions: {
-                                        some: {
-                                            id: publicationVersionId
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                select: {
-                    title: true
-                }
-            }
+            id: true
         }
     });
 
