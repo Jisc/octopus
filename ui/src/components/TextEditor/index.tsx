@@ -20,6 +20,7 @@ import TableHeader from '@tiptap/extension-table-header';
 import TableRow from '@tiptap/extension-table-row';
 import TextAlign from '@tiptap/extension-text-align';
 import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder';
 
 type LetterIconType = {
     letter: string;
@@ -331,9 +332,8 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
                                             {({ selected }) => (
                                                 <>
                                                     <button
-                                                        className={`${
-                                                            selected ? 'font-medium' : 'font-normal'
-                                                        } block truncate`}
+                                                        className={`${selected ? 'font-medium' : 'font-normal'
+                                                            } block truncate`}
                                                         onClick={heading.onClick}
                                                         aria-label="Select heading"
                                                     >
@@ -709,6 +709,7 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
 interface TextEditorProps {
     contentChangeHandler: (htmlString: string) => void;
     defaultContent: string;
+    placeholder?: string;
 }
 
 const TextEditor: React.FC<TextEditorProps> = (props) => {
@@ -738,6 +739,11 @@ const TextEditor: React.FC<TextEditorProps> = (props) => {
             TableCell,
             TipTapImage.configure({
                 inline: true
+            }),
+            Placeholder.configure({
+                placeholder: props.placeholder,
+                emptyEditorClass:
+                    'cursor-text before:content-[attr(data-placeholder)] before:absolute before:opacity-60 before-pointer-events-none'
             })
         ],
         onUpdate: ({ editor }) => props.contentChangeHandler(editor.getHTML()),
