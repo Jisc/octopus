@@ -332,8 +332,9 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
                                             {({ selected }) => (
                                                 <>
                                                     <button
-                                                        className={`${selected ? 'font-medium' : 'font-normal'
-                                                            } block truncate`}
+                                                        className={`${
+                                                            selected ? 'font-medium' : 'font-normal'
+                                                        } block truncate`}
                                                         onClick={heading.onClick}
                                                         aria-label="Select heading"
                                                     >
