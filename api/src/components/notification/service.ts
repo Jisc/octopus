@@ -3,18 +3,20 @@ import * as I from 'interface';
 
 export const create = (
     userId: string,
+    entityId: string,
     type: I.NotificationTypeEnum,
     actionType: I.NotificationActionTypeEnum,
     payload?: I.NotificationPayload
 ) =>
     client.prisma.notification.create({
-        data: { userId, type, actionType, payload },
+        data: { userId, entityId, type, actionType, payload },
         select: { status: true, createdAt: true }
     });
 
 export const createMany = (
     notifications: {
         userId: string;
+        entityId: string;
         type: I.NotificationTypeEnum;
         actionType: I.NotificationActionTypeEnum;
         payload?: I.NotificationPayload;
@@ -44,7 +46,7 @@ export const getBulletin = (status?: I.NotificationStatusEnum) =>
     client.prisma.notification.findMany({
         where: { type: I.NotificationTypeEnum.BULLETIN, status },
         orderBy: { userId: 'asc' },
-        select: { id: true, userId: true, actionType: true, payload: true }
+        select: { id: true, userId: true, entityId: true, actionType: true, payload: true, createdAt: true }
     });
 
 export const update = (id: string, data: Pick<I.Notification, 'status'>) =>

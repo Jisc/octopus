@@ -13,11 +13,12 @@ describe('Send notifications', () => {
         const types = Object.values(I.NotificationTypeEnum);
         const actionTypes = Object.values(I.NotificationActionTypeEnum);
         const userIds = ['test-user-1', 'test-user-2', 'test-organisational-account-1'];
+        const entityId = 'test-entity-id-1';
 
         for (const type of types) {
             for (const actionType of actionTypes) {
                 for (const userId of userIds) {
-                    await notificationController.create({ type, actionType, payload, userId });
+                    await notificationController.create({ type, actionType, payload, userId, entityId });
                 }
             }
         }
@@ -39,11 +40,12 @@ describe('Send notifications', () => {
         const types = Object.values(I.NotificationTypeEnum);
         const actionTypes = Object.values(I.NotificationActionTypeEnum);
         const userIds = ['test-user-1', 'test-user-2', 'test-organisational-account-1'];
+        const entityId = 'test-entity-id-1';
 
         for (const type of types) {
             for (const actionType of actionTypes) {
                 for (const userId of userIds) {
-                    await notificationController.create({ type, actionType, payload, userId });
+                    await notificationController.create({ type, actionType, payload, userId, entityId });
                 }
             }
         }
