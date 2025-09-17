@@ -137,6 +137,13 @@ const postToPubRouter = (pdfMetadata: ReturnType<typeof getPubRouterMetadata>, e
         body: JSON.stringify(pdfMetadata)
     });
 
+// TODO: Remove this when https://uat.pubrouter.jisc.ac.uk supports proper SSL
+function toggleTLSRejectUnauthorized(reject: boolean) {
+    if (process.env.STAGE !== 'prod') {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = reject ? '1' : '0';
+    }
+}
+
 export const notifyPubRouter = async (
     publicationVersion: I.PublicationVersion
 ): Promise<{ code: number; message: string }> => {
@@ -156,6 +163,9 @@ export const notifyPubRouter = async (
         const apiEndpoint = `https://${
             process.env.STAGE !== 'prod' ? 'uat.' : ''
         }pubrouter.jisc.ac.uk/api/v4/notification?api_key=${apiKey}`;
+
+        // TODO: Remove this when https://uat.pubrouter.jisc.ac.uk supports proper SSL
+        toggleTLSRejectUnauthorized(false);
 
         try {
             const response = await postToPubRouter(pdfMetadata, apiEndpoint);
@@ -185,6 +195,9 @@ export const notifyPubRouter = async (
             await email.pubRouterFailure(publicationVersion.versionOf, errorString);
 
             return { code: 500, message: errorString };
+        } finally {
+            // TODO: Remove this when https://uat.pubrouter.jisc.ac.uk supports proper SSL
+            toggleTLSRejectUnauthorized(true);
         }
     }
 };
