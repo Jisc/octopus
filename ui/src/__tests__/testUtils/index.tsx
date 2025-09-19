@@ -76,7 +76,7 @@ export const testPublicationVersion: Interfaces.PublicationVersion = {
         type: 'PROBLEM',
         doi: 'testdoi',
         url_slug: 'test',
-        archived: false,
+        archived: false
     },
     topics: [],
     additionalInformation: []
@@ -91,7 +91,7 @@ export const testPublication: Interfaces.Publication = {
     linkedFrom: [],
     publicationFlags: [],
     versions: [testPublicationVersion],
-    archived: false,
+    archived: false
 };
 
 export const testUser: Interfaces.User = {
