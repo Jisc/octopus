@@ -32,6 +32,7 @@ export interface CorePublication {
     externalSource?: Types.PublicationImportSource;
     flagCount?: number;
     peerReviewCount?: number;
+    archived: boolean;
 }
 
 export interface PublicationVersionUser {
