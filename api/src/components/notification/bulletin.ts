@@ -383,7 +383,7 @@ export const createBulletin = async (
             }
 
             const usersToBeNotified = await userService.getUsersWithDirectLinkToVersion(
-                previousPublishedVersion.id,
+                previousPublishedVersion.versionOf,
                 'PEER_REVIEW',
                 'include'
             );
@@ -418,7 +418,7 @@ export const createBulletin = async (
 
             // Exclude peer review as that case is handled above in PUBLICATION_VERSION_PEER_REVIEWED
             const usersToBeNotified = await userService.getUsersWithDirectLinkToVersion(
-                previousPublishedVersion.id,
+                previousPublishedVersion.versionOf,
                 'PEER_REVIEW',
                 'exclude'
             );
