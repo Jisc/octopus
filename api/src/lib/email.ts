@@ -1046,19 +1046,17 @@ const NOTIFICATION_MESSAGES = {
     },
     [I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_PREDECESSOR]: {
         getText: (title: string): string =>
-            `The publication you are an author on, <strong>${title}</strong> has had a child publication re-versioned.`,
-        getLink: (url: string): string =>
-            `<a href="${url}">Click here to view the new version of the child publication</a>`,
+            `A new version of <strong>${title}</strong> has been published. This publication is linked from one that you are an author on. You may wish to peer review this publication to provide feedback, or even red flag it if you have a concern.`,
+        getLink: (url: string): string => `<a href="${url}">Click here to view the new publication version</a>`,
         getTextPlain: (title: string, url: string): string =>
-            `The publication you are an author on, ${title} has had a child publication re-versioned. You can view the new version of the child publication here: ${url}`
+            `A new version of ${title} has been published. This publication is linked from one that you are an author on. You may wish to peer review this publication to provide feedback, or even red flag it if you have a concern. You can view the new publication version here: ${url}`
     },
     [I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_SUCCESSOR]: {
         getText: (title: string): string =>
-            `The publication you are an author on, <strong>${title}</strong> has had a parent publication re-versioned.`,
-        getLink: (url: string): string =>
-            `<a href="${url}">Click here to view the new version of the parent publication</a>`,
+            `A new version of <strong>${title}</strong> has been published. You are an author of a publication that is linked to this one. You may wish to review their changes to see if this might affect your own publication.`,
+        getLink: (url: string): string => `<a href="${url}">Click here to view the new publication version</a>`,
         getTextPlain: (title: string, url: string): string =>
-            `The publication you are an author on, ${title} has had a parent publication re-versioned. You can view the new version of the parent publication here: ${url}`
+            `A new version of ${title} has been published. You are an author of a publication that is linked to this one. You may wish to review their changes to see if this might affect your own publication. You can view the new publication version here: ${url}`
     }
 };
 

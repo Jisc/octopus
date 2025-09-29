@@ -389,7 +389,7 @@ export const createBulletin = async (
             );
 
             const payload = {
-                title: currentPublishedVersion.title ?? '',
+                title: previousPublishedVersion.title ?? '',
                 url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf)
             };
 
@@ -403,7 +403,7 @@ export const createBulletin = async (
             entries = usersToBeNotified.map((user) => ({
                 userId: user.id,
                 payload: {
-                    title: user.publicationVersions[0].title ?? '',
+                    title: (previousPublishedVersion?.title || currentPublishedVersion.title) ?? '',
                     url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf)
                 }
             }));
@@ -426,7 +426,7 @@ export const createBulletin = async (
             entries = usersToBeNotified.map((user) => ({
                 userId: user.id,
                 payload: {
-                    title: user.publicationVersions[0].title ?? '',
+                    title: previousPublishedVersion.title ?? '',
                     url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf)
                 }
             }));
