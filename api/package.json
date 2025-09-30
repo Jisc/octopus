@@ -71,8 +71,8 @@
         "@aws-sdk/client-s3": "^3.413.0",
         "@aws-sdk/client-ses": "^3.413.0",
         "@aws-sdk/client-sqs": "^3.413.0",
-        "@swc/cli": "^0.4.1-nightly.20240914",
-        "@swc/core": "^1.7.36",
+        "@swc/cli": "^0.7.8",
+        "@swc/core": "^1.13.5",
         "@types/aws-lambda": "^8.10.121",
         "@types/cheerio": "^0.22.32",
         "@types/jest": "^29.5.4",
@@ -107,10 +107,10 @@
         "typescript": "^5.2.2"
     },
     "optionalDependencies": {
-        "@swc/core-linux-x64-musl": "1.9.3"
+        "@swc/core-linux-x64-musl": "^1.13.20"
     },
     "overrides": {
         "micromatch": "^4.0.8",
-        "form-data": "^4.0.4"
+        "tar-fs": "^3.1.1"
     }
 }
