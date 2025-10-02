@@ -144,6 +144,9 @@ const MainText: React.FC = (): React.ReactElement | null => {
         [publicationVersion, updatePublicationVersion]
     );
 
+    const publicationType = publicationVersion.publication.type;
+    const editorPlaceholder = Config.values.octopusInformation.publicationTypes[publicationType].editorPlaceholder;
+
     return (
         <div className="space-y-12 2xl:space-y-16">
             <div data-testid="main-text">
@@ -152,6 +155,7 @@ const MainText: React.FC = (): React.ReactElement | null => {
                     <Components.TextEditor
                         defaultContent={publicationVersion.content || ''}
                         contentChangeHandler={updateContent}
+                        placeholder={editorPlaceholder}
                     />
                 )}
             </div>

@@ -308,6 +308,7 @@ export interface OctopusInformation {
             label: string;
             inlineDescription: string;
             faqDescription: string;
+            editorPlaceholder: string;
         };
     };
     licences: {
