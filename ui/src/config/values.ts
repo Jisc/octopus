@@ -23,7 +23,7 @@ export const octopusInformation: Interfaces.OctopusInformation = {
             faqDescription:
                 'A &apos;research problem&apos; publication defines a research problem or question. You will need to explain what is known so far about the problem, rather like the &apos;introduction&apos; to a traditional paper.',
             editorPlaceholder:
-                "Enter the body of your Research Problem here. A 'research problem' publication defines a research problem or question. You will need to explain what is known so far about the problem, rather like the 'introduction' to a traditional paper.\nYou do not need to include references or affiliations here, these can be entered in separate, dedicated fields."
+                "Enter the main text of your Research Problem here. A 'research problem' publication defines a research problem or question. You will need to explain what is known so far about the problem, rather like the 'introduction' to a traditional paper. \nDo not include an abstract, bibliography or affiliations here, these can be entered in separate, dedicated fields."
         },
         HYPOTHESIS: {
             id: 'HYPOTHESIS',
@@ -33,7 +33,7 @@ export const octopusInformation: Interfaces.OctopusInformation = {
             faqDescription:
                 'A &apos;rationale/hypothesis&apos; publication sets out the theoretical basis for a potential solution, or partial solution, to the &apos;research problem&apos; it is linked to. In some fields a formal hypothesis is appropriate, in other fields it might be a description of an approach that might be taken.',
             editorPlaceholder:
-                "Enter the body of your Rationale/Hypothesis here. A 'rationale/hypothesis' publication sets out the theoretical basis for a potential solution, or partial solution, to the 'research problem' it is linked to. In some fields a formal hypothesis is appropriate, in other fields it might be a description of an approach that might be taken. \nYou do not need to include references or affiliations here, these can be entered in separate, dedicated fields."
+                "Enter the main text of your Rationale/Hypothesis here. A 'rationale/hypothesis' publication sets out the theoretical basis for a potential solution, or partial solution, to the 'research problem' it is linked to. In some fields a formal hypothesis is appropriate, in other fields it might be a description of an approach that might be taken.\nDo not include an abstract, bibliography or affiliations here, these can be entered in separate, dedicated fields."
         },
         PROTOCOL: {
             id: 'PROTOCOL',
@@ -41,7 +41,7 @@ export const octopusInformation: Interfaces.OctopusInformation = {
             inlineDescription: 'A practical method of testing an existing published Rationale/Hypothesis.',
             faqDescription: `A &apos;method&apos; publication is a detailed description of ways of testing a hypothesis, or carrying out a theoretical rationale. You can include links to sites such as <a href='https://protocols.io' className='underline' target='_blank'>protocols.io</a> to give more detail of the method if that would be helpful to readers.`,
             editorPlaceholder:
-                "Enter the body of your Method here. A 'method' publication is a detailed description of ways of testing a hypothesis, or carrying out a theoretical rationale. You can include links to sites such as protocols.io to give more detail of the method if that would be helpful to readers. \nYou do not need to include references or affiliations here, these can be entered in separate, dedicated fields."
+                "Enter the main text of your Method here. A 'method' publication is a detailed description of ways of testing a hypothesis, or carrying out a theoretical rationale. You can include links to sites such as protocols.io to give more detail of the method if that would be helpful to readers. \nDo not include an abstract, bibliography or affiliations here, these can be entered in separate, dedicated fields."
         },
         DATA: {
             id: 'DATA',
@@ -51,7 +51,7 @@ export const octopusInformation: Interfaces.OctopusInformation = {
             faqDescription:
                 'A &apos;Results/Sources&apos; publication can be either the raw data or summarised results collected according to an existing published &apos;method&apos;, or any existing evidence or material that form the object(s) of study for the research. It should describe the data, sources or results themselves, without any analysis. For results, it should provide details of the exact conditions under which the method was carried out and anything needed for an analysis or interpretation of the results. You can include links to the raw data files if they are in a specialist repository. Octopus is not a data repository itself.',
             editorPlaceholder:
-                "Enter the body of your Results/Sources here. A “Results/Sources” publication can be either the raw data or summarised results collected according to an existing published 'method', or any existing evidence or material that form the object(s) of study for the research. It should describe the data, sources or results themselves, without any analysis. For results, it should provide details of the exact conditions under which the method was carried out and anything needed for an analysis or interpretation of the results. You can include links to the raw data files if they are in a specialist repository. Octopus is not a data repository itself. \nYou do not need to include references or affiliations here, these can be entered in separate, dedicated fields."
+                "Enter the main text of your Results/Sources here. A “Results/Sources” publication can be either the raw data or summarised results collected according to an existing published 'method', or any existing evidence or material that form the object(s) of study for the research. It should describe the data, sources or results themselves, without any analysis. For results, it should provide details of the exact conditions under which the method was carried out and anything needed for an analysis or interpretation of the results. You can include links to the raw data files if they are in a specialist repository. Octopus is not a data repository itself. \nDo not include an abstract, bibliography or affiliations here, these can be entered in separate, dedicated fields."
         },
         ANALYSIS: {
             id: 'ANALYSIS',
@@ -60,7 +60,7 @@ export const octopusInformation: Interfaces.OctopusInformation = {
             faqDescription:
                 'An &apos;analysis&apos; publication describes manipulations of results to help draw conclusions from them. For example, thematic or statistical analysis.',
             editorPlaceholder:
-                "Enter the body of your Analysis here. An 'analysis' publication describes manipulations of results to help draw conclusions from them. For example, thematic or statistical analysis. \nYou do not need to include references or affiliations here, these can be entered in separate, dedicated fields."
+                "Enter the main text of your Analysis here. An 'analysis' publication describes manipulations of results to help draw conclusions from them. For example, thematic or statistical analysis. \nDo not include an abstract, bibliography or affiliations here, these can be entered in separate, dedicated fields."
         },
         INTERPRETATION: {
             id: 'INTERPRETATION',
@@ -69,7 +69,7 @@ export const octopusInformation: Interfaces.OctopusInformation = {
             faqDescription:
                 'An &apos;interpretation&apos; publication describes conclusions drawn from an &apos;analysis&apos; of results.',
             editorPlaceholder:
-                "Enter the body of your Interpretation here. An 'interpretation' publication describes conclusions drawn from an 'analysis' of results. \nYou do not need to include references or affiliations here, these can be entered in separate, dedicated fields."
+                "Enter the main text of your Interpretation here. An 'interpretation' publication describes conclusions drawn from an 'analysis' of results. \nDo not include an abstract, bibliography or affiliations here, these can be entered in separate, dedicated fields."
         },
         REAL_WORLD_APPLICATION: {
             id: 'REAL_WORLD_APPLICATION',
@@ -78,7 +78,7 @@ export const octopusInformation: Interfaces.OctopusInformation = {
             faqDescription:
                 'An &apos;Applications/Implications&apos; publication describes how findings might have (or have had) an impact in the real world or for others in the field of study. This might be through a practical or policy application, and would be the appropriate publication type for case studies.',
             editorPlaceholder:
-                'Enter the body of your Applications/Implications here. An “Applications/Implications” publication describes how findings might have (or have had) an impact in the real world or for others in the field of study. This might be through a practical or policy application, and would be the appropriate publication type for case studies. \nYou do not need to include references or affiliations here, these can be entered in separate, dedicated fields.'
+                'Enter the main text of your Applications/Implications here. An “Applications/Implications” publication describes how findings might have (or have had) an impact in the real world or for others in the field of study. This might be through a practical or policy application, and would be the appropriate publication type for case studies. \nDo not include an abstract, bibliography or affiliations here, these can be entered in separate, dedicated fields.'
         },
         PEER_REVIEW: {
             id: 'PEER_REVIEW',
@@ -88,7 +88,7 @@ export const octopusInformation: Interfaces.OctopusInformation = {
             faqDescription:
                 'A &apos;peer review&apos; publication is open and post-publication. It should be a carefully considered and constructive critique of an existing publication by someone else. Your review should help other readers assess the publication, and should be written in the same style as any other kind of publication, with relevant references. Authors may reversion publications in the light of reviews.',
             editorPlaceholder:
-                "Enter the body of your Peer Review here. A 'peer review' publication is open and post-publication. It should be a carefully considered and constructive critique of an existing publication by someone else. Your review should help other readers assess the publication, and should be written in the same style as any other kind of publication, with relevant references. Authors may reversion publications in the light of reviews. \nYou do not need to include references or affiliations here, these can be entered in separate, dedicated fields."
+                "Enter the main text of your Peer Review here. A 'peer review' publication is open and post-publication. It should be a carefully considered and constructive critique of an existing publication by someone else. Your review should help other readers assess the publication, and should be written in the same style as any other kind of publication, with relevant references. Authors may reversion publications in the light of reviews. \nDo not include an abstract, bibliography or affiliations here, these can be entered in separate, dedicated fields."
         }
     },
     licences: {
