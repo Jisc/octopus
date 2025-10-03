@@ -580,6 +580,27 @@ functions:
                 path: ${self:custom.versions.v1}/publication-bundles
                 method: GET
                 cors: true
+    # Pearls
+    getPearls:
+        handler: dist/src/components/pearl/routes.getAll
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/pearls
+                method: GET
+    createPearl:
+        handler: dist/src/components/pearl/routes.create
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/pearls
+                method: POST
+                cors: true
+    createPearlSource:
+        handler: dist/src/components/pearl/routes.createSource
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/pearls/sources
+                method: POST
+                cors: true
 
 package:
     defaultPatterns:
