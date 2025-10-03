@@ -14,14 +14,8 @@ export const getAll = async (): Promise<I.JSONResponse> => {
 
 export const create = async (event: I.AuthenticatedAPIRequest<I.CreatePearlRequestBody>): Promise<I.JSONResponse> => {
     try {
-        console.log('before');
-        const created = await pearlService.create(event.body);
-
-        console.log('after');
-        console.log(created);
+        await pearlService.create(event.body);
     } catch (error) {
-        console.log(error);
-
         return response.json(500, { message: 'Unknown server error.' });
     }
 

@@ -13,8 +13,6 @@ export const getAll = async (): Promise<I.Pearl[]> => {
 };
 
 export const create = async (data: I.CreatePearlRequestBody) => {
-    console.log(data);
-
     return await client.prisma.pearl.create({
         data: {
             title: data.title,
