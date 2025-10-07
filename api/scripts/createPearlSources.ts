@@ -90,9 +90,9 @@ const validateData = (data: InputData): { valid: boolean; messages: string[] } =
             messages.push(`Item at index ${index} has an invalid "licenceType" field.`);
         }
 
-        if (!optionalString(item.defaultTopic)) {
+        if (!optionalString(item.defaultTopicId)) {
             valid = false;
-            messages.push(`Item at index ${index} has an invalid "defaultTopic" field.`);
+            messages.push(`Item at index ${index} has an invalid "defaultTopicId" field.`);
         }
 
         if (!requiredString(item.identifier)) {
