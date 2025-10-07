@@ -23,8 +23,7 @@ export const create = async (data: I.CreatePearlRequestBody) => {
             licenceType: data.licenceType,
             topics: { connect: data.topicIds.map((id) => ({ id })) },
             source: {
-                connect: data.sourceId ? { id: data.sourceId } : undefined,
-                create: data.source
+                connect: { id: data.sourceId }
             },
             subPearls: {
                 create: data.subPearls
