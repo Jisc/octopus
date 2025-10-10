@@ -404,7 +404,8 @@ export const createBulletin = async (
                 userId: user.id,
                 payload: {
                     title: (previousPublishedVersion?.title || currentPublishedVersion.title) ?? '',
-                    url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf)
+                    url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf),
+                    first: !previousPublishedVersion
                 }
             }));
             break;
