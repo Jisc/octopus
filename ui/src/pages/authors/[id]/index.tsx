@@ -134,7 +134,8 @@ const Author: Types.NextPage<Props> = (props): React.ReactElement => {
                         doi: publication.doi,
                         url_slug: publication.url_slug,
                         flagCount: publication.flagCount,
-                        peerReviewCount: publication.peerReviewCount
+                        peerReviewCount: publication.peerReviewCount,
+                        archived: publication.archived
                     };
                     return version;
                 }) || [],
