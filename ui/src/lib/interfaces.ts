@@ -131,6 +131,7 @@ export interface LinkedPublication {
     parentVersionId?: string;
     parentVersionNumber?: number;
     parentVersionIsLatestLive?: boolean;
+    archived: boolean;
 }
 
 export interface LinkedToPublication extends LinkedPublication {

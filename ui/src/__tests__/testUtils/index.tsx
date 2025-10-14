@@ -121,7 +121,8 @@ export const testLinkedPublication: Interfaces.LinkedPublication = {
     authorLastName: testUser.lastName,
     authors: [],
     flagCount: 0,
-    peerReviewCount: 0
+    peerReviewCount: 0,
+    archived: false
 };
 
 export const testLinkedFromPublication: Interfaces.LinkedFromPublication = {
