@@ -24,14 +24,10 @@ const createPublications = async (publications: Prisma.PublicationCreateInput[])
                         content: true,
                         currentStatus: true,
                         publishedDate: true,
+                        coAuthors: true,
                         user: {
                             select: {
                                 role: true,
-                                coAuthors: {
-                                    select: {
-                                        affiliations: true,
-                                    }
-                                }
                             }
                         }
                     }
@@ -56,7 +52,7 @@ const createPublications = async (publications: Prisma.PublicationCreateInput[])
                     content: latestVersion.content,
                     publishedDate: latestVersion.publishedDate,
                     cleanContent: convert(latestVersion.content),
-                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestVersion.user.coAuthors)
+                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestVersion.coAuthors)
                 }
             });
         }
@@ -166,13 +162,7 @@ export const initialProdSeed = async (): Promise<void> => {
                         content: true,
                         currentStatus: true,
                         publishedDate: true,
-                        user: {
-                            select: {
-                                coAuthors: {
-                                    select: { affiliations: true }
-                                }
-                            }
-                        }
+                        coAuthors: true
                     }
                 }
             }
@@ -197,7 +187,7 @@ export const initialProdSeed = async (): Promise<void> => {
                     currentStatus: latestVersion.currentStatus,
                     publishedDate: latestVersion.publishedDate,
                     cleanContent: convert(latestVersion.content),
-                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestVersion.user.coAuthors), 
+                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestVersion.coAuthors), 
                 }
             });
         }

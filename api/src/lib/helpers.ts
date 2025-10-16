@@ -47,7 +47,7 @@ export const objectIsAffiliation = (obj: unknown): obj is I.CoAuthor['affiliatio
 };
 
 export const indexableAffilicationsFromCoAuthors = (
-    coAuthors: { affiliations: (unknown)[] }[]
+    coAuthors: { affiliations: unknown[] }[]
 ): I.IndexableAffiliation[] => {
     const indexableAffiliations: I.IndexableAffiliation[] = [];
 

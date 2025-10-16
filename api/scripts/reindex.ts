@@ -33,14 +33,10 @@ const reindex = async (): Promise<void> => {
                     keywords: true,
                     content: true,
                     publishedDate: true,
+                    coAuthors: true,
                     user: {
                         select: {
-                            role: true,
-                            coAuthors: {
-                                select: {
-                                    affiliations: true,
-                                }
-                            }
+                            role: true
                         }
                     }
                 }
@@ -65,7 +61,7 @@ const reindex = async (): Promise<void> => {
                     content: latestLiveVersion.content,
                     publishedDate: latestLiveVersion.publishedDate,
                     cleanContent: convert(latestLiveVersion.content),
-                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestLiveVersion.user.coAuthors) }
+                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestLiveVersion.coAuthors) }
             });
         }
     }

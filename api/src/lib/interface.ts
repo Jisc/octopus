@@ -140,7 +140,7 @@ export interface OpenSearchPublication {
     content?: string | null;
     cleanContent?: string | null;
     publishedDate?: Date | null;
-    affiliations?: string | null;
+    affiliations?: IndexableAffiliation[];
 }
 
 export interface GetPublicationPathParams {
