@@ -27,7 +27,7 @@ const createPublications = async (publications: Prisma.PublicationCreateInput[])
                         coAuthors: true,
                         user: {
                             select: {
-                                role: true,
+                                role: true
                             }
                         }
                     }
