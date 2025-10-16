@@ -42,6 +42,40 @@ export const formatAffiliationName = (affiliation: I.MappedOrcidAffiliation): st
     }${organization.address.country}`;
 };
 
+export const objectIsAffiliation = (obj: unknown): obj is I.CoAuthor['affiliations'][number] => {
+    return typeof obj === 'object' && obj !== null && 'organization' in obj;
+};
+
+export const indexableAffilicationsFromCoAuthors = (
+    coAuthors: { affiliations: (unknown)[] }[]
+): I.IndexableAffiliation[] => {
+    const indexableAffiliations: I.IndexableAffiliation[] = [];
+
+    for (const coAuthor of coAuthors) {
+        if (!Array.isArray(coAuthor.affiliations)) {
+            continue;
+        }
+
+        for (const affiliation of coAuthor.affiliations) {
+            if (!objectIsAffiliation(affiliation)) {
+                continue;
+            }
+
+            const indexableAffiliation = {
+                organizationName: affiliation.organization.name,
+                departmentName: affiliation.departmentName || '',
+                organizationIdentifier:
+                    affiliation.organization['disambiguated-organization']?.['disambiguated-organization-identifier'] ||
+                    ''
+            };
+
+            indexableAffiliations.push(indexableAffiliation);
+        }
+    }
+
+    return indexableAffiliations;
+};
+
 export const isEmptyContent = (content: string): boolean => (content ? /^(<p>\s*<\/p>)+$/.test(content) : true);
 
 export const checkEnvVariable = (variableName: keyof NodeJS.ProcessEnv): string => {

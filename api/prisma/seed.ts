@@ -4,6 +4,7 @@ import * as s3 from '../src/lib/s3';
 import * as sqs from '../src/lib/sqs';
 import * as SeedData from './seeds';
 import * as client from '../src/lib/client';
+import * as Helpers from '../src/lib/helpers';
 
 import { CreateBucketCommand, GetBucketAclCommand } from '@aws-sdk/client-s3';
 
@@ -25,7 +26,12 @@ const createPublications = async (publications: Prisma.PublicationCreateInput[])
                         publishedDate: true,
                         user: {
                             select: {
-                                role: true
+                                role: true,
+                                coAuthors: {
+                                    select: {
+                                        affiliations: true,
+                                    }
+                                }
                             }
                         }
                     }
@@ -49,7 +55,8 @@ const createPublications = async (publications: Prisma.PublicationCreateInput[])
                     keywords: latestVersion.keywords,
                     content: latestVersion.content,
                     publishedDate: latestVersion.publishedDate,
-                    cleanContent: convert(latestVersion.content)
+                    cleanContent: convert(latestVersion.content),
+                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestVersion.user.coAuthors)
                 }
             });
         }
@@ -150,6 +157,22 @@ export const initialProdSeed = async (): Promise<void> => {
                 versions: {
                     where: {
                         isLatestVersion: true
+                    },
+                    select: {
+                        title: true,
+                        licence: true,
+                        description: true,
+                        keywords: true,
+                        content: true,
+                        currentStatus: true,
+                        publishedDate: true,
+                        user: {
+                            select: {
+                                coAuthors: {
+                                    select: { affiliations: true }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -173,7 +196,8 @@ export const initialProdSeed = async (): Promise<void> => {
                     language: 'en',
                     currentStatus: latestVersion.currentStatus,
                     publishedDate: latestVersion.publishedDate,
-                    cleanContent: convert(latestVersion.content)
+                    cleanContent: convert(latestVersion.content),
+                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestVersion.user.coAuthors), 
                 }
             });
         }

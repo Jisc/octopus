@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { convert } from 'html-to-text';
 import * as client from '../src/lib/client';
+import * as Helpers from '../src/lib/helpers';
 
 const reindex = async (): Promise<void> => {
     const doesIndexExists = await client.search.indices.exists({
@@ -34,15 +35,18 @@ const reindex = async (): Promise<void> => {
                     publishedDate: true,
                     user: {
                         select: {
-                            role: true
+                            role: true,
+                            coAuthors: {
+                                select: {
+                                    affiliations: true,
+                                }
+                            }
                         }
                     }
                 }
             }
         }
     });
-
-    console.log(`reindexing ${pubs.length}`);
 
     for (const pub of pubs) {
         const latestLiveVersion = pub.versions[0];
@@ -60,8 +64,8 @@ const reindex = async (): Promise<void> => {
                     keywords: latestLiveVersion.keywords,
                     content: latestLiveVersion.content,
                     publishedDate: latestLiveVersion.publishedDate,
-                    cleanContent: convert(latestLiveVersion.content)
-                }
+                    cleanContent: convert(latestLiveVersion.content),
+                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestLiveVersion.user.coAuthors) }
             });
         }
     }
