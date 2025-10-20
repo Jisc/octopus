@@ -7,6 +7,7 @@ const updatePublicationVersionSchema: I.JSONSchemaType<I.UpdatePublicationVersio
     properties: {
         title: {
             type: 'string',
+            maxLength: config.constants.publication.title.maxLength,
             nullable: true
         },
         content: {
