@@ -4,3 +4,4 @@ export { default as doNotWaitForEmptyEventLoop } from '@middy/do-not-wait-for-em
 export { default as validator } from './validator';
 export { default as authentication } from './authentication';
 export { default as checkOwnership } from './checkOwnership';
+export { default as logOutcome } from './logOutcome';
