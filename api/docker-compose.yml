@@ -116,12 +116,6 @@ services:
             - PARTICIPATING_ARI_USER_IDS=
             - PUBROUTER_API_KEYS
             - PUBROUTER_FAILURE_CHANNEL=test@mailinator.com
-        healthcheck:
-            test: ['CMD', 'curl', '-f', 'http://localhost:4003']
-            interval: 30s
-            timeout: 10s
-            retries: 5
-
 
 volumes:
     opensearch-data1:
