@@ -147,6 +147,8 @@ const ViewBundles: Types.NextPage<Props> = (props): JSX.Element => {
                         />
                     </div>
 
+                    <Components.PublicationBundleInstructions />
+
                     <div className="xl:w-2/3 2xl:w-1/2">
                         <div className="sr-only" aria-live="polite">
                             {deletionUpdate}

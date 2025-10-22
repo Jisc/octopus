@@ -174,7 +174,7 @@ const ViewBundle: NextPage<Props> = (props): JSX.Element => {
                         <>
                             <Components.PageTitle text={bundle.name} className={editMode ? 'lg:mb-2' : 'mb-4'} />
                             {editMode ? (
-                                <h2 className="font-montserrat text-lg font-medium text-grey-700 transition-colors duration-500 dark:text-grey-50 mb-8 mt-4 lg:mt-0 ">
+                                <h2 className="font-montserrat text-lg font-medium text-grey-700 transition-colors duration-500 dark:text-grey-50 mb-8 mt-4 lg:mt-0">
                                     Shareable link:{' '}
                                     <Components.Button
                                         childClassName="truncate max-w-[calc(100vw-6rem)]"
@@ -191,7 +191,16 @@ const ViewBundle: NextPage<Props> = (props): JSX.Element => {
                                         {bundleShareableLink}
                                     </Components.Button>
                                 </h2>
-                            ) : null}
+                            ) : token ? null : (
+                                <Components.Alert
+                                    className="mb-8 w-fit"
+                                    severity="INFO"
+                                    title="If you are the owner of this publication bundle, please log in to make edits."
+                                ></Components.Alert>
+                            )}
+
+                            <Components.PublicationBundleInstructions />
+
                             <Components.PublicationBundleForm
                                 bundle={bundle}
                                 onSave={saveBundle}
