@@ -74,6 +74,7 @@ services:
         container_name: api-test
         depends_on:
             - opensearch-node1
+            - db
         build:
             context: .
             dockerfile: Dockerfile
