@@ -1,6 +1,6 @@
 service: ${file(./serverless-config-default.yml):service}
 
-frameworkVersion: ${file(./serverless-config-default.yml):frameworkVersion}
+frameworkVersion: '4'
 
 plugins:
     - serverless-offline
