@@ -8,9 +8,6 @@ CREATE TYPE "PearlCreatorType" AS ENUM ('INDIVIDUAL', 'ORGANISATION');
 ALTER TYPE "PublicationImportSource" ADD VALUE 'UKDS';
 
 -- AlterTable
-ALTER TABLE "Publication" ADD COLUMN     "pearlId" TEXT;
-
--- AlterTable
 ALTER TABLE "Topic" ADD COLUMN     "pearlId" TEXT;
 
 -- CreateTable
@@ -47,8 +44,8 @@ CREATE TABLE "PearlCreator" (
     "pearlId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "type" "PearlCreatorType" NOT NULL,
-    "creatorId" TEXT NOT NULL,
-    "creatorTypeId" TEXT NOT NULL,
+    "creatorId" TEXT,
+    "creatorTypeId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -65,9 +62,6 @@ CREATE TABLE "SubPearl" (
 );
 
 -- AddForeignKey
-ALTER TABLE "Publication" ADD CONSTRAINT "Publication_pearlId_fkey" FOREIGN KEY ("pearlId") REFERENCES "Pearl"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Topic" ADD CONSTRAINT "Topic_pearlId_fkey" FOREIGN KEY ("pearlId") REFERENCES "Pearl"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -80,4 +74,4 @@ ALTER TABLE "PearlSource" ADD CONSTRAINT "PearlSource_defaultTopicId_fkey" FOREI
 ALTER TABLE "PearlCreator" ADD CONSTRAINT "PearlCreator_pearlId_fkey" FOREIGN KEY ("pearlId") REFERENCES "Pearl"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SubPearl" ADD CONSTRAINT "SubPearl_pearlId_fkey" FOREIGN KEY ("pearlId") REFERENCES "Pearl"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "SubPearl" ADD CONSTRAINT "SubPearl_pearlId_fkey" FOREIGN KEY ("pearlId") REFERENCES "Pearl"("id") ON DELETE CASCADE ON UPDATE CASCADE;

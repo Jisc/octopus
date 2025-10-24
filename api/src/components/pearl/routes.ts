@@ -27,6 +27,16 @@ export const create = middy(pearlController.create)
     // .use(middleware.authentication())
     .use(middleware.validator(pearlSchema.create, 'body'));
 
+export const getSources = middy(pearlController.getAllSources)
+    .use(
+        middleware.doNotWaitForEmptyEventLoop({
+            runOnError: true,
+            runOnBefore: true,
+            runOnAfter: true
+        })
+    )
+    .use(middleware.httpJsonBodyParser());
+
 export const createSource = middy(pearlController.createSource)
     .use(
         middleware.doNotWaitForEmptyEventLoop({

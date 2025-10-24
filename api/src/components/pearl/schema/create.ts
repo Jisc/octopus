@@ -37,7 +37,7 @@ const createPearlSchema: I.Schema = {
             uniqueItems: true
         }
     },
-    required: ['title', 'creators', 'topicIds', 'subPearls'],
+    required: ['title', 'creators', 'topicIds', 'sourceId', 'subPearls'],
     additionalProperties: false
 };
 
