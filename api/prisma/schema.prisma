@@ -282,8 +282,9 @@ model Bookmark {
 }
 
 model Notification {
-    id     String @id @default(cuid())
-    userId String
+    id       String @id @default(cuid())
+    userId   String
+    entityId String
 
     type       NotificationTypeEnum
     actionType NotificationActionTypeEnum
@@ -387,17 +388,17 @@ model Pearl {
 }
 
 model PearlSource {
-    id             String       @id @default(cuid())
+    id             String                    @id @default(cuid())
     name           String
-    language       Languages    @default(en)
+    language       Languages                 @default(en)
     licenceType    LicenceType?
-    defaultTopic   Topic?       @relation(fields: [defaultTopicId], references: [id])
+    defaultTopic   Topic?                    @relation(fields: [defaultTopicId], references: [id])
     defaultTopicId String?
     identifier     String
     identifierType PearlSourceIdentifierType
     Pearl          Pearl[]
-    createdAt      DateTime     @default(now())
-    updatedAt      DateTime     @updatedAt
+    createdAt      DateTime                  @default(now())
+    updatedAt      DateTime                  @updatedAt
 }
 
 model PearlCreator {
@@ -412,16 +413,14 @@ model PearlCreator {
     updatedAt     DateTime         @updatedAt
 }
 
-
 enum PearlSourceIdentifierType {
-  ROR
-  GRID
-  RINGGOLD
-  ISNI
-  CROSSREF_FUNDER
-  WIKIDATA
+    ROR
+    GRID
+    RINGGOLD
+    ISNI
+    CROSSREF_FUNDER
+    WIKIDATA
 }
-
 
 // We use a separate model for now. However this will likely become an actual publication with a "PEARL" type in future.
 model SubPearl {

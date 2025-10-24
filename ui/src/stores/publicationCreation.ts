@@ -33,7 +33,8 @@ const initialPublicationVersion: Interfaces.PublicationVersion = {
         id: '',
         type: 'PROBLEM',
         doi: '',
-        url_slug: ''
+        url_slug: '',
+        archived: false
     },
     publicationStatus: [],
     funders: [],

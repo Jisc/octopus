@@ -22,7 +22,8 @@ export const defaultPublicationVersionInclude = {
             doi: true,
             url_slug: true,
             externalId: true,
-            externalSource: true
+            externalSource: true,
+            archived: true
         }
     },
     publicationStatus: {

@@ -11,6 +11,7 @@ describe('Create notifications', () => {
     const types = Object.values(I.NotificationTypeEnum);
     const actionTypes = Object.values(I.NotificationActionTypeEnum);
     const userIds = ['test-user-1', 'test-user-2', 'test-organisational-account-1'];
+    const entityId = 'test-entity-id-1';
 
     for (const type of types) {
         for (const actionType of actionTypes) {
@@ -19,6 +20,7 @@ describe('Create notifications', () => {
                     const payload = {
                         type,
                         actionType,
+                        entityId,
                         userId,
                         payload: {
                             title: 'PUBLICATION TITLE',
@@ -36,7 +38,7 @@ describe('Create notifications', () => {
                 });
 
                 test(`Create notification by ${type} type, ${actionType}, no payload`, async () => {
-                    const payload = { type, actionType, userId };
+                    const payload = { type, actionType, userId, entityId };
                     const notifications = await Promise.all(
                         Array.from({ length: 30 }, () => notificationController.create(payload))
                     );

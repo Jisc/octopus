@@ -32,6 +32,7 @@ export interface CorePublication {
     externalSource?: Types.PublicationImportSource;
     flagCount?: number;
     peerReviewCount?: number;
+    archived: boolean;
 }
 
 export interface PublicationVersionUser {
@@ -130,6 +131,7 @@ export interface LinkedPublication {
     parentVersionId?: string;
     parentVersionNumber?: number;
     parentVersionIsLatestLive?: boolean;
+    archived: boolean;
 }
 
 export interface LinkedToPublication extends LinkedPublication {
