@@ -488,7 +488,9 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
     const topPrevButtonSmallId = 'top-previous-button-small-displays';
     const topNextButtonSmallId = 'top-next-button-small-displays';
 
-    const linkedToARI = store.linkedTo.some((linkedTo) => linkedTo.externalSource === 'ARI' && linkedTo.draft);
+    const linkedToARI = store.linkedTo.some(
+        (linkedTo) => linkedTo.externalSource === 'ARI' && linkedTo.draft && linkedTo.archived === false
+    );
     const linksPendingDeletion = store.linkedTo.filter((link) => link.pendingDeletion);
 
     return (

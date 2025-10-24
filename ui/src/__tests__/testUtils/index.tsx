@@ -75,7 +75,8 @@ export const testPublicationVersion: Interfaces.PublicationVersion = {
         id: 'test',
         type: 'PROBLEM',
         doi: 'testdoi',
-        url_slug: 'test'
+        url_slug: 'test',
+        archived: false
     },
     topics: [],
     additionalInformation: []
@@ -89,7 +90,8 @@ export const testPublication: Interfaces.Publication = {
     linkedTo: [],
     linkedFrom: [],
     publicationFlags: [],
-    versions: [testPublicationVersion]
+    versions: [testPublicationVersion],
+    archived: false
 };
 
 export const testUser: Interfaces.User = {
@@ -119,7 +121,8 @@ export const testLinkedPublication: Interfaces.LinkedPublication = {
     authorLastName: testUser.lastName,
     authors: [],
     flagCount: 0,
-    peerReviewCount: 0
+    peerReviewCount: 0,
+    archived: false
 };
 
 export const testLinkedFromPublication: Interfaces.LinkedFromPublication = {

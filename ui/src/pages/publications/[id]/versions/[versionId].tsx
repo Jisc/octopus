@@ -684,6 +684,15 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
             );
         }
 
+        if (publicationVersion.publication.archived) {
+            alerts.push(
+                <Components.Alert severity="INFO" className="mb-4 text-white-100 dark:text-grey-50">
+                    The organisation who published this ARI have indicated that it is no longer a priority. Please visit
+                    their profile to see a list of current their current ARIs.
+                </Components.Alert>
+            );
+        }
+
         return alerts;
     };
 
