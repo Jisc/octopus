@@ -26,6 +26,7 @@ const endpoints = {
     revokeOrcidAccess: `${baseURL}/revoke-orcid-access`,
     topics: `${baseURL}/topics`,
     users: `${baseURL}/users`,
+    helpdesk: `${baseURL}/helpdesk`,
     verification: `${baseURL}/verification`,
     verifyOrcidAccess: `${baseURL}/verify-orcid-access`
 };

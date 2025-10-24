@@ -580,6 +580,21 @@ functions:
                 path: ${self:custom.versions.v1}/publication-bundles
                 method: GET
                 cors: true
+    # Helpdesk
+    startHelpdeskSession:
+        handler: dist/src/components/helpdesk/routes.start
+        events:
+            - http: 
+                path: ${self:custom.versions.v1}/helpdesk/start
+                method: POST
+                cors: true
+    stopHelpdeskSession:
+        handler: dist/src/components/helpdesk/routes.stop
+        events:
+            - http:
+                path: ${self:custom.versions.v1/helpdesk/stop
+                method: POST
+                cors: true
 
 package:
     defaultPatterns:

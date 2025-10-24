@@ -49,6 +49,13 @@ export type ToastStoreType = {
     clearToast: () => void;
 };
 
+export type HelpdeskStoreType = {
+    target: UserType | null;
+    initiator: UserType | null;
+    startHelpdesk: (initiator: UserType, target: UserType) => void;
+    stopHelpdesk: () => void;
+};
+
 export type PublicationVersionSlice = {
     publicationVersion: Interfaces.PublicationVersion;
     updatePublicationVersion: (publicationVersion: Interfaces.PublicationVersion) => void;

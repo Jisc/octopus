@@ -4,7 +4,7 @@ import Head from 'next/head';
 import useSWR from 'swr';
 import * as Router from 'next/router';
 import * as SolidIcons from '@heroicons/react/24/solid';
-
+import * as Stores from '@/stores';
 import * as api from '@/api';
 import * as Assets from '@/assets';
 import * as Components from '@/components';
@@ -13,6 +13,7 @@ import * as Helpers from '@/helpers';
 import * as Interfaces from '@/interfaces';
 import * as Layouts from '@/layouts';
 import * as Types from '@/types';
+import * as Hooks from '@/hooks';
 
 export const getServerSideProps: Types.GetServerSideProps = async (context) => {
     const userId = context.query.id;
@@ -62,7 +63,8 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
             query,
             user,
             publications,
-            flags
+            flags,
+            enableHelpdesk: true
         }
     };
 };
@@ -72,10 +74,12 @@ type Props = {
     user: Interfaces.User;
     publications: Interfaces.SearchResults<Interfaces.Publication> | null;
     flags: Interfaces.SearchResults<Interfaces.FlagByUser> | null;
+    enableHelpdesk: boolean;
 };
 
 const Author: Types.NextPage<Props> = (props): React.ReactElement => {
     const router = Router.useRouter();
+    const helpdesk = Hooks.useHelpdesk();
     const [publicationsQuery, setPublicationsQuery] = useState(props.query ? props.query : '');
     const [publicationsLimit, setPublicationsLimit] = useState(20);
     const [publicationsOffset, setPublicationsOffset] = useState(0);
@@ -243,6 +247,15 @@ const Author: Types.NextPage<Props> = (props): React.ReactElement => {
                             </Components.Link>
                         </div>
                     )}
+
+                    {
+                        props.enableHelpdesk ? <div className="mt-8">
+                            {helpdesk.store.target
+                                ? <Components.Button startIcon={<SolidIcons.StopCircleIcon className="size-4" />} textSize="xs" variant="block" onClick={() => helpdesk.stopHelpdesk()} title="Stop Helpdesk" />
+                                : <Components.Button startIcon={<SolidIcons.PlayCircleIcon className="size-4" />} textSize="xs" variant="block-alt" onClick={() => helpdesk.startHelpdesk(props.user.id)} title="Start Helpdesk" />
+                            }</div>
+                            : null
+                    }
                 </header>
 
                 {!isOrganisationalAccount && (
