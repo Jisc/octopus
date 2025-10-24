@@ -39,7 +39,8 @@ export {
     PublicationType,
     Role,
     Topic,
-    Pearl
+    Pearl,
+    PearlSource
 } from '@prisma/client';
 export { JSONSchemaType, Schema } from 'ajv';
 export {
@@ -1212,8 +1213,7 @@ export interface CreatePearlRequestBody {
     language?: Languages;
     licenceType?: LicenceType;
     topicIds: [string, ...string[]];
-    source?: PearlSourceInput;
-    sourceId?: string;
+    sourceId: string;
     subPearls: [SubPearlInput, ...SubPearlInput[]];
 }
 

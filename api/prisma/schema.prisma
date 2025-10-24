@@ -95,8 +95,6 @@ model Publication {
     externalSource     PublicationImportSource?
     // Currently only used for imported publications.
     archived           Boolean                  @default(false)
-    Pearl              Pearl?                   @relation(fields: [pearlId], references: [id])
-    pearlId            String?
 }
 
 model PublicationVersion {
@@ -384,7 +382,6 @@ model Pearl {
     subPearls   SubPearl[]
     createdAt   DateTime       @default(now())
     updatedAt   DateTime       @updatedAt
-    Publication Publication[]
 }
 
 model PearlSource {
@@ -407,8 +404,8 @@ model PearlCreator {
     name          String
     pearl         Pearl            @relation(fields: [pearlId], references: [id], onDelete: Cascade)
     type          PearlCreatorType
-    creatorId     String
-    creatorTypeId String
+    creatorId     String?
+    creatorTypeId String?
     createdAt     DateTime         @default(now())
     updatedAt     DateTime         @updatedAt
 }

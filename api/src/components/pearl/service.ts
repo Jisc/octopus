@@ -22,18 +22,25 @@ export const create = async (data: I.CreatePearlRequestBody) => {
             language: data.language,
             licenceType: data.licenceType,
             topics: { connect: data.topicIds.map((id) => ({ id })) },
-            source: {
-                connect: data.sourceId ? { id: data.sourceId } : undefined,
-                create: data.source
-            },
-            subPearls: {
-                create: data.subPearls
-            }
+            source: { connect: { id: data.sourceId } },
+            subPearls: { create: data.subPearls }
         },
         select: {
             id: true
         }
     });
+};
+
+export const getSource = async (sourceId: string): Promise<I.PearlSource | null> => {
+    return client.prisma.pearlSource.findUnique({
+        where: {
+            id: sourceId
+        }
+    });
+};
+
+export const getAllSources = async (): Promise<I.PearlSource[]> => {
+    return client.prisma.pearlSource.findMany();
 };
 
 export const createSource = async (data: I.CreatePearlSourceRequestBody) => {

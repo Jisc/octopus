@@ -594,11 +594,18 @@ functions:
                 path: ${self:custom.versions.v1}/pearls
                 method: POST
                 cors: true
+    getPearlSources:
+        handler: dist/src/components/pearl/routes.getSources
+        events:
+            - http: 
+                path: ${self:custom.versions.v1}/pearl-sources
+                method: GET
+                cors: true
     createPearlSource:
         handler: dist/src/components/pearl/routes.createSource
         events:
             - http:
-                path: ${self:custom.versions.v1}/pearls/sources
+                path: ${self:custom.versions.v1}/pearl-sources
                 method: POST
                 cors: true
 

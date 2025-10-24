@@ -9,8 +9,14 @@ const createPearlCreatorSchema: I.Schema = {
         creatorId: { type: 'string' },
         creatorTypeId: { type: 'string' }
     },
-    required: ['name', 'type', 'creatorId', 'creatorTypeId'],
-    additionalProperties: false
+    required: ['name', 'type'],
+    additionalProperties: false,
+    allOf: [
+        {
+            if: { required: ['creatorId'] },
+            then: { required: ['creatorTypeId'] }
+        }
+    ]
 };
 
 export default createPearlCreatorSchema;

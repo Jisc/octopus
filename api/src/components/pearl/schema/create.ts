@@ -2,7 +2,6 @@ import * as I from 'interface';
 import * as E from 'enum';
 
 import createPearlCreatorSchema from './createCreator';
-import createPearlSourceSchema from './createSource';
 import createSubPearlSchema from './createSubPearl';
 
 const createPearlSchema: I.Schema = {
@@ -28,7 +27,6 @@ const createPearlSchema: I.Schema = {
             minItems: 1,
             uniqueItems: true
         },
-        source: createPearlSourceSchema,
         sourceId: {
             type: 'string'
         },
@@ -39,7 +37,7 @@ const createPearlSchema: I.Schema = {
             uniqueItems: true
         }
     },
-    required: ['title', 'creators', 'topicIds', 'subPearls'],
+    required: ['title', 'creators', 'topicIds', 'sourceId', 'subPearls'],
     additionalProperties: false
 };
 
