@@ -11,7 +11,9 @@ import {
     PublicationImportSource,
     PublicationStatusEnum,
     PublicationType,
-    Role
+    Role,
+    PearlCreatorType,
+    PearlSourceIdentifierType
 } from '@prisma/client';
 import {
     APIGatewayProxyEventPathParameters,
@@ -36,7 +38,8 @@ export {
     PublicationStatusEnum,
     PublicationType,
     Role,
-    Topic
+    Topic,
+    Pearl
 } from '@prisma/client';
 export { JSONSchemaType, Schema } from 'ajv';
 export {
@@ -1182,3 +1185,36 @@ export interface NotificationSendBulkResponse {
     totalFailed: number;
     totalSkipped: number;
 }
+
+export interface PearlCreatorInput {
+    name: string;
+    type: PearlCreatorType;
+    creatorId: string;
+    creatorTypeId: string;
+}
+
+export interface PearlSourceInput {
+    name: string;
+    identifier: string;
+    identifierType: PearlSourceIdentifierType;
+    language?: Languages;
+    licenceType?: LicenceType;
+    defaultTopicId?: string;
+}
+
+export interface SubPearlInput {
+    doi: string;
+}
+
+export interface CreatePearlRequestBody {
+    title: string;
+    creators: [PearlCreatorInput, ...PearlCreatorInput[]];
+    language?: Languages;
+    licenceType?: LicenceType;
+    topicIds: [string, ...string[]];
+    source?: PearlSourceInput;
+    sourceId?: string;
+    subPearls: [SubPearlInput, ...SubPearlInput[]];
+}
+
+export type CreatePearlSourceRequestBody = PearlSourceInput;
