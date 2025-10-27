@@ -56,7 +56,7 @@ const useHelpdesk = (checkStatus = false) => {
             return reset();
         }
         setStatus((prev) => ({ ...prev, loading: true }));
-        const response = api.post(`${Config.endpoints.helpdesk}/stop-session`, {}, auth.user.token);
+        api.post(`${Config.endpoints.helpdesk}/stop-session`, {}, auth.user.token);
         setStatus((prev) => ({ ...prev, loading: false }));
         const decodedJWT = Helpers.setAndReturnJWT(store.initiator.token) as Types.UserType;
         const initiatorUser = { ...decodedJWT, token: store.initiator.token };
