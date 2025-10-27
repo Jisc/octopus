@@ -15,7 +15,7 @@ const helpdeskEnabled = (user?: I.User): boolean => {
     }
 
     try {
-        return helpdeskUserIds.split(';').some((id) => id.trim() === user.id);
+        return helpdeskUserIds.split(',').some((id) => id.trim() === user.id);
     } catch {
         return false;
     }

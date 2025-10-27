@@ -6,7 +6,6 @@ import * as Components from '@/components';
 import * as Assets from '@/assets';
 import * as Config from '@/config';
 import * as Stores from '@/stores';
-import { useHelpdesk } from '@/hooks';
 
 type Props = {
     fixed?: boolean;
@@ -16,7 +15,6 @@ type Props = {
 const Header: React.FC<Props> = (props): React.ReactElement => {
     const user = Stores.useAuthStore((state) => state.user);
     const isDarkMode = Stores.usePreferencesStore((state) => state.darkMode);
-    const helpdesk = useHelpdesk();
     const router = NextRouter.useRouter();
 
     const showConfirmEmailBanner = user && !user?.email && router.pathname !== Config.urls.verify.path;
