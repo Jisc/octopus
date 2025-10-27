@@ -600,6 +600,32 @@ functions:
         events:
             - http:
                 path: ${self:custom.versions.v1}/helpdesk/stop-session
+    # Pearls
+    getPearls:
+        handler: dist/src/components/pearl/routes.getAll
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/pearls
+                method: GET
+    createPearl:
+        handler: dist/src/components/pearl/routes.create
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/pearls
+                method: POST
+                cors: true
+    getPearlSources:
+        handler: dist/src/components/pearl/routes.getSources
+        events:
+            - http: 
+                path: ${self:custom.versions.v1}/pearl-sources
+                method: GET
+                cors: true
+    createPearlSource:
+        handler: dist/src/components/pearl/routes.createSource
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/pearl-sources
                 method: POST
                 cors: true
 

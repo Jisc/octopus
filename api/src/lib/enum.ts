@@ -233,4 +233,8 @@ export const publicationTypes: I.PublicationType[] = [
     'PEER_REVIEW'
 ];
 
+export const sourceIdentifierTypes = ['ROR', 'GRID', 'RINGGOLD', 'ISNI', 'CROSSREF_FUNDER', 'WIKIDATA', 'CUSTOM'];
+
 export const authorTypes = ['individual', 'organisational'];
+
+export const pearlCreatorType = ['ORGANISATION', 'INDIVIDUAL'];

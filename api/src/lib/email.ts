@@ -198,13 +198,6 @@ export const standardHTMLEmailTemplate = (subject: string, html: string, preview
 
 export const send = async (options: I.EmailSendOptions): Promise<SMTPTransport.SentMessageInfo> => {
     try {
-        console.log(
-            `[EMAIL] Sending email to ${
-                Array.isArray(options.to)
-                    ? options.to.map(Helpers.obfuscateEmail).join(', ')
-                    : Helpers.obfuscateEmail(options.to)
-            }`
-        );
         const emailResponse = await transporter.sendMail({
             from,
             to: options.to,
@@ -231,7 +224,6 @@ export const send = async (options: I.EmailSendOptions): Promise<SMTPTransport.S
 
         return emailResponse;
     } catch (error) {
-        console.error('[EMAIL] Unexpected error sending email:', error);
         const recipients = Array.isArray(options.to) ? options.to : [options.to];
         const obfuscatedEmails = recipients.map(Helpers.obfuscateEmail).join(', ');
         console.error(`[EMAIL] [ERROR] Error sending email to ${obfuscatedEmails}:`, error);
