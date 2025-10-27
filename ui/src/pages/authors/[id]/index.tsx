@@ -4,7 +4,6 @@ import Head from 'next/head';
 import useSWR from 'swr';
 import * as Router from 'next/router';
 import * as SolidIcons from '@heroicons/react/24/solid';
-import * as Stores from '@/stores';
 import * as api from '@/api';
 import * as Assets from '@/assets';
 import * as Components from '@/components';
@@ -13,7 +12,6 @@ import * as Helpers from '@/helpers';
 import * as Interfaces from '@/interfaces';
 import * as Layouts from '@/layouts';
 import * as Types from '@/types';
-import * as Hooks from '@/hooks';
 
 export const getServerSideProps: Types.GetServerSideProps = async (context) => {
     const userId = context.query.id;
