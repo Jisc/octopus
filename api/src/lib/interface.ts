@@ -1182,3 +1182,11 @@ export interface NotificationSendBulkResponse {
     totalFailed: number;
     totalSkipped: number;
 }
+
+export interface HelpdeskStatus {
+    enabled: boolean;
+}
+
+export interface StartHelpdeskSessionBody {
+    userId: string;
+}

@@ -63,8 +63,7 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
             query,
             user,
             publications,
-            flags,
-            enableHelpdesk: true
+            flags
         }
     };
 };
@@ -74,12 +73,10 @@ type Props = {
     user: Interfaces.User;
     publications: Interfaces.SearchResults<Interfaces.Publication> | null;
     flags: Interfaces.SearchResults<Interfaces.FlagByUser> | null;
-    enableHelpdesk: boolean;
 };
 
 const Author: Types.NextPage<Props> = (props): React.ReactElement => {
     const router = Router.useRouter();
-    const helpdesk = Hooks.useHelpdesk();
     const [publicationsQuery, setPublicationsQuery] = useState(props.query ? props.query : '');
     const [publicationsLimit, setPublicationsLimit] = useState(20);
     const [publicationsOffset, setPublicationsOffset] = useState(0);
@@ -105,7 +102,6 @@ const Author: Types.NextPage<Props> = (props): React.ReactElement => {
     >(flagsSwrKey, null, {
         fallbackData: props.flags || undefined
     });
-    console.log('Get flags response', getFlagsResponse);
 
     const searchInputRef = React.useRef<HTMLInputElement>(null);
     const missingNames = !props.user.firstName && !props.user.lastName;
@@ -248,14 +244,7 @@ const Author: Types.NextPage<Props> = (props): React.ReactElement => {
                         </div>
                     )}
 
-                    {
-                        props.enableHelpdesk ? <div className="mt-8">
-                            {helpdesk.store.target
-                                ? <Components.Button startIcon={<SolidIcons.StopCircleIcon className="size-4" />} textSize="xs" variant="block" onClick={() => helpdesk.stopHelpdesk()} title="Stop Helpdesk" />
-                                : <Components.Button startIcon={<SolidIcons.PlayCircleIcon className="size-4" />} textSize="xs" variant="block-alt" onClick={() => helpdesk.startHelpdesk(props.user.id)} title="Start Helpdesk" />
-                            }</div>
-                            : null
-                    }
+                    <Components.HelpdeskController userId={props.user.id} />
                 </header>
 
                 {!isOrganisationalAccount && (

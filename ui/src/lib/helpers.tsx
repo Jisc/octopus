@@ -172,7 +172,7 @@ export const getDecodedUserToken = async (token: string) => {
     try {
         return (await (
             await api.get(Config.endpoints.decodeUserToken, token)
-        ).data) as Types.UserType;
+        ).data) as Types.UserType & { helpdeskActive?: boolean };
     } catch (error) {
         return null;
     }

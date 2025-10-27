@@ -581,18 +581,25 @@ functions:
                 method: GET
                 cors: true
     # Helpdesk
+    getHelpdeskStatus:
+        handler: dist/src/components/helpdesk/routes.getStatus
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/helpdesk/status
+                method: GET
+                cors: true
     startHelpdeskSession:
-        handler: dist/src/components/helpdesk/routes.start
+        handler: dist/src/components/helpdesk/routes.startSession
         events:
             - http: 
-                path: ${self:custom.versions.v1}/helpdesk/start
+                path: ${self:custom.versions.v1}/helpdesk/start-session
                 method: POST
                 cors: true
     stopHelpdeskSession:
-        handler: dist/src/components/helpdesk/routes.stop
+        handler: dist/src/components/helpdesk/routes.stopSession
         events:
             - http:
-                path: ${self:custom.versions.v1/helpdesk/stop
+                path: ${self:custom.versions.v1}/helpdesk/stop-session
                 method: POST
                 cors: true
 

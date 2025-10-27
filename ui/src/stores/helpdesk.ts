@@ -3,7 +3,6 @@ import { devtools, persist } from 'zustand/middleware';
 
 import * as Config from '@/config';
 import * as Types from '@/types';
-import * as Interfaces from '@/interfaces';
 
 const useHelpdeskStore = create<Types.HelpdeskStoreType>()(
     devtools(
@@ -11,11 +10,13 @@ const useHelpdeskStore = create<Types.HelpdeskStoreType>()(
             (set) => ({
                 target: null,
                 initiator: null,
-                startHelpdesk: (initiator: Types.UserType, target: Types.UserType) => set(() => ({ initiator, target })),
-                stopHelpdesk: () => set(() => ({ target: null, initiator: null })),
+                startedAt: null,
+                startHelpdesk: (initiator: Types.UserType, target: Types.UserType) =>
+                    set(() => ({ initiator, target, startedAt: new Date().toISOString() })),
+                stopHelpdesk: () => set(() => ({ target: null, initiator: null, startedAt: null }))
             }),
             {
-                name: Config.keys.localStorage.helpdesk,
+                name: Config.keys.localStorage.helpdesk
             }
         )
     )

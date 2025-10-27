@@ -6,6 +6,7 @@ import * as Components from '@/components';
 import * as Assets from '@/assets';
 import * as Config from '@/config';
 import * as Stores from '@/stores';
+import { useHelpdesk } from '@/hooks';
 
 type Props = {
     fixed?: boolean;
@@ -15,7 +16,7 @@ type Props = {
 const Header: React.FC<Props> = (props): React.ReactElement => {
     const user = Stores.useAuthStore((state) => state.user);
     const isDarkMode = Stores.usePreferencesStore((state) => state.darkMode);
-    const helpdesk = Stores.useHelpdeskStore();
+    const helpdesk = useHelpdesk();
     const router = NextRouter.useRouter();
 
     const showConfirmEmailBanner = user && !user?.email && router.pathname !== Config.urls.verify.path;
@@ -57,28 +58,25 @@ const Header: React.FC<Props> = (props): React.ReactElement => {
                             {showConfirmEmailBanner && showMissingNamesBanner
                                 ? 'Please set your name to be visible on your ORCiD profile, then return to Octopus to verify your email to be able to publish content.'
                                 : showConfirmEmailBanner
-                                    ? 'Please confirm your email address to be able to publish content.'
-                                    : 'Your name is not visible on your ORCiD account. Please change this setting to "Everyone" or "Trusted parties" to be able to publish content.'}
+                                  ? 'Please confirm your email address to be able to publish content.'
+                                  : 'Your name is not visible on your ORCiD account. Please change this setting to "Everyone" or "Trusted parties" to be able to publish content.'}
                         </Components.Link>
                     </div>
                 </div>
             )}
 
-            {helpdesk.target && (
-                <span className="block w-full items-center bg-red-300 p-2 text-center text-sm text-black transition-colors duration-500 dark:bg-red-700 dark:text-grey-100 flex justify-center space-x-4 sticky top-0 z-60">
-                    <span className="font-montserrat">You are currently helping{' '} <span className="font-bold">{helpdesk.target.firstName} {helpdesk.target.lastName} &lt;{helpdesk.target.email || "no email"}&gt;</span></span>
-                    <Components.Button className="!bg-red-900" variant='block' textSize='xs' onClick={() => helpdesk.stopHelpdesk()} title="LEAVE SESSION" startIcon={<OutlineIcons.StopCircleIcon className="size-5" />} />
-                </span>
-            )}
+            <Components.HelpdeskBanner />
 
             <header
-                className={`text-grey-800 transition-colors duration-500  print:hidden  ${props.fixed && 'lg:fixed lg:left-0 lg:top-0 lg:z-20 lg:w-full'
-                    }`}
+                className={`text-grey-800 transition-colors duration-500  print:hidden  ${
+                    props.fixed && 'lg:fixed lg:left-0 lg:top-0 lg:z-20 lg:w-full'
+                }`}
             >
                 <div className="container mx-auto px-8">
                     <div
-                        className={`flex items-center justify-between py-6 transition-colors duration-500 ${props.hasBorder ? 'border-b border-grey-200 dark:border-grey-400' : ''
-                            }`}
+                        className={`flex items-center justify-between py-6 transition-colors duration-500 ${
+                            props.hasBorder ? 'border-b border-grey-200 dark:border-grey-400' : ''
+                        }`}
                     >
                         <Components.Link
                             href={Config.urls.home.path}

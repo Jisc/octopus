@@ -21,6 +21,9 @@
             "enum": [
                 "src/lib/enum"
             ],
+            "helpdesk/*": [
+                "src/components/helpdesk/*"
+            ],
             "interface": [
                 "src/lib/interface"
             ],
