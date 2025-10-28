@@ -600,6 +600,8 @@ functions:
         events:
             - http:
                 path: ${self:custom.versions.v1}/helpdesk/stop-session
+                method: POST
+                cors: true
     # Pearls
     getPearls:
         handler: dist/src/components/pearl/routes.getAll

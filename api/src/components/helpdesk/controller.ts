@@ -15,6 +15,9 @@ const helpdeskEnabled = (user?: I.User): boolean => {
     }
 
     try {
+        console.log('Helpdesk enabled user IDs:', helpdeskUserIds);
+        console.log('Current user ID:', user.id);
+
         return helpdeskUserIds.split(',').some((id) => id.trim() === user.id);
     } catch {
         return false;

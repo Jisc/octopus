@@ -51,12 +51,12 @@ const useHelpdesk = (checkStatus = false) => {
         store.startHelpdesk(auth.user, targetUser);
     }
 
-    function stopHelpdeskSession() {
+    async function stopHelpdeskSession() {
         if (!store.initiator || !auth.user) {
             return reset();
         }
         setStatus((prev) => ({ ...prev, loading: true }));
-        api.post(`${Config.endpoints.helpdesk}/stop-session`, {}, auth.user.token);
+        await api.post(`${Config.endpoints.helpdesk}/stop-session`, {}, store.initiator.token);
         setStatus((prev) => ({ ...prev, loading: false }));
         const decodedJWT = Helpers.setAndReturnJWT(store.initiator.token) as Types.UserType;
         const initiatorUser = { ...decodedJWT, token: store.initiator.token };
