@@ -1,4 +1,5 @@
 import * as testUtils from 'lib/testUtils';
+import * as config from 'config';
 
 beforeEach(async () => {
     await testUtils.clearDB();
@@ -253,5 +254,18 @@ describe('Update publication version', () => {
         expect(updateTopicsRequest.body.message).toEqual(
             'You do not have permission to modify this publication version.'
         );
+    });
+
+    test('Cannot create publication version with title exceeding max length', async () => {
+        const longTitle = 'A'.repeat(config.constants.publication.title.maxLength + 1);
+
+        const updatedVersion = await testUtils.agent
+            .patch('/publication-versions/publication-interpretation-draft-v1')
+            .query({ apiKey: 123456789 })
+            .send({ title: longTitle });
+
+        expect(updatedVersion.status).toEqual(400);
+        expect(updatedVersion.body.message[0].instancePath).toEqual('/title');
+        expect(updatedVersion.body.message[0].keyword).toEqual('maxLength');
     });
 });
