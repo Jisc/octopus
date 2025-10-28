@@ -119,8 +119,10 @@
             ],
             "verification/*": [
                 "src/components/verification/*"
-            ]
-        }
+            ],
+            "pearl/*": [
+                "src/components/pearl/*"
+            ]        }
     },
     "include": [
         "./**/*.ts"

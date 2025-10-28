@@ -5,12 +5,13 @@ import * as notificationService from 'notification/service';
 
 export const create = async (data: {
     userId: string;
+    entityId: string;
     type: I.NotificationTypeEnum;
     actionType: I.NotificationActionTypeEnum;
     payload?: I.NotificationPayload;
 }): Promise<I.Notification> => {
-    const { userId, type, actionType, payload } = data;
-    const notification = await notificationService.create(userId, type, actionType, payload);
+    const { userId, entityId, type, actionType, payload } = data;
+    const notification = await notificationService.create(userId, entityId, type, actionType, payload);
 
     return notification;
 };

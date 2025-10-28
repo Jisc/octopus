@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import * as aws from '@aws-sdk/client-ses';
+import { SESv2Client, SendEmailCommand } from '@aws-sdk/client-sesv2';
 import * as Helpers from 'lib/helpers';
 import * as I from 'interface';
 
@@ -10,9 +10,7 @@ const from = {
 };
 const baseURL = process.env.BASE_URL;
 
-const ses = new aws.SES({
-    region: 'eu-west-1'
-});
+const sesClient = new SESv2Client({ region: 'eu-west-1' });
 
 let mailConfig;
 
@@ -25,7 +23,7 @@ switch (process.env.STAGE) {
         break;
     default:
         mailConfig = {
-            SES: { ses, aws }
+            SES: { sesClient, SendEmailCommand }
         };
         break;
 }

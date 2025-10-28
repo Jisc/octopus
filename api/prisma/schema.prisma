@@ -75,26 +75,26 @@ model Images {
 }
 
 model Publication {
-    id                 String                         @id @default(cuid())
-    url_slug           String                         @unique @default(cuid())
+    id                 String                   @id @default(cuid())
+    url_slug           String                   @unique @default(cuid())
     type               PublicationType
     doi                String
     publicationFlags   PublicationFlags[]
-    linkedTo           Links[]                        @relation("from")
-    linkedFrom         Links[]                        @relation("to")
+    linkedTo           Links[]                  @relation("from")
+    linkedFrom         Links[]                  @relation("to")
     versions           PublicationVersion[]
     publicationBundles PublicationBundleEntry[]
     // These reverse relations are needed by prisma, but we shouldn't use them in the application.
     // Prisma doesn't allow symmetrical many-to-many self relations.
     // There must be an "asymmetrical" relationship (e.g. from and to) in the schema. In practice, we will treat
     // crosslink entities as having a pair of publications associated that are of equal importance.
-    crosslinksFrom     Crosslink[]                    @relation("crosslinkFrom")
-    crosslinksTo       Crosslink[]                    @relation("crosslinkTo")
+    crosslinksFrom     Crosslink[]              @relation("crosslinkFrom")
+    crosslinksTo       Crosslink[]              @relation("crosslinkTo")
     // Populated when a publication has been imported from an external source.
     externalId         String?
     externalSource     PublicationImportSource?
     // Currently only used for imported publications.
-    archived           Boolean                        @default(false)
+    archived           Boolean                  @default(false)
 }
 
 model PublicationVersion {
@@ -235,6 +235,9 @@ model Topic {
     publicationVersions    PublicationVersion[]
     organisationalAccounts User[]
     mappings               TopicMapping[]
+    PearlSource            PearlSource[]
+    Pearl                  Pearl?               @relation(fields: [pearlId], references: [id])
+    pearlId                String?
 }
 
 model TopicTranslation {
@@ -277,8 +280,9 @@ model Bookmark {
 }
 
 model Notification {
-    id     String @id @default(cuid())
-    userId String
+    id       String @id @default(cuid())
+    userId   String
+    entityId String
 
     type       NotificationTypeEnum
     actionType NotificationActionTypeEnum
@@ -346,24 +350,86 @@ model IngestLog {
 }
 
 model PublicationBundle {
-    id           String                         @id @default(cuid())
-    createdAt    DateTime                       @default(now())
-    updatedAt    DateTime                       @updatedAt
-    name         String
-    createdBy    String
-    user         User                           @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-    entries PublicationBundleEntry[]
+    id        String                   @id @default(cuid())
+    createdAt DateTime                 @default(now())
+    updatedAt DateTime                 @updatedAt
+    name      String
+    createdBy String
+    user      User                     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+    entries   PublicationBundleEntry[]
 }
 
 model PublicationBundleEntry {
-    id                  String @id @default(cuid())
+    id                  String            @id @default(cuid())
     publicationBundleId String
     publicationId       String
     position            Int
-    publicationBundle PublicationBundle @relation(fields: [publicationBundleId], references: [id], onDelete: Cascade)
-    publication       Publication       @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+    publicationBundle   PublicationBundle @relation(fields: [publicationBundleId], references: [id], onDelete: Cascade)
+    publication         Publication       @relation(fields: [publicationId], references: [id], onDelete: Cascade)
 
     @@unique([publicationBundleId, publicationId])
+}
+
+model Pearl {
+    id          String         @id @default(cuid())
+    title       String
+    creators    PearlCreator[]
+    language    Languages      @default(en)
+    licenceType LicenceType    @default(CC_BY)
+    topics      Topic[]
+    source      PearlSource?   @relation(fields: [sourceId], references: [id])
+    sourceId    String?
+    subPearls   SubPearl[]
+    createdAt   DateTime       @default(now())
+    updatedAt   DateTime       @updatedAt
+}
+
+model PearlSource {
+    id             String                    @id @default(cuid())
+    name           String
+    language       Languages                 @default(en)
+    licenceType    LicenceType?
+    defaultTopic   Topic?                    @relation(fields: [defaultTopicId], references: [id])
+    defaultTopicId String?
+    identifier     String
+    identifierType PearlSourceIdentifierType
+    Pearl          Pearl[]
+    createdAt      DateTime                  @default(now())
+    updatedAt      DateTime                  @updatedAt
+}
+
+model PearlCreator {
+    id            String           @id @default(cuid())
+    pearlId       String
+    name          String
+    pearl         Pearl            @relation(fields: [pearlId], references: [id], onDelete: Cascade)
+    type          PearlCreatorType
+    creatorId     String?
+    creatorTypeId String?
+    createdAt     DateTime         @default(now())
+    updatedAt     DateTime         @updatedAt
+}
+
+enum PearlSourceIdentifierType {
+    ROR
+    GRID
+    RINGGOLD
+    ISNI
+    CROSSREF_FUNDER
+    WIKIDATA
+}
+
+// We use a separate model for now. However this will likely become an actual publication with a "PEARL" type in future.
+model SubPearl {
+    id      String  @id @default(cuid())
+    doi     String
+    Pearl   Pearl?  @relation(fields: [pearlId], references: [id], onDelete: Cascade)
+    pearlId String?
+}
+
+enum PearlCreatorType {
+    INDIVIDUAL
+    ORGANISATION
 }
 
 enum EventType {
@@ -643,4 +709,5 @@ enum NotificationStatusEnum {
 
 enum PublicationImportSource {
     ARI
+    UKDS
 }
