@@ -173,11 +173,13 @@ const FunderForm: React.FC = (): React.ReactElement => {
 
         timeout = setTimeout(async () => {
             try {
-                const { data } = await axios.get<Interfaces.RORAPIOrganizationResponse>(`https://api.ror.org/organizations/${actualRor}`);
-                const name = data.names.find((n) => n.types.includes("ror_display"))?.value || data.names[0].value;
+                const { data } = await axios.get<Interfaces.RORAPIOrganizationResponse>(
+                    `https://api.ror.org/organizations/${actualRor}`
+                );
+                const name = data.names.find((n) => n.types.includes('ror_display'))?.value || data.names[0].value;
                 const city = data.locations[0].geonames_details.name;
                 const country = data.locations[0].geonames_details.country_name;
-                const link = data.links.find(link => link.type === "website")?.value || data.links[0].value;
+                const link = data.links.find((link) => link.type === 'website')?.value || data.links[0].value;
 
                 setRorError(false);
                 setName(name);
