@@ -183,7 +183,9 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
             const { publicationVersion, references } = store;
 
             if (publicationVersion.title.length > Config.values.publicationTitleMaxLength) {
-                throw new Error(`Publication title must be under ${Config.values.publicationTitleMaxLength} characters`);
+                throw new Error(
+                    `Publication title must be under ${Config.values.publicationTitleMaxLength} characters`
+                );
             }
 
             const body: Interfaces.PublicationUpdateRequestBody = {
