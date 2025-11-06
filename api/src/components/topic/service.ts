@@ -68,3 +68,13 @@ export const getPaginatedResults = async (filters: I.TopicsFilters) => {
 
     return { offset, limit, total, results: topics };
 };
+
+export const getByMultipleIds = async (ids: string[]): Promise<I.Topic[]> => {
+    return client.prisma.topic.findMany({
+        where: {
+            id: {
+                in: ids
+            }
+        }
+    });
+};

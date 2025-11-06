@@ -10,6 +10,17 @@ const BULLETIN_USERS_PER_BATCH = 10;
 
 type BulletinNotifications = Awaited<ReturnType<typeof notificationService.getBulletin>>;
 
+const NOTIFICATION_SETTINGS_MAP: Record<I.NotificationActionTypeEnum, keyof NonNullable<I.User['settings']>> = {
+    [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_VERSION_CREATED]: 'enableBookmarkVersionNotifications',
+    [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_RAISED]: 'enableBookmarkFlagNotifications',
+    [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_RESOLVED]: 'enableBookmarkFlagNotifications',
+    [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_COMMENTED]: 'enableBookmarkFlagNotifications',
+    [I.NotificationActionTypeEnum.PUBLICATION_VERSION_RED_FLAG_RAISED]: 'enableVersionFlagNotifications',
+    [I.NotificationActionTypeEnum.PUBLICATION_VERSION_PEER_REVIEWED]: 'enablePeerReviewNotifications',
+    [I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_PREDECESSOR]: 'enableLinkedNotifications',
+    [I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_SUCCESSOR]: 'enableLinkedNotifications'
+};
+
 async function sendSingle(
     userId: string,
     userNotifications: BulletinNotifications,
@@ -37,7 +48,7 @@ async function sendSingle(
         return response;
     }
 
-    const notificationToBeCleared: string[] = [];
+    const notificationsToBeDeleted: string[] = [];
     const notificationsByActionType: Map<I.NotificationActionTypeEnum, BulletinNotifications> = new Map();
 
     // Construct the notifications by action type and user settings
@@ -46,93 +57,39 @@ async function sendSingle(
             notificationsByActionType.set(notification.actionType, []);
         }
 
+        const currentActionNotifications = notificationsByActionType.get(notification.actionType) || [];
+
+        // Filter out notifications that are for the same entity and action type, keeping only the most recent one
+        const notificationSameEntityIdIndex = currentActionNotifications.findIndex(
+            (n) => n.entityId === notification.entityId
+        );
+
+        if (notificationSameEntityIdIndex !== -1) {
+            const notificationSameEntity = currentActionNotifications[notificationSameEntityIdIndex];
+
+            if (notification.createdAt > notificationSameEntity.createdAt) {
+                // This notification is more recent than the one we already have for this entity and action type, so replace it
+                currentActionNotifications.splice(notificationSameEntityIdIndex, 1);
+            } else {
+                // This notification is older than the one we already have for this entity and action type, so skip it
+                continue;
+            }
+        }
+
+        const settingField = NOTIFICATION_SETTINGS_MAP[notification.actionType];
+
         // user.settings?.[field] should be checked against false specifically as any
         // other value (undefined, null, etc) should be considered true (it's opt-out)
-
-        switch (notification.actionType) {
-            case I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_VERSION_CREATED: {
-                if (user.settings?.enableBookmarkVersionNotifications === false) {
-                    notificationToBeCleared.push(notification.id);
-                    break;
-                }
-
-                notificationsByActionType.get(notification.actionType)?.push(notification);
-                break;
-            }
-
-            case I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_RAISED:
-                if (user.settings?.enableBookmarkFlagNotifications === false) {
-                    notificationToBeCleared.push(notification.id);
-                    break;
-                }
-
-                notificationsByActionType.get(notification.actionType)?.push(notification);
-                break;
-
-            case I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_RESOLVED:
-                if (user.settings?.enableBookmarkFlagNotifications === false) {
-                    notificationToBeCleared.push(notification.id);
-                    break;
-                }
-
-                notificationsByActionType.get(notification.actionType)?.push(notification);
-                break;
-
-            case I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_COMMENTED: {
-                if (user.settings?.enableBookmarkFlagNotifications === false) {
-                    notificationToBeCleared.push(notification.id);
-                    break;
-                }
-
-                notificationsByActionType.get(notification.actionType)?.push(notification);
-                break;
-            }
-
-            case I.NotificationActionTypeEnum.PUBLICATION_VERSION_RED_FLAG_RAISED: {
-                if (user.settings?.enableVersionFlagNotifications === false) {
-                    notificationToBeCleared.push(notification.id);
-                    break;
-                }
-
-                notificationsByActionType.get(notification.actionType)?.push(notification);
-                break;
-            }
-
-            case I.NotificationActionTypeEnum.PUBLICATION_VERSION_PEER_REVIEWED: {
-                if (user.settings?.enablePeerReviewNotifications === false) {
-                    notificationToBeCleared.push(notification.id);
-                    break;
-                }
-
-                notificationsByActionType.get(notification.actionType)?.push(notification);
-                break;
-            }
-
-            case I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_PREDECESSOR: {
-                if (user.settings?.enableLinkedNotifications === false) {
-                    notificationToBeCleared.push(notification.id);
-                    break;
-                }
-
-                notificationsByActionType.get(notification.actionType)?.push(notification);
-                break;
-            }
-
-            case I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_SUCCESSOR: {
-                if (user.settings?.enableLinkedNotifications === false) {
-                    notificationToBeCleared.push(notification.id);
-                    break;
-                }
-
-                notificationsByActionType.get(notification.actionType)?.push(notification);
-                break;
-            }
+        if (settingField && user.settings?.[settingField] === false) {
+            notificationsToBeDeleted.push(notification.id);
+        } else {
+            currentActionNotifications.push(notification);
         }
     }
 
-    if (notificationToBeCleared.length > 0) {
+    if (notificationsToBeDeleted.length > 0) {
         try {
-            await notificationService.removeMany(notificationToBeCleared);
+            await notificationService.removeMany(notificationsToBeDeleted);
         } catch (error) {
             response.error =
                 error instanceof Error ? error : new Error('Unknown error occurred while clearing notifications');
@@ -143,10 +100,7 @@ async function sendSingle(
     }
 
     try {
-        await email.notifyBulletin({
-            recipientEmail: user.email,
-            notificationsByActionType: notificationsByActionType
-        });
+        await email.notifyBulletin({ recipientEmail: user.email, notificationsByActionType });
     } catch (error) {
         response.error = error instanceof Error ? error : new Error('Unknown error occurred while sending email');
         console.error(`Failed to send bulletin notification to user ${userId}:`, response.error);
@@ -268,7 +222,7 @@ export async function sendAll(
     const sentResponse = await Promise.allSettled(sent.map((n) => notificationService.remove(n.id)));
 
     if (sentResponse.some((res) => res.status === 'rejected')) {
-        console.error('Some notifications failed to be removed:', response);
+        console.error('Some notifications failed to be removed:', response, sentResponse);
         response.errors.push(new Error('Some notifications failed to be removed'));
     }
 
@@ -278,7 +232,7 @@ export async function sendAll(
     );
 
     if (failedResponse.some((res) => res.status === 'rejected')) {
-        console.error('Some notifications failed to be updated:', response);
+        console.error('Some notifications failed to be updated:', response, failedResponse);
         response.errors.push(new Error('Some notifications failed to be updated'));
     }
 
@@ -302,22 +256,24 @@ export const createBulletin = async (
 ): Promise<void> => {
     const type = I.NotificationTypeEnum.BULLETIN;
 
-    let entries: { userId: string; payload: I.NotificationPayload }[] = [];
+    let entries: { userId: string; entityId: string; payload: I.NotificationPayload }[] = [];
 
     switch (actionType) {
         case I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_VERSION_CREATED: {
             const usersToBeNotified = await userService.getBookmarkedUsers(currentPublishedVersion.versionOf);
+            const entityId = currentPublishedVersion.versionOf;
             const payload = {
                 title: currentPublishedVersion.title ?? '',
                 url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf)
             };
 
-            entries = usersToBeNotified.map((user) => ({ userId: user.id, payload }));
+            entries = usersToBeNotified.map((user) => ({ userId: user.id, entityId, payload }));
             break;
         }
 
         case I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_RAISED: {
             const usersToBeNotified = await userService.getBookmarkedUsers(currentPublishedVersion.versionOf);
+            const entityId = currentPublishedVersion.versionOf;
             const payload = {
                 title: currentPublishedVersion.title ?? '',
                 url: `${Helpers.getPublicationUrl(currentPublishedVersion.versionOf)}${
@@ -325,12 +281,13 @@ export const createBulletin = async (
                 }`
             };
 
-            entries = usersToBeNotified.map((user) => ({ userId: user.id, payload }));
+            entries = usersToBeNotified.map((user) => ({ userId: user.id, entityId, payload }));
             break;
         }
 
         case I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_RESOLVED: {
             const usersToBeNotified = await userService.getBookmarkedUsers(currentPublishedVersion.versionOf);
+            const entityId = currentPublishedVersion.versionOf;
             const payload = {
                 title: currentPublishedVersion.title ?? '',
                 url: `${Helpers.getPublicationUrl(currentPublishedVersion.versionOf)}${
@@ -338,12 +295,13 @@ export const createBulletin = async (
                 }`
             };
 
-            entries = usersToBeNotified.map((user) => ({ userId: user.id, payload }));
+            entries = usersToBeNotified.map((user) => ({ userId: user.id, entityId, payload }));
             break;
         }
 
         case I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_COMMENTED: {
             const usersToBeNotified = await userService.getBookmarkedUsers(currentPublishedVersion.versionOf);
+            const entityId = currentPublishedVersion.versionOf;
             const payload = {
                 title: currentPublishedVersion.title ?? '',
                 url: `${Helpers.getPublicationUrl(currentPublishedVersion.versionOf)}${
@@ -351,7 +309,7 @@ export const createBulletin = async (
                 }`
             };
 
-            entries = usersToBeNotified.map((user) => ({ userId: user.id, payload }));
+            entries = usersToBeNotified.map((user) => ({ userId: user.id, entityId, payload }));
             break;
         }
 
@@ -367,12 +325,14 @@ export const createBulletin = async (
                 currentPublishedVersion.publishedDate || new Date()
             );
 
+            const entityId = currentPublishedVersion.versionOf;
+
             const payload = {
                 title: currentPublishedVersion.title ?? '',
                 url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf)
             };
 
-            entries = usersToBeNotified.map((user) => ({ userId: user.id, payload }));
+            entries = usersToBeNotified.map((user) => ({ userId: user.id, entityId, payload }));
             break;
         }
 
@@ -388,12 +348,14 @@ export const createBulletin = async (
                 'include'
             );
 
+            const entityId = currentPublishedVersion.versionOf;
+
             const payload = {
                 title: previousPublishedVersion.title ?? '',
                 url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf)
             };
 
-            entries = usersToBeNotified.map((user) => ({ userId: user.id, payload }));
+            entries = usersToBeNotified.map((user) => ({ userId: user.id, entityId, payload }));
             break;
         }
 
@@ -402,9 +364,11 @@ export const createBulletin = async (
 
             entries = usersToBeNotified.map((user) => ({
                 userId: user.id,
+                entityId: currentPublishedVersion.versionOf,
                 payload: {
                     title: (previousPublishedVersion?.title || currentPublishedVersion.title) ?? '',
-                    url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf)
+                    url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf),
+                    first: !previousPublishedVersion
                 }
             }));
             break;
@@ -425,6 +389,7 @@ export const createBulletin = async (
 
             entries = usersToBeNotified.map((user) => ({
                 userId: user.id,
+                entityId: currentPublishedVersion.versionOf,
                 payload: {
                     title: previousPublishedVersion.title ?? '',
                     url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf)
@@ -440,5 +405,7 @@ export const createBulletin = async (
         entries = entries.filter(({ userId }) => !excludedUserIds.includes(userId));
     }
 
-    await notificationService.createMany(entries.map(({ userId, payload }) => ({ type, actionType, userId, payload })));
+    await notificationService.createMany(
+        entries.map(({ userId, entityId, payload }) => ({ type, actionType, userId, entityId, payload }))
+    );
 };
