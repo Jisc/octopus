@@ -112,13 +112,11 @@ export const getRecordResponse = (
     funders.forEach((funder) => metadata.ele('dc:contributor').txt(funder.name).up());
 
     metadata.ele('dc:date').txt(dateStamp).up();
-    metadata.ele('dc:type').txt('text').up();
-    metadata.ele('dc:format').txt('application/pdf').up();
     metadata.ele('dc:identifier').txt(identifier).up();
     metadata.ele('dc:language').txt(language).up();
 
-    links.linkedTo.forEach((link) => metadata.ele('dc:relation').txt(link.doi).up());
-    links.linkedFrom.forEach((link) => metadata.ele('dc:relation').txt(link.doi).up());
+    links.linkedTo.forEach((link) => metadata.ele('dc:relation', { type: 'predecessor' }).txt(link.doi).up());
+    links.linkedFrom.forEach((link) => metadata.ele('dc:relation', { type: 'successor' }).txt(link.doi).up());
 
     metadata.ele('dc:rights').txt(licence).up();
     metadata.up();
