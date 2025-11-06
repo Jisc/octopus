@@ -15,7 +15,13 @@ export const OAI_PMH_SCHEMA = {
     'xsi:schemaLocation': 'http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd'
 };
 
+const BASE_URL = `https://${process.env.STAGE}.api.octopus.ac/v1/oai2`;
+
 const writerOptions = { prettyPrint: true };
+
+const formatDate = (date: Date): string => {
+    return date.toISOString().split('T')[0];
+};
 
 export const responseRoot = (reqAttr: I.OAIRequestAttributes = {}): ReturnType<typeof XMLBuilder.create> =>
     XMLBuilder.create({ version: '1.0', encoding: 'UTF-8' })
@@ -24,7 +30,7 @@ export const responseRoot = (reqAttr: I.OAIRequestAttributes = {}): ReturnType<t
         .txt(new Date().toISOString())
         .up()
         .ele('request', reqAttr)
-        .txt(`https://${process.env.STAGE}.api.octopus.ac/v1/oai2`)
+        .txt(BASE_URL)
         .up();
 
 export const invalidVerbResponse = (): string =>
@@ -78,7 +84,7 @@ export const getRecordResponse = (
         topics
     } = publicationVersion;
 
-    const dateStamp = (publishedDate || createdAt).toISOString().split('T')[0];
+    const dateStamp = formatDate(publishedDate || createdAt);
     const recordRoot = responseRoot({ verb, metadataPrefix, identifier }).ele('GetRecord').ele('record');
 
     // Header
@@ -123,3 +129,45 @@ export const getRecordResponse = (
 
     return recordRoot.up().end(writerOptions);
 };
+
+export const identifyResponse = (
+    publicationVersion: Pick<I.OAIPublicationVersion, 'createdAt' | 'publishedDate'> | null
+): string => {
+    const response = responseRoot({ verb: 'Identify' }).ele('Identify');
+
+    response.ele('repositoryName').txt('Octopus').up();
+    response.ele('baseURL').txt(BASE_URL).up();
+    response.ele('protocolVersion').txt('2.0').up();
+    response.ele('adminEmail').txt('help@jisc.ac.uk').up();
+
+    if (publicationVersion) {
+        const { createdAt, publishedDate } = publicationVersion;
+        response
+            .ele('earliestDatestamp')
+            .txt(formatDate(publishedDate || createdAt))
+            .up();
+    }
+
+    response.ele('deletedRecord').txt('no').up();
+    response.ele('granularity').txt('YYYY-MM-DDThh:mm:ssZ').up();
+
+    return response.up().end(writerOptions);
+};
+
+export const listSetsResponse = (): string => {
+    const response = responseRoot({ verb: 'ListSets' }).ele('ListSets');
+
+    response.ele('set');
+    response.ele('setSpec').txt('publications').up();
+    response.ele('setName').txt('Publications').up();
+    response.ele('setDescription');
+    response.ele('oai_dc:dc', OAI_DC_METADATA_SCHEMA);
+    response.ele('dc:description').txt('All publications in Octopus').up();
+    response.up();
+    response.up();
+
+    return response.up().end(writerOptions);
+};
+
+export const internalServerErrorResponse = (): string =>
+    responseRoot().ele('error', { code: 'internalServerError' }).txt('Internal server error').up().end(writerOptions);

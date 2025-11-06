@@ -1079,3 +1079,21 @@ export const getPreviousPublishedVersion = async (publicationId: string): Promis
         include: defaultPublicationVersionInclude
     });
 };
+
+export const getEarliestDoiPublicationVersion = async () => {
+    return client.prisma.publicationVersion.findFirst({
+        where: {
+            isLatestLiveVersion: true,
+            user: {
+                role: {
+                    not: 'ORGANISATION'
+                }
+            }
+        },
+        orderBy: { publishedDate: 'asc' },
+        select: {
+            createdAt: true,
+            publishedDate: true
+        }
+    });
+};
