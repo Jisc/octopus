@@ -44,6 +44,8 @@ const reindex = async (): Promise<void> => {
         }
     });
 
+    console.log(`reindexing ${pubs.length}`);
+
     for (const pub of pubs) {
         const latestLiveVersion = pub.versions[0];
 
