@@ -192,7 +192,6 @@ const ViewBundle: NextPage<Props> = (props): JSX.Element => {
                                     </Components.Button>
                                 </h2>
                             ) : null}
-
                             <Components.PublicationBundleForm
                                 bundle={bundle}
                                 onSave={saveBundle}
