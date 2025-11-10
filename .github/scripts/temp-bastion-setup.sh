@@ -30,8 +30,20 @@ INSTANCE_PROFILE=$(aws iam get-instance-profile --instance-profile-name "ec2_pro
 # Get Security Group by name
 SG_ID=$(aws ec2 describe-security-groups --filters "Name=tag:Name,Values=bastion_sg_$ENV" --query "SecurityGroups[0].GroupId" --output text)
 
-# Create bastion EC2
-BASTION=$(aws ec2 run-instances --image-id $IMAGE_ID --instance-type "t2.micro" --iam-instance-profile '{"Arn": "'$INSTANCE_PROFILE'"}' --subnet-id $SUBNET --security-group-ids $SG_ID --metadata-options '{"HttpTokens": "required"}' --associate-public-ip-address --user-data "$USER_DATA" --query "Instances[0].InstanceId" --output text)
+# Create bastion EC2 with tags
+BASTION=$(aws ec2 run-instances \
+  --image-id "$IMAGE_ID" \
+  --instance-type "t2.micro" \
+  --iam-instance-profile "{\"Arn\":\"$INSTANCE_PROFILE\"}" \
+  --subnet-id "$SUBNET" \
+  --security-group-ids "$SG_ID" \
+  --metadata-options '{"HttpTokens":"required"}' \
+  --associate-public-ip-address \
+  --user-data "$USER_DATA" \
+  --query "Instances[0].InstanceId" \
+  --output text)
+
+echo "Launched bastion $BASTION"
 
 while [[ "$(aws ssm describe-instance-information --instance-information-filter-list "key=InstanceIds,valueSet='$BASTION'" --query "InstanceInformationList[0].AgentVersion")" == "null" ]]
 do 

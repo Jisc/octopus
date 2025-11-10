@@ -104,6 +104,9 @@
             ],
             "verification/*": [
                 "src/components/verification/*"
+            ],
+            "pearl/*": [
+                "src/components/pearl/*"
             ]
         },
         "target": "es2020",

@@ -43,6 +43,7 @@
         "updateOrganisationalAccounts": "tsx scripts/updateOrganisationalAccounts.ts"
     },
     "dependencies": {
+        "@aws-sdk/client-sesv2": "^3.914.0",
         "@middy/core": "^4.7.0",
         "@middy/do-not-wait-for-empty-event-loop": "^4.7.0",
         "@middy/http-json-body-parser": "^4.7.0",
@@ -55,6 +56,7 @@
         "aws-lambda": "^1.0.7",
         "axios": "^1.12.0",
         "cheerio": "^1.0.0-rc.12",
+        "chokidar": "^4.0.3",
         "dotenv": "16.4.5",
         "entities": "^6.0.0",
         "html-to-text": "^9.0.5",
@@ -62,7 +64,7 @@
         "jsonwebtoken": "^9.0.2",
         "katex": "^0.16.21",
         "luxon": "^3.4.3",
-        "nodemailer": "^7.0.7",
+        "nodemailer": "^7.0.9",
         "puppeteer-core": "^24.2.0",
         "supertest": "^6.3.3"
     },
@@ -85,6 +87,7 @@
         "@types/supertest": "^2.0.12",
         "@typescript-eslint/eslint-plugin": "^5.62.0",
         "@typescript-eslint/parser": "^5.62.0",
+        "chokidar": "^4.0.3",
         "concurrently": "^9.0.1",
         "eslint": "^8.49.0",
         "eslint-config-airbnb-typescript": "^16.2.0",
@@ -103,6 +106,7 @@
         "serverless-prune-plugin": "^2.1.0",
         "ts-jest": "^29.1.1",
         "ts-loader": "^9.4.4",
+        "ts-node": "^10.9.2",
         "tsx": "^4.19.2",
         "typescript": "^5.2.2"
     },

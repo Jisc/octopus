@@ -11,7 +11,9 @@ import {
     PublicationImportSource,
     PublicationStatusEnum,
     PublicationType,
-    Role
+    Role,
+    PearlCreatorType,
+    PearlSourceIdentifierType
 } from '@prisma/client';
 import {
     APIGatewayProxyEventPathParameters,
@@ -36,7 +38,9 @@ export {
     PublicationStatusEnum,
     PublicationType,
     Role,
-    Topic
+    Topic,
+    Pearl,
+    PearlSource
 } from '@prisma/client';
 export { JSONSchemaType, Schema } from 'ajv';
 export {
@@ -140,6 +144,7 @@ export interface OpenSearchPublication {
     content?: string | null;
     cleanContent?: string | null;
     publishedDate?: Date | null;
+    affiliations?: IndexableAffiliation[];
 }
 
 export interface GetPublicationPathParams {
@@ -217,6 +222,7 @@ export interface OpenSearchPublicationFilters {
     dateTo?: string;
     orderBy?: PublicationOrderBy;
     orderDirection?: OrderDirection;
+    affiliation?: string;
 }
 
 export type GetPublicationVersionsReportingOptions = Pick<
@@ -921,6 +927,12 @@ export interface MappedOrcidAffiliation {
     url?: string;
 }
 
+export interface IndexableAffiliation {
+    organizationName: string;
+    organizationIdentifier?: string;
+    departmentName?: string;
+}
+
 export interface AffiliationWithFormattedName extends MappedOrcidAffiliation {
     name: string;
 }
@@ -1155,6 +1167,7 @@ export interface GetPublicationBundlesByUserQueryParams {
 export interface NotificationPayload {
     title?: string;
     url?: string;
+    first?: boolean;
 }
 
 export type NotificationWithPayload = Notification & {
@@ -1182,3 +1195,35 @@ export interface NotificationSendBulkResponse {
     totalFailed: number;
     totalSkipped: number;
 }
+
+export interface PearlCreatorInput {
+    name: string;
+    type: PearlCreatorType;
+    creatorId: string;
+    creatorTypeId: string;
+}
+
+export interface PearlSourceInput {
+    name: string;
+    identifier: string;
+    identifierType: PearlSourceIdentifierType;
+    language?: Languages;
+    licenceType?: LicenceType;
+    defaultTopicId?: string;
+}
+
+export interface SubPearlInput {
+    doi: string;
+}
+
+export interface CreatePearlRequestBody {
+    title: string;
+    creators: [PearlCreatorInput, ...PearlCreatorInput[]];
+    language?: Languages;
+    licenceType?: LicenceType;
+    topicIds: [string, ...string[]];
+    sourceId: string;
+    subPearls: [SubPearlInput, ...SubPearlInput[]];
+}
+
+export type CreatePearlSourceRequestBody = PearlSourceInput;
