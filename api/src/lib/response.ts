@@ -10,6 +10,16 @@ export const json = (statusCode: number, body): I.JSONResponse => ({
     statusCode
 });
 
+export const xml = (statusCode: number, body: string): I.XMLResponse => ({
+    body,
+    headers: {
+        'Access-Control-Allow-Credentials': true,
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/xml'
+    },
+    statusCode
+});
+
 export const unknownError = {
     body: JSON.stringify({ message: 'unknown error.' }),
     headers: {

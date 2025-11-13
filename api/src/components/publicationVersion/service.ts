@@ -136,6 +136,45 @@ export const privateGetById = (id: string) =>
         include: privatePublicationVersionInclude
     });
 
+export const getOAIPublicationVersion = (doiString: string) =>
+    client.prisma.publicationVersion.findFirst({
+        where: {
+            isLatestLiveVersion: true,
+            doi: doiString,
+            coAuthors: {
+                some: {
+                    confirmedCoAuthor: true,
+                    user: {
+                        role: { not: 'ORGANISATION' }
+                    }
+                }
+            }
+        },
+        select: {
+            createdAt: true,
+            description: true,
+            funders: true,
+            fundersStatement: true,
+            keywords: true,
+            language: true,
+            licence: true,
+            publishedDate: true,
+            title: true,
+            topics: true,
+            versionOf: true,
+            coAuthors: {
+                select: {
+                    user: {
+                        select: {
+                            firstName: true,
+                            lastName: true
+                        }
+                    }
+                }
+            }
+        }
+    });
+
 const getVersionFilter = (versionFilter: string) => ({
     ...(typeof versionFilter === 'number' || Number(versionFilter)
         ? { versionNumber: Number(versionFilter) }
@@ -1039,5 +1078,23 @@ export const getPreviousPublishedVersion = async (publicationId: string): Promis
             publishedDate: 'desc'
         },
         include: defaultPublicationVersionInclude
+    });
+};
+
+export const getEarliestDoiPublicationVersion = async () => {
+    return client.prisma.publicationVersion.findFirst({
+        where: {
+            isLatestLiveVersion: true,
+            user: {
+                role: {
+                    not: 'ORGANISATION'
+                }
+            }
+        },
+        orderBy: { publishedDate: 'asc' },
+        select: {
+            createdAt: true,
+            publishedDate: true
+        }
     });
 };
