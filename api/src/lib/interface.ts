@@ -1232,10 +1232,13 @@ export interface CreatePearlRequestBody {
     subPearls: [SubPearlInput, ...SubPearlInput[]];
 }
 
-export type OAIPublicationVersion = Exclude<
-    Prisma.PromiseReturnType<typeof publicationVersionService.getOAIPublicationVersion>,
-    null
->;
+export type OAIPublicationVersion = Prisma.PromiseReturnType<typeof publicationVersionService.getOAIPublicationVersion>;
+
+export interface OAIPublicationVersionHeader {
+    doi?: string | null;
+    createdAt: Date;
+    publishedDate?: Date | null;
+}
 
 export interface OAIRequestAttributes {
     verb?: string;
@@ -1244,9 +1247,13 @@ export interface OAIRequestAttributes {
 }
 
 export interface GetOAIRequestQueryParams {
-    verb: 'GetRecord' | 'Identify' | 'ListSets';
+    verb: 'GetRecord' | 'Identify' | 'ListSets' | 'ListIdentifiers';
     metadataPrefix: 'oai_dc';
     identifier?: string;
+    from?: string;
+    until?: string;
+    set?: string;
+    resumptionToken?: string;
 }
 
 export type CreatePearlSourceRequestBody = PearlSourceInput;

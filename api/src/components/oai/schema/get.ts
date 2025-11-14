@@ -5,7 +5,7 @@ const getOAI: I.Schema = {
     properties: {
         verb: {
             type: 'string',
-            enum: ['GetRecord', 'Identify', 'ListSets']
+            enum: ['GetRecord', 'Identify', 'ListSets', 'ListIdentifiers']
         },
         metadataPrefix: {
             type: 'string',
@@ -13,6 +13,16 @@ const getOAI: I.Schema = {
         },
         identifier: {
             type: 'string'
+        },
+        set: {
+            type: 'string',
+            enum: ['publications']
+        },
+        resumptionToken: {
+            type: 'string',
+            pattern: '^[A-Za-z0-9+/]+=*$',
+            minLength: 16,
+            maxLength: 256
         }
     },
     required: ['verb'],
@@ -26,6 +36,16 @@ const getOAI: I.Schema = {
             },
             then: {
                 required: ['identifier', 'metadataPrefix']
+            }
+        },
+        {
+            if: {
+                properties: {
+                    verb: { const: 'ListIdentifiers' }
+                }
+            },
+            then: {
+                required: ['metadataPrefix']
             }
         }
     ]

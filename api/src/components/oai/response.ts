@@ -56,6 +56,19 @@ export const recordNotFoundResponse = (): string =>
         .up()
         .end(writerOptions);
 
+export const badResumptionTokenResponse = (): string =>
+    responseRoot()
+        .ele('error', { code: 'badResumptionToken' })
+        .txt('The resumption token is invalid or expired')
+        .up()
+        .end(writerOptions);
+
+export const noRecordsMatchResponse = (): string =>
+    responseRoot().ele('error', { code: 'noRecordsMatch' }).txt('No records match the request').up().end(writerOptions);
+
+export const internalServerErrorResponse = (): string =>
+    responseRoot().ele('error', { code: 'internalServerError' }).txt('Internal server error').up().end(writerOptions);
+
 // https://www.openarchives.org/OAI/openarchivesprotocol.html#GetRecord
 export const getRecordResponse = (
     publicationVersion: I.OAIPublicationVersion,
@@ -169,5 +182,73 @@ export const listSetsResponse = (): string => {
     return response.up().end(writerOptions);
 };
 
-export const internalServerErrorResponse = (): string =>
-    responseRoot().ele('error', { code: 'internalServerError' }).txt('Internal server error').up().end(writerOptions);
+export const listIdentifiersResponse = (
+    publicationVersionHeaders: I.OAIPublicationVersionHeader[],
+    params: I.GetOAIRequestQueryParams,
+    cursor = 0,
+    resumptionToken?: string
+): string => {
+    const { verb, metadataPrefix, identifier } = params;
+
+    const listIdentifiersRoot = responseRoot({ verb, metadataPrefix, identifier }).ele('ListIdentifiers');
+
+    for (const pubHeader of publicationVersionHeaders) {
+        const { doi, createdAt, publishedDate } = pubHeader;
+
+        console.log(doi);
+
+        if (!doi) {
+            continue;
+        }
+
+        const dateStamp = formatDate(publishedDate || createdAt);
+
+        const header = listIdentifiersRoot.ele('header');
+        header.ele('identifier').txt(doi).up();
+        header.ele('datestamp').txt(dateStamp).up();
+        header.ele('setSpec').txt('publications').up();
+        header.up();
+    }
+
+    if (resumptionToken) {
+        listIdentifiersRoot
+            .ele('resumptionToken', { cursor, completeListSize: publicationVersionHeaders.length })
+            .txt(resumptionToken)
+            .up();
+    }
+
+    return listIdentifiersRoot.up().end(writerOptions);
+};
+
+export const generateResumptionToken = (params: {
+    offset: number;
+    limit: number;
+    from?: string;
+    until?: string;
+}): string => {
+    const tokenData = {
+        offset: params.offset,
+        limit: params.limit,
+        ...(params.from && { from: params.from }),
+        ...(params.until && { until: params.until })
+    };
+
+    return Buffer.from(JSON.stringify(tokenData)).toString('base64');
+};
+
+export const parseResumptionToken = (
+    token: string
+): {
+    offset: number;
+    limit: number;
+    from?: string;
+    until?: string;
+} | null => {
+    try {
+        const decoded = Buffer.from(token, 'base64').toString('utf-8');
+
+        return JSON.parse(decoded);
+    } catch {
+        return null;
+    }
+};
