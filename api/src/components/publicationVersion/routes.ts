@@ -18,24 +18,28 @@ export const update = middy(publicationVersionController.update)
     .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
     .use(middleware.httpJsonBodyParser())
     .use(middleware.authentication())
-    .use(middleware.validator(publicationVersionSchema.update, 'body'));
+    .use(middleware.validator(publicationVersionSchema.update, 'body'))
+    .use(middleware.logOutcome('update publication version'));
 
 export const updateStatus = middy(publicationVersionController.updateStatus)
     .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
     .use(middleware.httpJsonBodyParser())
     .use(middleware.authentication())
     .use(middleware.validator(publicationVersionSchema.updateStatusPath, 'pathParameters'))
-    .use(middleware.validator(publicationVersionSchema.updateStatusQuery, 'queryStringParameters'));
+    .use(middleware.validator(publicationVersionSchema.updateStatusQuery, 'queryStringParameters'))
+    .use(middleware.logOutcome('update publication version status'));
 
 export const deleteVersion = middy(publicationVersionController.deleteVersion)
     .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
     .use(middleware.httpJsonBodyParser())
-    .use(middleware.authentication());
+    .use(middleware.authentication())
+    .use(middleware.logOutcome('delete publication version'));
 
 export const create = middy(publicationVersionController.create)
     .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
     .use(middleware.httpJsonBodyParser())
-    .use(middleware.authentication());
+    .use(middleware.authentication())
+    .use(middleware.logOutcome('create publication version'));
 
 export const requestControl = middy(publicationVersionController.requestControl)
     .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))

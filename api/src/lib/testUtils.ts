@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import * as client from 'lib/client';
 import * as seeds from 'prisma/seeds';
+import * as Helpers from 'lib/helpers';
 
 jest.setTimeout(60000);
 
@@ -102,7 +103,12 @@ export const openSearchSeed = async (): Promise<void> => {
                     publishedDate: true,
                     user: {
                         select: {
-                            role: true
+                            role: true,
+                            coAuthors: {
+                                select: {
+                                    affiliations: true
+                                }
+                            }
                         }
                     }
                 }
@@ -126,7 +132,8 @@ export const openSearchSeed = async (): Promise<void> => {
                     keywords: latestLiveVersion.keywords,
                     content: latestLiveVersion.content,
                     publishedDate: latestLiveVersion.publishedDate,
-                    cleanContent: convert(latestLiveVersion.content)
+                    cleanContent: convert(latestLiveVersion.content),
+                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestLiveVersion.user.coAuthors)
                 }
             });
         })

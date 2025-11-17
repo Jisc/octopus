@@ -889,7 +889,8 @@ export const postPublishHook = async (publicationVersion: I.PublicationVersion, 
                         keywords: publicationVersion.keywords,
                         content: publicationVersion.content,
                         publishedDate: publicationVersion.publishedDate,
-                        cleanContent: convert(publicationVersion.content)
+                        cleanContent: convert(publicationVersion.content),
+                        affiliations: Helpers.indexableAffilicationsFromCoAuthors(publicationVersion.coAuthors)
                     })
                     .then((result) => {
                         console.log(`Indexing complete.`);

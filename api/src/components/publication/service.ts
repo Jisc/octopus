@@ -381,6 +381,62 @@ export const getOpenSearchPublications = (filters: I.OpenSearchPublicationFilter
         });
     }
 
+    if (filters.affiliation) {
+        const aff = filters.affiliation.trim();
+
+        if (aff) {
+            const should: unknown[] = [];
+            const looksLikeUrl = /^https?:\/\//i.test(aff);
+
+            if (looksLikeUrl) {
+                should.push({
+                    term: { 'affiliations.organizationIdentifier.keyword': aff }
+                });
+            } else {
+                should.push(
+                    {
+                        match_phrase: { 'affiliations.organizationName': aff }
+                    },
+                    {
+                        match: {
+                            'affiliations.organizationName': {
+                                query: aff,
+                                operator: 'and',
+                                fuzziness: 'AUTO'
+                            }
+                        }
+                    },
+                    {
+                        match_phrase: { 'affiliations.departmentName': aff }
+                    },
+                    {
+                        match: {
+                            'affiliations.departmentName': {
+                                query: aff,
+                                operator: 'and',
+                                fuzziness: 'AUTO'
+                            }
+                        }
+                    },
+                    {
+                        multi_match: {
+                            query: aff,
+                            fields: ['affiliations.organizationName', 'affiliations.departmentName'],
+                            type: 'phrase_prefix'
+                        }
+                    }
+                );
+            }
+
+            must.push({
+                bool: {
+                    should,
+                    minimum_should_match: 1
+                }
+            });
+        }
+    }
+
     // @ts-ignore
     query.body.query.bool.must = must;
 
