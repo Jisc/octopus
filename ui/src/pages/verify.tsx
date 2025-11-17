@@ -324,24 +324,41 @@ const Verify: Types.NextPage<Props> = (props): React.ReactElement => {
                                     <span className="font-semibold text-grey-900 dark:text-grey-50">{email}</span>.
                                 </p>
                                 <p>
-                                    Please check your spam folder. Alternatively, you can{' '}
-                                    <Components.Button
-                                        title="request a new code"
-                                        onClick={requestCode}
-                                        textSize="xs"
-                                        padding="py-0"
-                                        className="p-0"
-                                    />{' '}
-                                    or{' '}
-                                    <Components.Button
-                                        title="return to update your email address"
-                                        onClick={resetForm}
-                                        textSize="xs"
-                                        padding="py-0"
-                                        className="p-0"
-                                    />
-                                    .
+                                    Please check your spam folder. If you still haven&apos;t found the verification
+                                    code, you can:
                                 </p>
+                                <ul className="list-disc space-y-2 pl-5 pt-2">
+                                    <li>
+                                        <Components.Button
+                                            title="Request a new code"
+                                            onClick={requestCode}
+                                            textSize="xs"
+                                            padding="py-0"
+                                            className="p-0"
+                                        />
+                                    </li>
+                                    <li>
+                                        <Components.Button
+                                            title="Return to update your email address"
+                                            onClick={resetForm}
+                                            textSize="xs"
+                                            padding="py-0"
+                                            className="p-0"
+                                        />
+                                    </li>
+                                    <li>
+                                        Or contact us at{' '}
+                                        <Components.Button
+                                            padding="py-0"
+                                            className="p-0"
+                                            textSize="xs"
+                                            title="help@jisc.ac.uk"
+                                            href="mailto:help@jisc.ac.uk?subject=Missing Octopus Verification Code"
+                                        />{' '}
+                                        with the subject line “Missing Octopus verification code” for further
+                                        assistance.
+                                    </li>
+                                </ul>
                             </div>
                         </HeadlessUI.Transition>
                     </form>
