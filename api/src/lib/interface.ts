@@ -1234,11 +1234,7 @@ export interface CreatePearlRequestBody {
 
 export type OAIPublicationVersion = Prisma.PromiseReturnType<typeof publicationVersionService.getOAIPublicationVersion>;
 
-export interface OAIPublicationVersionHeader {
-    doi?: string | null;
-    createdAt: Date;
-    publishedDate?: Date | null;
-}
+export type OAIPublicationVersionHeader = Pick<NonNullable<OAIPublicationVersion>, 'doi' | 'createdAt' | 'publishedDate'>;
 
 export interface OAIRequestAttributes {
     verb?: string;

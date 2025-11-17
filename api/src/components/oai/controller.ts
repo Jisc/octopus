@@ -72,8 +72,10 @@ const listIdentifiers = async (event: I.APIRequest<undefined, I.GetOAIRequestQue
     }
 
     let resumptionToken = '';
+    const totalResults = publications.body.hits.total.value;
+    const hasMoreResults = offset + publicationVersions.length < totalResults;
 
-    if (offset + limit < publications.body.hits.total.value) {
+    if (hasMoreResults) {
         resumptionToken = oaiResponse.generateResumptionToken({
             offset: offset + limit,
             limit,

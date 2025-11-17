@@ -71,7 +71,7 @@ export const internalServerErrorResponse = (): string =>
 
 // https://www.openarchives.org/OAI/openarchivesprotocol.html#GetRecord
 export const getRecordResponse = (
-    publicationVersion: I.OAIPublicationVersion,
+    publicationVersion: I.OAIPublicationVersion | null,
     links: {
         linkedTo: I.LinkedToPublication[];
         linkedFrom: I.LinkedFromPublication[];
@@ -79,6 +79,10 @@ export const getRecordResponse = (
     params: I.GetOAIRequestQueryParams
 ): string => {
     if (!params.identifier) {
+        return recordNotFoundResponse();
+    }
+
+    if (!publicationVersion) {
         return recordNotFoundResponse();
     }
 
@@ -144,7 +148,7 @@ export const getRecordResponse = (
 };
 
 export const identifyResponse = (
-    publicationVersion: Pick<I.OAIPublicationVersion, 'createdAt' | 'publishedDate'> | null
+    publicationVersion: Pick<NonNullable<I.OAIPublicationVersion>, 'createdAt' | 'publishedDate'> | null
 ): string => {
     const response = responseRoot({ verb: 'Identify' }).ele('Identify');
 
