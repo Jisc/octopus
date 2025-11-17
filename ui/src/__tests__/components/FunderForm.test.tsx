@@ -39,16 +39,9 @@ describe('Funder form tests', () => {
     it('Add funder button is enabled when ROR details have been entered', async () => {
         mocks.mockedAxios.get.mockResolvedValueOnce({
             data: {
-                name: 'Jisc',
-                addresses: [
-                    {
-                        city: 'Bristol'
-                    }
-                ],
-                links: ['https://jisc.ac.uk'],
-                country: {
-                    country_name: 'United Kingdom'
-                }
+                names: [{ value: 'Jisc', types: ['ror_display'] }],
+                locations: [{ geonames_details: { name: 'Bristol', country_name: 'United Kingdom' } }],
+                links: [{ type: 'website', value: 'https://jisc.ac.uk' }]
             }
         });
 
