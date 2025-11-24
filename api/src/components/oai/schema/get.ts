@@ -5,7 +5,7 @@ const getOAI: I.Schema = {
     properties: {
         verb: {
             type: 'string',
-            enum: ['GetRecord', 'Identify', 'ListSets', 'ListIdentifiers']
+            enum: ['GetRecord', 'Identify', 'ListSets', 'ListIdentifiers', 'ListMetadataFormats']
         },
         metadataPrefix: {
             type: 'string',
