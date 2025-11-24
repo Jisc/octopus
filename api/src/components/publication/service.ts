@@ -241,6 +241,56 @@ export const get = async (id: string) => {
         : publication;
 };
 
+export const getOAIPublication = async (doi: string) => {
+    return client.prisma.publication.findFirst({
+        where: {
+            doi,
+            versions: {
+                some: {
+                    isLatestLiveVersion: true,
+                    coAuthors: {
+                        some: {
+                            confirmedCoAuthor: true,
+                            user: {
+                                role: { not: 'ORGANISATION' }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        select: {
+            versions: {
+                select: {
+                    doi: true,
+                    createdAt: true,
+                    description: true,
+                    funders: true,
+                    fundersStatement: true,
+                    keywords: true,
+                    language: true,
+                    licence: true,
+                    publishedDate: true,
+                    title: true,
+                    topics: true,
+                    versionOf: true,
+                    coAuthors: {
+                        select: {
+                            user: {
+                                select: {
+                                    firstName: true,
+                                    lastName: true
+                                }
+                            }
+                        }
+                    },
+                    isLatestLiveVersion: true
+                }
+            }
+        }
+    });
+};
+
 export const privateGet = async (id: string) => {
     const publication = await client.prisma.publication.findUnique({
         where: {
