@@ -222,8 +222,9 @@ export const listIdentifiersResponse = (
     return listIdentifiersRoot.up().end(writerOptions);
 };
 
-export const listMetadataFormatsResponse = (): string => {
-    const response = responseRoot({ verb: 'ListMetadataFormats' }).ele('ListMetadataFormats');
+export const listMetadataFormatsResponse = (params: I.GetOAIRequestQueryParams): string => {
+    const { identifier } = params;
+    const response = responseRoot({ verb: 'ListMetadataFormats', identifier }).ele('ListMetadataFormats');
 
     const metadataFormat = response.ele('metadataFormat');
     metadataFormat.ele('metadataPrefix').txt('oai_dc').up();
