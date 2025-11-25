@@ -1,4 +1,5 @@
 import * as testUtils from 'lib/testUtils';
+import * as config from 'config';
 
 describe('Create draft publication', () => {
     beforeAll(async () => {
@@ -570,5 +571,21 @@ describe('Create live publication', () => {
 
         expect(createPublicationRequest.status).toEqual(400);
         expect(createPublicationRequest.body.message).toEqual('Topic with ID made-up-topic-id not found.');
+    });
+
+    test('Cannot create publication with title exceeding max length', async () => {
+        const longTitle = 'A'.repeat(config.constants.publication.title.maxLength + 1);
+
+        const createPublicationRequest = await testUtils.agent
+            .post('/publications')
+            .query({
+                apiKey: '000000012',
+                directPublish: 'true'
+            })
+            .send({ type: 'PROBLEM', title: longTitle, content: 'Test' });
+
+        expect(createPublicationRequest.status).toEqual(400);
+        expect(createPublicationRequest.body.message[0].instancePath).toEqual('/title');
+        expect(createPublicationRequest.body.message[0].keyword).toEqual('maxLength');
     });
 });

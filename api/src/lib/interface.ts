@@ -144,6 +144,7 @@ export interface OpenSearchPublication {
     content?: string | null;
     cleanContent?: string | null;
     publishedDate?: Date | null;
+    affiliations?: IndexableAffiliation[];
 }
 
 export interface GetPublicationPathParams {
@@ -221,6 +222,7 @@ export interface OpenSearchPublicationFilters {
     dateTo?: string;
     orderBy?: PublicationOrderBy;
     orderDirection?: OrderDirection;
+    affiliation?: string;
 }
 
 export type GetPublicationVersionsReportingOptions = Pick<
@@ -925,6 +927,12 @@ export interface MappedOrcidAffiliation {
     url?: string;
 }
 
+export interface IndexableAffiliation {
+    organizationName: string;
+    organizationIdentifier?: string;
+    departmentName?: string;
+}
+
 export interface AffiliationWithFormattedName extends MappedOrcidAffiliation {
     name: string;
 }
@@ -1159,6 +1167,7 @@ export interface GetPublicationBundlesByUserQueryParams {
 export interface NotificationPayload {
     title?: string;
     url?: string;
+    first?: boolean;
 }
 
 export type NotificationWithPayload = Notification & {

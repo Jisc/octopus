@@ -52,6 +52,10 @@ const getAll: I.JSONSchemaType<I.GetPublicationVersionsQueryParams> = {
             type: 'string',
             enum: ['reporting'],
             nullable: true
+        },
+        affiliation: {
+            type: 'string',
+            nullable: true
         }
     },
     required: [],

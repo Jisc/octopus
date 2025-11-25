@@ -999,61 +999,71 @@ export const automaticUnlock = async (options: {
     });
 };
 
-const NOTIFICATION_MESSAGES = {
+const NOTIFICATION_MESSAGES: Record<
+    I.NotificationActionTypeEnum,
+    {
+        getText: (title: string, first?: boolean) => string;
+        getLink: (url: string, first?: boolean) => string;
+        getTextPlain: (title: string, url: string, first?: boolean) => string;
+    }
+> = {
     [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_VERSION_CREATED]: {
-        getText: (title: string): string =>
+        getText: (title) =>
             `The publication you have bookmarked, <strong>${title}</strong> has had a new version published.`,
-        getLink: (url: string): string => `<a href="${url}">Click here to view the new version.</a>`,
-        getTextPlain: (title: string, url: string): string =>
+        getLink: (url) => `<a href="${url}">Click here to view the new version.</a>`,
+        getTextPlain: (title, url) =>
             `The publication you have bookmarked, ${title} has had a new version published. You can view the new version here: ${url}`
     },
     [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_RAISED]: {
-        getText: (title: string): string =>
-            `The publication you have bookmarked, <strong>${title}</strong> has had a red flag raised.`,
-        getLink: (url: string): string => `<a href="${url}">Click here to view the red flag</a>`,
-        getTextPlain: (title: string, url: string): string =>
+        getText: (title) => `The publication you have bookmarked, <strong>${title}</strong> has had a red flag raised.`,
+        getLink: (url) => `<a href="${url}">Click here to view the red flag</a>`,
+        getTextPlain: (title, url) =>
             `The publication you have bookmarked, ${title} has had a red flag raised. You can view the red flag here: ${url}`
     },
     [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_RESOLVED]: {
-        getText: (title: string): string =>
+        getText: (title) =>
             `The publication you have bookmarked, <strong>${title}</strong> has had a red flag resolved.`,
-        getLink: (url: string): string => `<a href="${url}">Click here to view the publication</a>`,
-        getTextPlain: (title: string, url: string): string =>
+        getLink: (url) => `<a href="${url}">Click here to view the publication</a>`,
+        getTextPlain: (title, url) =>
             `The publication you have bookmarked, ${title} has had a red flag resolved. You can view the publication here: ${url}`
     },
     [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_COMMENTED]: {
-        getText: (title: string): string =>
+        getText: (title) =>
             `The publication you have bookmarked, <strong>${title}</strong> has had a comment added to a red flag.`,
-        getLink: (url: string): string => `<a href="${url}">Click here to view the comment</a>`,
-        getTextPlain: (title: string, url: string): string =>
+        getLink: (url) => `<a href="${url}">Click here to view the comment</a>`,
+        getTextPlain: (title, url) =>
             `The publication you have bookmarked, ${title} has had a comment added to a red flag. You can view the comment here: ${url}`
     },
     [I.NotificationActionTypeEnum.PUBLICATION_VERSION_RED_FLAG_RAISED]: {
-        getText: (title: string): string =>
+        getText: (title) =>
             `The publication you raised a red flag on, <strong>${title}</strong> has had a new version published.`,
-        getLink: (url: string): string => `<a href="${url}">Click here to view the new version</a>`,
-        getTextPlain: (title: string, url: string): string =>
+        getLink: (url) => `<a href="${url}">Click here to view the new version</a>`,
+        getTextPlain: (title, url) =>
             `The publication you raised a red flag on, ${title} has had a new version published. You can view the new version here: ${url}`
     },
     [I.NotificationActionTypeEnum.PUBLICATION_VERSION_PEER_REVIEWED]: {
-        getText: (title: string): string =>
+        getText: (title) =>
             `The publication you peer reviewed, <strong>${title}</strong> has had a new version published.`,
-        getLink: (url: string): string => `<a href="${url}">Click here to view the new version</a>`,
-        getTextPlain: (title: string, url: string): string =>
+        getLink: (url) => `<a href="${url}">Click here to view the new version</a>`,
+        getTextPlain: (title, url) =>
             `The publication you peer reviewed, ${title} has had a new version published. You can view the new version here: ${url}`
     },
     [I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_PREDECESSOR]: {
-        getText: (title: string): string =>
-            `A new version of <strong>${title}</strong> has been published. This publication is linked from one that you are an author on. You may wish to peer review this publication to provide feedback, or even red flag it if you have a concern.`,
-        getLink: (url: string): string => `<a href="${url}">Click here to view the new publication version</a>`,
-        getTextPlain: (title: string, url: string): string =>
-            `A new version of ${title} has been published. This publication is linked from one that you are an author on. You may wish to peer review this publication to provide feedback, or even red flag it if you have a concern. You can view the new publication version here: ${url}`
+        getText: (title, first) =>
+            first
+                ? `<strong>${title}</strong> has been published. This publication is linked from one that you are an author on. You may wish to peer review this publication to provide feedback, or even red flag it if you have a concern.`
+                : `A new version of <strong>${title}</strong> has been published. This publication is linked from one that you are an author on. You may wish to peer review this publication to provide feedback, or even red flag it if you have a concern.`,
+        getLink: (url) => `<a href="${url}">Click here to view the new publication version</a>`,
+        getTextPlain: (title, url, first) =>
+            first
+                ? `${title} has been published. This publication is linked from one that you are an author on. You may wish to peer review this publication to provide feedback, or even red flag it if you have a concern. You can view the new publication version here: ${url}`
+                : `A new version of ${title} has been published. This publication is linked from one that you are an author on. You may wish to peer review this publication to provide feedback, or even red flag it if you have a concern. You can view the new publication version here: ${url}`
     },
     [I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_SUCCESSOR]: {
-        getText: (title: string): string =>
+        getText: (title) =>
             `A new version of <strong>${title}</strong> has been published. You are an author of a publication that is linked to this one. You may wish to review their changes to see if this might affect your own publication.`,
-        getLink: (url: string): string => `<a href="${url}">Click here to view the new publication version</a>`,
-        getTextPlain: (title: string, url: string): string =>
+        getLink: (url) => `<a href="${url}">Click here to view the new publication version</a>`,
+        getTextPlain: (title, url) =>
             `A new version of ${title} has been published. You are an author of a publication that is linked to this one. You may wish to review their changes to see if this might affect your own publication. You can view the new publication version here: ${url}`
     }
 };
@@ -1087,9 +1097,9 @@ const buildNotificationContent = (
 
             hasValidNotifications = true;
 
-            const messageText = messageConfig.getText(payload.title);
+            const messageText = messageConfig.getText(payload.title, payload.first);
             const linkText = messageConfig.getLink(payload.url);
-            const plainText = messageConfig.getTextPlain(payload.title, payload.url);
+            const plainText = messageConfig.getTextPlain(payload.title, payload.url, payload.first);
 
             html += `<li style="${styles.li}"><p style="${styles.p}">${messageText} ${linkText}<p></li>`;
             text += `${plainText}\n`;

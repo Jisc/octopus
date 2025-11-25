@@ -367,7 +367,8 @@ export const createBulletin = async (
                 entityId: currentPublishedVersion.versionOf,
                 payload: {
                     title: (previousPublishedVersion?.title || currentPublishedVersion.title) ?? '',
-                    url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf)
+                    url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf),
+                    first: !previousPublishedVersion
                 }
             }));
             break;

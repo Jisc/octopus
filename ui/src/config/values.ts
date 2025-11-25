@@ -12,6 +12,8 @@ export const publicationTypes: Types.PublicationType[] = [
     'PEER_REVIEW'
 ];
 
+export const publicationTitleMaxLength = 1000;
+
 export const authorTypes = ['individual', 'organisational'];
 
 export const octopusInformation: Interfaces.OctopusInformation = {

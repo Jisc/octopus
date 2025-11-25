@@ -47,6 +47,12 @@ const Create: Types.NextPage<PageProps> = (props): React.ReactElement => {
         setCreatePublicationLoading(true);
         setError(null);
 
+        if (title.length > Config.values.publicationTitleMaxLength) {
+            setError(`Title cannot exceed ${Config.values.publicationTitleMaxLength} characters.`);
+            setCreatePublicationLoading(false);
+            return;
+        }
+
         try {
             const response = await api.post<{ id: string }>(
                 Config.endpoints.publications,

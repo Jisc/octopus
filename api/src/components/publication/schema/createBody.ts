@@ -20,7 +20,8 @@ const createPublicationBodySchema: I.Schema = {
         },
         title: {
             type: 'string',
-            minLength: 1
+            minLength: 1,
+            maxLength: config.constants.publication.title.maxLength
         },
         licence: {
             type: 'string',
