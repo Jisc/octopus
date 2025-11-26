@@ -4,7 +4,8 @@ const keys = {
     localStorage: {
         preferences: `${prefix}-preferences`,
         token: `${prefix}-token`,
-        user: `${prefix}-user`
+        user: `${prefix}-user`,
+        helpdesk: `${prefix}-helpdesk`
     },
     cookieStorage: {
         token: `${prefix}-token`

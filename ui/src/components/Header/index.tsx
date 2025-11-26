@@ -63,6 +63,8 @@ const Header: React.FC<Props> = (props): React.ReactElement => {
                 </div>
             )}
 
+            <Components.HelpdeskBanner />
+
             <header
                 className={`text-grey-800 transition-colors duration-500  print:hidden  ${
                     props.fixed && 'lg:fixed lg:left-0 lg:top-0 lg:z-20 lg:w-full'
