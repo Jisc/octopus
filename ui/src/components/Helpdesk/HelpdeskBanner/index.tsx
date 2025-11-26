@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Hooks from '@/hooks';
 import * as Components from '@/components';
-import * as SolidIcons from '@heroicons/react/16/solid';
+import * as SolidIcons from '@heroicons/react/24/solid';
 import * as Assets from '@/assets';
 
 const HelpdeskBanner: React.FC = () => {
