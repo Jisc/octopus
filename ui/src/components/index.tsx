@@ -31,6 +31,8 @@ export { default as FlagPreview } from './Flag/Preview';
 export { default as Footer } from './Footer';
 export { default as FunderForm } from './FunderForm';
 export { default as Header } from './Header';
+export { default as HelpdeskBanner } from './Helpdesk/HelpdeskBanner';
+export { default as HelpdeskController } from './Helpdesk/HelpdeskController';
 export { default as HTMLVideo } from './Video/HTML';
 export { default as IconButton } from './IconButton';
 export { default as ImagePreview } from './ImagePreview';

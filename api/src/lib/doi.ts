@@ -375,7 +375,7 @@ export const createPublicationVersionDOI = async (
     return response.data;
 };
 
-const updateDOI = (doi: string, payload: DOIPayload): Promise<AxiosResponse<I.DOIResponse>> =>
+export const updateDOI = (doi: string, payload: DOIPayload): Promise<AxiosResponse<I.DOIResponse>> =>
     axios.put<I.DOIResponse>(`${process.env.DATACITE_ENDPOINT}/${doi}`, payload, {
         auth: {
             username: process.env.DATACITE_USER as string,

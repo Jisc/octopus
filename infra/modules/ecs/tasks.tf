@@ -106,6 +106,10 @@ resource "aws_ecs_task_definition" "script-runner" {
           "valueFrom" : "arn:aws:ssm:${local.region_name}:${local.account_id}:parameter/participating_ari_user_ids_${var.environment}_${var.project_name}"
         },
         {
+          "name" : "HELPDESK_ENABLED_USER_IDS",
+          "valueFrom" : "arn:aws:ssm:${local.region_name}:${local.account_id}:parameter/helpdesk_enabled_user_ids_${var.environment}_${var.project_name}"
+        },
+        {
           "name" : "QUEUE_URL",
           "valueFrom" : "arn:aws:ssm:${local.region_name}:${local.account_id}:parameter/queue_url_${var.environment}_${var.project_name}"
         },
