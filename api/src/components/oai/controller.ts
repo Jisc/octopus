@@ -94,6 +94,14 @@ const listIdentifiers = async (event: I.APIRequest<undefined, I.GetOAIRequestQue
     return response.xml(200, listIdentifiersResponse);
 };
 
+function listMetadataFormats(event: I.APIRequest<undefined, I.GetOAIRequestQueryParams>): I.XMLResponse {
+    const queryParams = event.queryStringParameters || {};
+
+    const listMetadataFormatsResponse = oaiResponse.listMetadataFormatsResponse(queryParams);
+
+    return response.xml(200, listMetadataFormatsResponse);
+}
+
 export const get = async (event: I.APIRequest<undefined, I.GetOAIRequestQueryParams>): Promise<I.XMLResponse> => {
     try {
         const { verb } = event.queryStringParameters || {};
@@ -107,6 +115,8 @@ export const get = async (event: I.APIRequest<undefined, I.GetOAIRequestQueryPar
                 return listSets();
             case 'ListIdentifiers':
                 return listIdentifiers(event);
+            case 'ListMetadataFormats':
+                return listMetadataFormats(event);
         }
     } catch (error) {
         console.error('OAI Get Error:', error);

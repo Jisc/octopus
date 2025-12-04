@@ -199,8 +199,6 @@ export const listIdentifiersResponse = (
     for (const pubHeader of publicationVersionHeaders) {
         const { doi, createdAt, publishedDate } = pubHeader;
 
-        console.log(doi);
-
         if (!doi) {
             continue;
         }
@@ -222,6 +220,19 @@ export const listIdentifiersResponse = (
     }
 
     return listIdentifiersRoot.up().end(writerOptions);
+};
+
+export const listMetadataFormatsResponse = (params: I.GetOAIRequestQueryParams): string => {
+    const { identifier } = params;
+    const response = responseRoot({ verb: 'ListMetadataFormats', identifier }).ele('ListMetadataFormats');
+
+    const metadataFormat = response.ele('metadataFormat');
+    metadataFormat.ele('metadataPrefix').txt('oai_dc').up();
+    metadataFormat.ele('schema').txt('http://www.openarchives.org/OAI/2.0/oai_dc.xsd').up();
+    metadataFormat.ele('metadataNamespace').txt('http://www.openarchives.org/OAI/2.0/oai_dc/').up();
+    metadataFormat.up();
+
+    return response.up().end(writerOptions);
 };
 
 export const generateResumptionToken = (params: {
