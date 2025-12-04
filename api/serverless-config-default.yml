@@ -580,6 +580,28 @@ functions:
                 path: ${self:custom.versions.v1}/publication-bundles
                 method: GET
                 cors: true
+    # Helpdesk
+    getHelpdeskStatus:
+        handler: dist/src/components/helpdesk/routes.getStatus
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/helpdesk/status
+                method: GET
+                cors: true
+    startHelpdeskSession:
+        handler: dist/src/components/helpdesk/routes.startSession
+        events:
+            - http: 
+                path: ${self:custom.versions.v1}/helpdesk/start-session
+                method: POST
+                cors: true
+    stopHelpdeskSession:
+        handler: dist/src/components/helpdesk/routes.stopSession
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/helpdesk/stop-session
+                method: POST
+                cors: true
     # Pearls
     getPearls:
         handler: dist/src/components/pearl/routes.getAll

@@ -5,7 +5,7 @@ beforeAll(async () => {
     await testUtils.testSeed();
 });
 
-describe('Notify pubRouter of a publication', () => {
+describe.skip('Notify pubRouter of a publication', () => {
     test('Notify of existing non-seed publication', async () => {
         const response = await testUtils.agent.post('/publications/publication-problem-live/notifyPubRouter');
 

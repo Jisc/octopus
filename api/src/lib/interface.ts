@@ -1202,6 +1202,14 @@ export interface NotificationSendBulkResponse {
     totalSkipped: number;
 }
 
+export interface HelpdeskStatus {
+    enabled: boolean;
+}
+
+export interface StartHelpdeskSessionBody {
+    userId: string;
+}
+
 export interface PearlCreatorInput {
     name: string;
     type: PearlCreatorType;
