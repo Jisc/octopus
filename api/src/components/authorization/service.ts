@@ -12,6 +12,16 @@ export const createJWT = (user: I.User): string => {
     return jwt;
 };
 
+export const createHelpdeskJWT = (
+    user: I.User & {
+        helpdeskInitiatorId?: string;
+    }
+): string => {
+    const jwt = JWT.sign(user, SECRET, { expiresIn: '30m' });
+
+    return jwt;
+};
+
 export const validateJWT = (token: string) => {
     try {
         const decodedJWT = JWT.verify(token, SECRET);

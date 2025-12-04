@@ -219,15 +219,15 @@ const Accessibility: Types.NextPage = (): React.ReactElement => {
                 <p>
                     Whenever new features are released, they go through our internal quality assurance checks and must
                     meet WCAG 2.1 A & AA guidelines. We&apos;re also committed to working on the issues above and aim to
-                    have all known issues resolved by mid-2025.
+                    have all known issues resolved by mid-2026.
                 </p>
                 <p>
                     Improvements are being made both as a part of routine development, and as dedicated exercises.
                     Accessibility is considered as a priority for all features developed for the platform.
                 </p>
                 <h2 className="mt-10 text-xl font-semibold">Preparation of this accessibility statement</h2>
-                <p>This statement was prepared on 3 Nov 2023. It was last reviewed on 25 Jun 2024.</p>
-                <p>This website was last tested on 25 Jun 2024.</p>
+                <p>This statement was prepared on 3 Nov 2023. It was last reviewed on 30 Oct 2025.</p>
+                <p>This website was last tested on 30 Oct 2025.</p>
                 <p>
                     The test was carried out by Jisc staff, using semi-automated testing tools such as Site Improve,
                     Chrome Lighthouse and WAVE Evaluation tool. Manual accessibility testing was conducted on Chrome &

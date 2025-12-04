@@ -150,6 +150,7 @@ export interface OpenSearchPublication {
     content?: string | null;
     cleanContent?: string | null;
     publishedDate?: Date | null;
+    affiliations?: IndexableAffiliation[];
 }
 
 export interface GetPublicationPathParams {
@@ -227,6 +228,7 @@ export interface OpenSearchPublicationFilters {
     dateTo?: string;
     orderBy?: PublicationOrderBy;
     orderDirection?: OrderDirection;
+    affiliation?: string;
 }
 
 export type GetPublicationVersionsReportingOptions = Pick<
@@ -931,6 +933,12 @@ export interface MappedOrcidAffiliation {
     url?: string;
 }
 
+export interface IndexableAffiliation {
+    organizationName: string;
+    organizationIdentifier?: string;
+    departmentName?: string;
+}
+
 export interface AffiliationWithFormattedName extends MappedOrcidAffiliation {
     name: string;
 }
@@ -1192,6 +1200,14 @@ export interface NotificationSendBulkResponse {
     totalSent: number;
     totalFailed: number;
     totalSkipped: number;
+}
+
+export interface HelpdeskStatus {
+    enabled: boolean;
+}
+
+export interface StartHelpdeskSessionBody {
+    userId: string;
 }
 
 export interface PearlCreatorInput {

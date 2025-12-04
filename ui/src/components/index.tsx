@@ -31,6 +31,8 @@ export { default as FlagPreview } from './Flag/Preview';
 export { default as Footer } from './Footer';
 export { default as FunderForm } from './FunderForm';
 export { default as Header } from './Header';
+export { default as HelpdeskBanner } from './Helpdesk/HelpdeskBanner';
+export { default as HelpdeskController } from './Helpdesk/HelpdeskController';
 export { default as HTMLVideo } from './Video/HTML';
 export { default as IconButton } from './IconButton';
 export { default as ImagePreview } from './ImagePreview';
@@ -77,6 +79,7 @@ export { default as PublicationCreationResearchProcess } from './Publication/Cre
 export { default as PublicationCreationStepTitle } from './Publication/Creation/StepTitle';
 export { default as PublicationBundleForm } from './PublicationBundle/PublicationBundleForm';
 export { default as PublicationBundleFormEntry } from './PublicationBundle/PublicationBundleFormEntry';
+export { default as PublicationBundleInstructions } from './PublicationBundle/PublicationBundleInstructions';
 export { default as PublicationLink } from './Publication/Link';
 export { default as PublicationPageCoAuthoringActions } from './Publication/PublicationPage/CoAuthoringActions';
 export { default as PublicationPageHeaderActions } from './Publication/PublicationPage/HeaderActions';
