@@ -1,4 +1,4 @@
-import * as XMLBuilder from 'xmlbuilder2';
+import { create, XMLToStringOptions } from 'xmlbuilder';
 import * as I from 'lib/interface';
 import * as Helpers from 'lib/helpers';
 
@@ -17,14 +17,14 @@ export const OAI_PMH_SCHEMA = {
 
 const BASE_URL = `https://${process.env.STAGE}.api.octopus.ac/v1/oai2`;
 
-const writerOptions = { prettyPrint: true };
+const writerOptions: XMLToStringOptions = { pretty: true };
 
 const formatDate = (date: Date): string => {
     return date.toISOString().split('T')[0];
 };
 
-export const responseRoot = (reqAttr: I.OAIRequestAttributes = {}): ReturnType<typeof XMLBuilder.create> =>
-    XMLBuilder.create({ version: '1.0', encoding: 'UTF-8' })
+export const responseRoot = (reqAttr: I.OAIRequestAttributes = {}): ReturnType<typeof create> =>
+    create({ version: '1.0', encoding: 'UTF-8' })
         .ele('OAI-PMH', OAI_PMH_SCHEMA)
         .ele('responseDate')
         .txt(new Date().toISOString())
