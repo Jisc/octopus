@@ -52,6 +52,7 @@ data "aws_iam_policy_document" "deploy_backend_policy" {
       "ec2:DescribeSubnets",
       "ec2:DescribeVpcs",
       "ec2:RunInstances",
+      "ec2:TerminateInstances",
       "events:ListTargetsByRule",
       "events:DescribeRule",
       "events:PutRule",
