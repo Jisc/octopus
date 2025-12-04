@@ -151,6 +151,7 @@ export const getOAIPublicationVersion = (doiString: string) =>
             }
         },
         select: {
+            doi: true,
             createdAt: true,
             description: true,
             funders: true,

@@ -262,6 +262,7 @@ export const getOAIPublication = async (doi: string) => {
         select: {
             versions: {
                 select: {
+                    doi: true,
                     createdAt: true,
                     description: true,
                     funders: true,

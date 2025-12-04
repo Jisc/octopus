@@ -23,6 +23,8 @@ const validator = (schema: I.Schema, requestType: I.RequestType): middy.Middlewa
                         return response.xml(200, oaiResponse.invalidMetadataPrefixResponse());
                     case '/identifier':
                         return response.xml(200, oaiResponse.invalidIdentifierResponse());
+                    case '/resumptionToken':
+                        return response.xml(200, oaiResponse.badResumptionTokenResponse());
                     default:
                         return response.xml(200, oaiResponse.badArgumentResponse());
                 }
