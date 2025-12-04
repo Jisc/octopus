@@ -91,6 +91,12 @@ export interface JSONResponse {
     statusCode: number;
 }
 
+export interface XMLResponse {
+    body: string;
+    headers: unknown;
+    statusCode: number;
+}
+
 export type Environment = 'int' | 'prod';
 
 export type SearchResultMeta = {
@@ -1232,6 +1238,23 @@ export interface CreatePearlRequestBody {
     topicIds: [string, ...string[]];
     sourceId: string;
     subPearls: [SubPearlInput, ...SubPearlInput[]];
+}
+
+export type OAIPublicationVersion = Exclude<
+    Prisma.PromiseReturnType<typeof publicationVersionService.getOAIPublicationVersion>,
+    null
+>;
+
+export interface OAIRequestAttributes {
+    verb?: string;
+    metadataPrefix?: string;
+    identifier?: string;
+}
+
+export interface GetOAIRequestQueryParams {
+    verb: 'GetRecord';
+    metadataPrefix: 'oai_dc';
+    identifier?: string;
 }
 
 export type CreatePearlSourceRequestBody = PearlSourceInput;

@@ -87,6 +87,9 @@
             "notification/*": [
                 "src/components/notification/*"
             ],
+            "oai/*": [
+                "src/components/oai/*"
+            ],
             "pdf/*": [
                 "src/components/pdf/*"
             ],

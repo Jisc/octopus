@@ -630,6 +630,13 @@ functions:
                 path: ${self:custom.versions.v1}/pearl-sources
                 method: POST
                 cors: true
+    getOAI:
+        handler: dist/src/components/oai/routes.get
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/oai2
+                method: GET
+                cors: true
 
 package:
     defaultPatterns:
