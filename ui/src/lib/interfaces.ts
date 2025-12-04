@@ -617,3 +617,54 @@ export interface VisualizationBoxData {
     flagCount: number;
     peerReviewCount: number;
 }
+
+export interface RORAPIOrganizationResponse {
+    admin: {
+        created: {
+            date: string;
+            schema_version: string;
+        };
+        last_modified: {
+            date: string;
+            schema_version: string;
+        };
+    };
+    domains: string[];
+    established: number;
+    external_ids: {
+        all: string[];
+        preferred: string | null;
+        type: string;
+    }[];
+    id: string;
+    links: {
+        type: string;
+        value: string;
+    }[];
+    locations: {
+        geonames_details: {
+            continent_code: string;
+            continent_name: string;
+            country_code: string;
+            country_name: string;
+            country_subdivision_code: string;
+            country_subdivision_name: string;
+            lat: number;
+            lng: number;
+            name: string;
+        };
+        geonames_id: number;
+    }[];
+    names: {
+        lang: string;
+        types: string[];
+        value: string;
+    }[];
+    relationships: {
+        label: string;
+        type: string;
+        id: string;
+    }[];
+    status: string;
+    types: string[];
+}

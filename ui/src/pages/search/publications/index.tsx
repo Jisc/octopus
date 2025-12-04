@@ -32,9 +32,11 @@ const formatDateForAPI = (rawDate: string, type: 'to' | 'from'): string | null =
 };
 
 const constructQueryParams = (params: {
-    [key in 'query' | 'publicationTypes' | 'limit' | 'offset' | 'dateFrom' | 'dateTo' | 'authorTypes']: string | null;
+    [key in 'query' | 'publicationTypes' | 'limit' | 'offset' | 'dateFrom' | 'dateTo' | 'authorTypes' | 'affiliation']:
+        | string
+        | null;
 }): string => {
-    const { query, publicationTypes, limit, offset, dateFrom, dateTo, authorTypes } = params;
+    const { query, publicationTypes, limit, offset, dateFrom, dateTo, authorTypes, affiliation } = params;
     const paramString: string[] = [];
 
     if (query) {
@@ -84,6 +86,10 @@ const constructQueryParams = (params: {
         );
     }
 
+    if (affiliation) {
+        paramString.push('affiliation=' + encodeURIComponent(affiliation));
+    }
+
     return paramString.join('&');
 };
 
@@ -97,6 +103,7 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
     const dateFrom = Helpers.extractNextQueryParam(context.query.dateFrom);
     const dateTo = Helpers.extractNextQueryParam(context.query.dateTo);
     const authorTypes = Helpers.extractNextQueryParam(context.query.authorType);
+    const affiliation = Helpers.extractNextQueryParam(context.query.affiliation);
 
     const params = constructQueryParams({
         query,
@@ -105,7 +112,8 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
         offset,
         dateFrom,
         dateTo,
-        authorTypes
+        authorTypes,
+        affiliation
     });
 
     const swrKey = `/${searchType}?${params}`;
@@ -135,6 +143,7 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
             dateFrom,
             dateTo,
             authorTypes,
+            affiliation,
             fallback: {
                 [swrKey]: fallbackData
             },
@@ -152,6 +161,7 @@ type Props = {
     dateFrom: string | null;
     dateTo: string | null;
     authorTypes: string | null;
+    affiliation: string | null;
     error: string | null;
     fallback: { [key: string]: { data: Interfaces.PublicationVersion[] } & Interfaces.SearchResultMeta };
 };
@@ -178,7 +188,8 @@ const Publications: Types.NextPage<Props> = (props): React.ReactElement => {
         offset: offset.toString(),
         dateFrom,
         dateTo,
-        authorTypes
+        authorTypes,
+        affiliation: props.affiliation
     });
 
     const swrKey = `/${props.searchType}?${params}`;

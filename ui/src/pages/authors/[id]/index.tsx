@@ -4,7 +4,6 @@ import Head from 'next/head';
 import useSWR from 'swr';
 import * as Router from 'next/router';
 import * as SolidIcons from '@heroicons/react/24/solid';
-
 import * as api from '@/api';
 import * as Assets from '@/assets';
 import * as Components from '@/components';
@@ -101,7 +100,6 @@ const Author: Types.NextPage<Props> = (props): React.ReactElement => {
     >(flagsSwrKey, null, {
         fallbackData: props.flags || undefined
     });
-    console.log('Get flags response', getFlagsResponse);
 
     const searchInputRef = React.useRef<HTMLInputElement>(null);
     const missingNames = !props.user.firstName && !props.user.lastName;
@@ -243,6 +241,8 @@ const Author: Types.NextPage<Props> = (props): React.ReactElement => {
                             </Components.Link>
                         </div>
                     )}
+
+                    <Components.HelpdeskController userId={props.user.id} />
                 </header>
 
                 {!isOrganisationalAccount && (

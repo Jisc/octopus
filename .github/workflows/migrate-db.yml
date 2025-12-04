@@ -44,7 +44,8 @@ jobs:
           # Replace the RDS URL with localhost, cheeky node usage to do it
           export DATABASE_URL=$(node -e "console.log('${{ secrets.DATABASE_URL }}'.replace(/octopus-${{inputs.ENVIRONMENT}}.*amazonaws.com/, 'localhost'))")
 
-          npx prisma migrate deploy
+          # Use the same Prisma version as the project
+          npx --package=prisma@$(node -p "require('./package.json').devDependencies.prisma") prisma migrate deploy
         env:
           DB_URL: ${{ secrets.DATABASE_URL }}
 
