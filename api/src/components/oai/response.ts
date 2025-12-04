@@ -24,8 +24,10 @@ const formatDate = (date: Date): string => {
 };
 
 export const responseRoot = (reqAttr: I.OAIRequestAttributes = {}): ReturnType<typeof create> =>
-    create({ version: '1.0', encoding: 'UTF-8' })
-        .ele('OAI-PMH', OAI_PMH_SCHEMA)
+    create('OAI-PMH', { version: '1.0', encoding: 'UTF-8' })
+        .att('xmlns', OAI_PMH_SCHEMA.xmlns)
+        .att('xmlns:xsi', OAI_PMH_SCHEMA['xmlns:xsi'])
+        .att('xsi:schemaLocation', OAI_PMH_SCHEMA['xsi:schemaLocation'])
         .ele('responseDate')
         .txt(new Date().toISOString())
         .up()
