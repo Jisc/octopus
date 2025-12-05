@@ -35,7 +35,7 @@ jobs:
         working-directory: ./.github/scripts
         run: |
           chmod +x ./temp-bastion-setup.sh
-          ./temp-bastion-setup.sh ${{ inputs.ENVIRONMENT }} ${{ secrets.RDS_URL   }} true
+          ./temp-bastion-setup.sh ${{ inputs.ENVIRONMENT }} ${{ secrets.RDS_URL }} true
         shell: bash
 
       - name: Run prisma migrations
