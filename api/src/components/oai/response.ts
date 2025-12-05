@@ -176,14 +176,21 @@ export const identifyResponse = (
 export const listSetsResponse = (): string => {
     const response = responseRoot({ verb: 'ListSets' }).ele('ListSets');
 
-    response.ele('set');
-    response.ele('setSpec').txt('publications').up();
-    response.ele('setName').txt('Publications').up();
-    response.ele('setDescription');
-    response.ele('oai_dc:dc', OAI_DC_METADATA_SCHEMA);
-    response.ele('dc:description').txt('All publications in Octopus').up();
-    response.up();
-    response.up();
+    response
+        .ele('set')
+        .ele('setSpec')
+        .txt('publications')
+        .up()
+        .ele('setName')
+        .txt('Publications')
+        .up()
+        .ele('setDescription')
+        .ele('oai_dc:dc', OAI_DC_METADATA_SCHEMA)
+        .ele('dc:description')
+        .txt('All publications in Octopus')
+        .up()
+        .up()
+        .up();
 
     return response.up().end(writerOptions);
 };
