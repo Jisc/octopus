@@ -257,6 +257,8 @@ export const getUserSettings = async (
             enableBookmarkNotifications: true,
             enableBookmarkVersionNotifications: true,
             enableBookmarkFlagNotifications: true,
+            enableBookmarkLinkedNotifications: true,
+            enableBookmarkPeerReviewNotifications: true,
             enableVersionFlagNotifications: true,
             enablePeerReviewNotifications: true,
             enableLinkedNotifications: true

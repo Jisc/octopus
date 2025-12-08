@@ -15,10 +15,12 @@ const NOTIFICATION_SETTINGS_MAP: Record<I.NotificationActionTypeEnum, keyof NonN
     [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_RAISED]: 'enableBookmarkFlagNotifications',
     [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_RESOLVED]: 'enableBookmarkFlagNotifications',
     [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_COMMENTED]: 'enableBookmarkFlagNotifications',
+    [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_VERSION_LINKED_SUCCESSOR]: 'enableBookmarkLinkedNotifications',
+    [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_PEER_REVIEWED]: 'enableBookmarkPeerReviewNotifications',
     [I.NotificationActionTypeEnum.PUBLICATION_VERSION_RED_FLAG_RAISED]: 'enableVersionFlagNotifications',
     [I.NotificationActionTypeEnum.PUBLICATION_VERSION_PEER_REVIEWED]: 'enablePeerReviewNotifications',
     [I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_PREDECESSOR]: 'enableLinkedNotifications',
-    [I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_SUCCESSOR]: 'enableLinkedNotifications'
+    [I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_SUCCESSOR]: 'enableLinkedNotifications',
 };
 
 async function sendSingle(

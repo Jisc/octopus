@@ -237,6 +237,8 @@ export interface UserSettings {
     enableBookmarkNotifications: boolean;
     enableBookmarkVersionNotifications: boolean;
     enableBookmarkFlagNotifications: boolean;
+    enableBookmarkLinkedNotifications: boolean;
+    enableBookmarkPeerReviewNotifications: boolean;
     enableVersionFlagNotifications: boolean;
     enablePeerReviewNotifications: boolean;
     enableLinkedNotifications: boolean;

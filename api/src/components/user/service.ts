@@ -178,6 +178,8 @@ export const get = (id: string, isAccountOwner = false) =>
                     enableBookmarkNotifications: true,
                     enableBookmarkVersionNotifications: true,
                     enableBookmarkFlagNotifications: true,
+                    enableBookmarkLinkedNotifications: true,
+                    enableBookmarkPeerReviewNotifications: true,
                     enableVersionFlagNotifications: true,
                     enablePeerReviewNotifications: true,
                     enableLinkedNotifications: true
