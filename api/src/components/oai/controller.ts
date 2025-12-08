@@ -32,6 +32,62 @@ const identify = async (): Promise<I.XMLResponse> => {
     return response.xml(200, identifyResponse);
 };
 
+const listRecords = async (event: I.APIRequest<undefined, I.GetOAIRequestQueryParams>): Promise<I.XMLResponse> => {
+    const queryParams = event.queryStringParameters || {};
+    const limit = 10;
+
+    let offset = 0;
+    let from = queryParams.from;
+    let until = queryParams.until;
+
+    if (queryParams.resumptionToken) {
+        const tokenData = oaiResponse.parseResumptionToken(queryParams.resumptionToken);
+
+        if (tokenData) {
+            offset = tokenData.offset;
+            from = tokenData.from;
+            until = tokenData.until;
+        }
+    }
+
+    const publications = await publicationService.getOpenSearchPublications({
+        limit,
+        offset,
+        authorType: 'individual',
+        dateFrom: from,
+        dateTo: until
+    });
+
+    const publicationIds: string[] = publications.body.hits.hits.map((hit) => hit._id as string);
+    const publicationVersions = await publicationVersionService.getAllByPublicationIds(publicationIds);
+
+    if (publicationVersions.length === 0) {
+        return response.xml(200, oaiResponse.noRecordsMatchResponse());
+    }
+
+    let resumptionToken = '';
+    const totalResults = publications.body.hits.total.value;
+    const hasMoreResults = offset + publicationVersions.length < totalResults;
+
+    if (hasMoreResults) {
+        resumptionToken = oaiResponse.generateResumptionToken({
+            offset: offset + limit,
+            limit,
+            from,
+            until
+        });
+    }
+
+    const listRecordsResponse = oaiResponse.listRecordsResponse(
+        publicationVersions,
+        queryParams,
+        offset,
+        resumptionToken
+    );
+
+    return response.xml(200, listRecordsResponse);
+};
+
 const listSets = async (): Promise<I.XMLResponse> => {
     const listSetsResponse = oaiResponse.listSetsResponse();
 
@@ -111,12 +167,14 @@ export const get = async (event: I.APIRequest<undefined, I.GetOAIRequestQueryPar
                 return getRecord(event);
             case 'Identify':
                 return identify();
-            case 'ListSets':
-                return listSets();
             case 'ListIdentifiers':
                 return listIdentifiers(event);
             case 'ListMetadataFormats':
                 return listMetadataFormats(event);
+            case 'ListRecords':
+                return listRecords(event);
+            case 'ListSets':
+                return listSets();
         }
     } catch (error) {
         console.error('OAI Get Error:', error);
