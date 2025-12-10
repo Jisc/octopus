@@ -634,3 +634,59 @@ export const updateUserSettings = async (
             userId: id
         }
     });
+
+export const getLinkedBookmarksUsers = async (
+    publicationId: string,
+    type?: I.PublicationType,
+    typeFilter: 'include' | 'exclude' = 'include'
+) => {
+    const typeCondition = type ? (typeFilter === 'include' ? { type: type } : { type: { not: type } }) : {};
+
+    const linkedVersions = await client.prisma.publicationVersion.findMany({
+        where: {
+            linkedFromPublications: {
+                some: {
+                    publicationFrom: {
+                        ...typeCondition,
+                        id: publicationId
+                    }
+                }
+            }
+        },
+        select: {
+            versionOf: true,
+            title: true
+        }
+    });
+
+    if (linkedVersions.length === 0) {
+        return { linkedVersions: [], users: [] };
+    }
+
+    const users = await client.prisma.user.findMany({
+        where: {
+            bookmarks: {
+                some: {
+                    entityId: {
+                        in: linkedVersions.map((lv) => lv.versionOf)
+                    }
+                }
+            }
+        },
+        select: {
+            id: true,
+            bookmarks: {
+                where: {
+                    entityId: {
+                        in: linkedVersions.map((lv) => lv.versionOf)
+                    }
+                },
+                select: {
+                    entityId: true
+                }
+            }
+        }
+    });
+
+    return { linkedVersions, users };
+};
