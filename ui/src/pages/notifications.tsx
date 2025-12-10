@@ -285,7 +285,6 @@ const Notifications: Types.NextPage<Props> = (props): React.ReactElement => {
                             label="Enable notifications about publications that are linked to mine"
                             className={`mt-4 font-semibold w-fit ${loading ? 'cursor-wait' : ''}`}
                         />
-
                     </fieldset>
                 </section>
 
