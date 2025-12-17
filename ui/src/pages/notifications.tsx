@@ -138,10 +138,11 @@ const Notifications: Types.NextPage<Props> = (props): React.ReactElement => {
         const checked = e.target.checked;
         const updatedSettings = {
             ...userSettings,
+            enableBookmarkNotifications: checked,
             enableBookmarkVersionNotifications: checked,
             enableBookmarkFlagNotifications: checked,
-            enableBookmarkNotifications: checked,
-            enableVersionFlagNotifications: checked
+            enableBookmarkLinkedNotifications: checked,
+            enableBookmarkPeerReviewNotifications: checked
         };
         updateNotificationsSettings(updatedSettings);
     };
@@ -208,10 +209,13 @@ const Notifications: Types.NextPage<Props> = (props): React.ReactElement => {
                         <legend className="mb-4 font-montserrat text-xl font-semibold text-grey-800 transition-colors duration-500 dark:text-white-50">
                             Notification settings
                         </legend>
-                        <p className="mb-8 font-montserrat text-grey-700 transition-colors duration-500 dark:text-grey-50 max-w-3xl">
+                        <p className="mb-4 font-montserrat text-grey-700 transition-colors duration-500 dark:text-grey-50 max-w-3xl">
                             Use these settings to control which notifications you would like to receive. Relevant
                             activity will be sent to you in a weekly bulletin email scheduled to be sent every Monday at
                             10:00am GMT.
+                        </p>
+                        <p className="mb-8 font-montserrat text-grey-700 transition-colors duration-500 dark:text-grey-50">
+                            Enable/disable notifications for:
                         </p>
                         <Components.Checkbox
                             disabled={loading}
@@ -219,7 +223,7 @@ const Notifications: Types.NextPage<Props> = (props): React.ReactElement => {
                             name="bookmark-notifications"
                             onChange={changeBookmarkNotifications}
                             checked={userSettings.enableBookmarkNotifications}
-                            label="Receive notifications for bookmarked publications"
+                            label="Bookmarked publications"
                             className={`font-semibold w-fit ${loading ? 'cursor-wait' : ''}`}
                         />
                         <Components.Checkbox
@@ -228,7 +232,7 @@ const Notifications: Types.NextPage<Props> = (props): React.ReactElement => {
                             name="bookmark-version-notifications"
                             onChange={changeBookmarkVersionNotifications}
                             checked={userSettings.enableBookmarkVersionNotifications}
-                            label="Receive notifications about new versions of bookmarked publications"
+                            label="New versions of bookmarked publications"
                             className={`mt-4 ml-8 w-fit ${loading ? 'cursor-wait' : ''}`}
                         />
                         <Components.Checkbox
@@ -237,7 +241,7 @@ const Notifications: Types.NextPage<Props> = (props): React.ReactElement => {
                             name="bookmark-flag-notifications"
                             onChange={changeBookmarkFlagNotifications}
                             checked={userSettings.enableBookmarkFlagNotifications}
-                            label="Receive notifications about red flags on bookmarked publications"
+                            label="Red flags on bookmarked publications"
                             className={`mt-4 ml-8 w-fit ${loading ? 'cursor-wait' : ''}`}
                         />
                         <Components.Checkbox
@@ -246,7 +250,7 @@ const Notifications: Types.NextPage<Props> = (props): React.ReactElement => {
                             name="bookmark-linked-notifications"
                             onChange={changeBookmarkLinkedNotifications}
                             checked={userSettings.enableBookmarkLinkedNotifications}
-                            label="Receive notifications about new publications that are linked to bookmarked publications"
+                            label="New publications that are linked to bookmarked publications"
                             className={`mt-4 ml-8 w-fit ${loading ? 'cursor-wait' : ''}`}
                         />
                         <Components.Checkbox
@@ -255,7 +259,7 @@ const Notifications: Types.NextPage<Props> = (props): React.ReactElement => {
                             name="bookmark-peer-review-notifications"
                             onChange={changeBookmarkPeerReviewNotifications}
                             checked={userSettings.enableBookmarkPeerReviewNotifications}
-                            label="Receive notifications about peer reviews on bookmarked publications"
+                            label="Peer reviews on bookmarked publications"
                             className={`mt-4 ml-8 w-fit ${loading ? 'cursor-wait' : ''}`}
                         />
                         <Components.Checkbox
@@ -264,7 +268,7 @@ const Notifications: Types.NextPage<Props> = (props): React.ReactElement => {
                             name="version-flag-notifications"
                             onChange={changeVersionFlagNotifications}
                             checked={userSettings.enableVersionFlagNotifications}
-                            label="Enable notifications about publications I have red flagged"
+                            label="Publications I have red flagged"
                             className={`mt-4 font-semibold w-fit ${loading ? 'cursor-wait' : ''}`}
                         />
                         <Components.Checkbox
@@ -273,7 +277,7 @@ const Notifications: Types.NextPage<Props> = (props): React.ReactElement => {
                             name="version-peer-review-notifications"
                             onChange={changePeerReviewNotifications}
                             checked={userSettings.enablePeerReviewNotifications}
-                            label="Enable notifications about publications I have peer reviewed"
+                            label="Publications I have peer reviewed"
                             className={`mt-4 font-semibold w-fit ${loading ? 'cursor-wait' : ''}`}
                         />
                         <Components.Checkbox
@@ -282,7 +286,7 @@ const Notifications: Types.NextPage<Props> = (props): React.ReactElement => {
                             name="version-linked-notifications"
                             onChange={changeLinkedNotifications}
                             checked={userSettings.enableLinkedNotifications}
-                            label="Enable notifications about publications that are linked to mine"
+                            label="Publications that are linked to mine"
                             className={`mt-4 font-semibold w-fit ${loading ? 'cursor-wait' : ''}`}
                         />
                     </fieldset>
