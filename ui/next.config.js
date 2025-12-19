@@ -4,9 +4,9 @@ const CSPDirectives = [
     "default-src 'none';",
     `script-src 'self' https://live.matomo.jisc.ac.uk 'sha256-i6f/49srVFuOjNVfFr0wuerEVL1EPOoBwnrjWDUm1UA=' ${isLocal ? "'unsafe-eval'" : ''};`,
     "style-src 'self' 'unsafe-inline';",
-    `connect-src 'self' https://*.api.octopus.ac http://127.0.0.1:4003 https://api.octopus.ac https://api.ror.org https://cdn.contentful.com https://live.matomo.jisc.ac.uk;`,
+    `connect-src 'self' https://*.api.octopus.ac http://127.0.0.1:4003 https://api.octopus.ac https://api.ror.org https://cdn.contentful.com https://live.matomo.jisc.ac.uk https://vimeo.com;`,
     `img-src https: data: ${isLocal ? 'http:' : ''};`,
-    'media-src https://octopus-promo-video.s3.eu-west-1.amazonaws.com https://www.youtube.com;',
+    'media-src https://octopus-promo-video.s3.eu-west-1.amazonaws.com https://www.youtube.com https://player.vimeo.com;',
     "font-src 'self';",
     "object-src 'none';",
     "base-uri 'self';",
@@ -14,7 +14,7 @@ const CSPDirectives = [
     "frame-ancestors 'none';",
     'upgrade-insecure-requests;',
     "manifest-src 'self';",
-    'frame-src https://www.youtube.com'
+    'frame-src https://www.youtube.com https://player.vimeo.com;'
 ];
 
 const securityHeaders = [
