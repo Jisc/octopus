@@ -6,7 +6,12 @@ import { webcrypto } from 'crypto';
 
 export const getSafeHTML = (content: string): string => {
     // Sanitize against XSS
-    return DOMPurify.sanitize(content);
+    return DOMPurify.sanitize(content, {
+        ADD_TAGS: ['iframe'],
+        ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src', 'style', 'width', 'height'],
+        // Allow only vimeo iframes
+        ALLOWED_URI_REGEXP: /^(https?:)?\/\/(player\.vimeo\.com)\/.*/
+    });
 };
 
 export function sanitizeSearchQuery(searchQuery: string): string {
