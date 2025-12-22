@@ -71,7 +71,6 @@ export const noRecordsMatchResponse = (): string =>
 export const internalServerErrorResponse = (): string =>
     responseRoot().ele('error', { code: 'internalServerError' }).txt('Internal server error').up().end(writerOptions);
 
-// https://www.openarchives.org/OAI/openarchivesprotocol.html#GetRecord
 export const getRecordResponse = (
     publicationVersion: I.OAIPublicationVersion | null,
     links: {
@@ -193,6 +192,63 @@ export const listSetsResponse = (): string => {
         .up();
 
     return response.up().end(writerOptions);
+};
+
+export const listRecordsResponse = (
+    publicationVersions: (Pick<
+        NonNullable<I.OAIPublicationVersion>,
+        'doi' | 'createdAt' | 'publishedDate' | 'title' | 'coAuthors' | 'language'
+    > | null)[],
+    params: I.GetOAIRequestQueryParams,
+    cursor = 0,
+    resumptionToken?: string
+): string => {
+    const { verb, metadataPrefix, identifier } = params;
+
+    const listRecordsRoot = responseRoot({ verb, metadataPrefix, identifier }).ele('ListRecords');
+
+    for (const pub of publicationVersions) {
+        if (pub === null) {
+            continue;
+        }
+
+        const { doi, createdAt, publishedDate, title, coAuthors, language } = pub;
+
+        if (!doi) {
+            continue;
+        }
+
+        const dateStamp = formatDate(publishedDate || createdAt);
+
+        const record = listRecordsRoot.ele('record');
+
+        const header = record.ele('header');
+        header.ele('identifier').txt(doi).up();
+        header.ele('datestamp').txt(dateStamp).up();
+        header.ele('setSpec').txt('publications').up();
+        header.up();
+
+        const metadata = record.ele('metadata').ele('oai_dc:dc', OAI_DC_METADATA_SCHEMA);
+        metadata.ele('dc:identifier').txt(doi).up();
+        metadata
+            .ele('oai_dc:title')
+            .txt(title || '')
+            .up();
+        metadata.ele('dc:language').txt(language).up();
+
+        coAuthors.forEach((author) => metadata.ele('dc:creator').txt(Helpers.getUserFullName(author.user)).up());
+
+        metadata.up().up();
+    }
+
+    if (resumptionToken) {
+        listRecordsRoot
+            .ele('resumptionToken', { cursor, completeListSize: publicationVersions.length })
+            .txt(resumptionToken)
+            .up();
+    }
+
+    return listRecordsRoot.up().end(writerOptions);
 };
 
 export const listIdentifiersResponse = (
