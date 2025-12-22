@@ -34,7 +34,7 @@ const identify = async (): Promise<I.XMLResponse> => {
 
 const listRecords = async (event: I.APIRequest<undefined, I.GetOAIRequestQueryParams>): Promise<I.XMLResponse> => {
     const queryParams = event.queryStringParameters || {};
-    const limit = 10;
+    const limit = 100;
 
     let offset = 0;
     let from = queryParams.from;
@@ -96,7 +96,7 @@ const listSets = async (): Promise<I.XMLResponse> => {
 
 const listIdentifiers = async (event: I.APIRequest<undefined, I.GetOAIRequestQueryParams>): Promise<I.XMLResponse> => {
     const queryParams = event.queryStringParameters || {};
-    const limit = 10;
+    const limit = 100;
 
     let offset = 0;
     let from = queryParams.from;
