@@ -435,9 +435,9 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
         () =>
             Boolean(
                 store.publicationVersion &&
-                    store.publicationVersion.title.trim() &&
-                    store.publicationVersion.content &&
-                    !Helpers.isEmptyContent(store.publicationVersion.content)
+                store.publicationVersion.title.trim() &&
+                store.publicationVersion.content &&
+                !Helpers.isEmptyContent(store.publicationVersion.content)
             ),
         [store.publicationVersion]
     );
