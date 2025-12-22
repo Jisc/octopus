@@ -23,7 +23,8 @@ const customJestConfig = {
         '^@/stores(.*)$': '<rootDir>/src/stores$1',
         '^@/templates(.*)$': '<rootDir>/src/templates$1',
         '^@/testUtils(.*)$': '<rootDir>/src/__tests__/testUtils$1',
-        '^@/types(.*)$': '<rootDir>/src/lib/types$1'
+        '^@/types(.*)$': '<rootDir>/src/lib/types$1',
+        '^cheerio$': require.resolve('cheerio')
     },
     testEnvironment: 'jest-environment-jsdom'
 };

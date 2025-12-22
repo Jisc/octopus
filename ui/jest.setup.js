@@ -7,9 +7,13 @@ import '@testing-library/jest-dom';
 // needed for 'fetch'
 import 'next';
 
-import { TextEncoder, TextDecoder } from 'util';
+import { TextEncoder, TextDecoder, ReadableStream  } from 'util';
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
+global.ReadableStream = ReadableStream;
+
+import { MessagePort } from 'worker_threads';
+global.MessagePort = MessagePort;
 
 // IntersectionObserver isn't available in test environment
 global.IntersectionObserver = function () {
