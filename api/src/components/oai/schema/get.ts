@@ -5,7 +5,7 @@ const getOAI: I.Schema = {
     properties: {
         verb: {
             type: 'string',
-            enum: ['GetRecord', 'Identify', 'ListSets', 'ListIdentifiers', 'ListMetadataFormats']
+            enum: ['GetRecord', 'Identify', 'ListIdentifiers', 'ListMetadataFormats', 'ListRecords', 'ListSets']
         },
         metadataPrefix: {
             type: 'string',
@@ -42,6 +42,16 @@ const getOAI: I.Schema = {
             if: {
                 properties: {
                     verb: { const: 'ListIdentifiers' }
+                }
+            },
+            then: {
+                required: ['metadataPrefix']
+            }
+        },
+        {
+            if: {
+                properties: {
+                    verb: { const: 'ListRecords' }
                 }
             },
             then: {

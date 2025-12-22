@@ -1254,7 +1254,7 @@ export interface OAIRequestAttributes {
 }
 
 export interface GetOAIRequestQueryParams {
-    verb: 'GetRecord' | 'Identify' | 'ListSets' | 'ListIdentifiers' | 'ListMetadataFormats';
+    verb: 'GetRecord' | 'Identify' | 'ListIdentifiers' | 'ListMetadataFormats' | 'ListRecords' | 'ListSets';
     metadataPrefix: 'oai_dc';
     identifier?: string;
     from?: string;
