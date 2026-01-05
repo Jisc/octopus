@@ -1034,6 +1034,19 @@ const NOTIFICATION_MESSAGES: Record<
         getTextPlain: (title, url) =>
             `The publication you have bookmarked, ${title} has had a comment added to a red flag. You can view the comment here: ${url}`
     },
+    [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_VERSION_LINKED_SUCCESSOR]: {
+        getText: (title) =>
+            `The publication you have bookmarked, <strong>${title}</strong> has had a new publication linked to it.`,
+        getLink: (url) => `<a href="${url}">Click here to view the new version</a>`,
+        getTextPlain: (title, url) =>
+            `The publication you have bookmarked, ${title} has had a new publication linked to it. You can view the new version here: ${url}`
+    },
+    [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_PEER_REVIEWED]: {
+        getText: (title) => `The publication you have bookmarked, <strong>${title}</strong> has had a new peer review.`,
+        getLink: (url) => `<a href="${url}">Click here to view the new version</a>`,
+        getTextPlain: (title, url) =>
+            `The publication you have bookmarked, ${title} has had a new peer review. You can view the new version here: ${url}`
+    },
     [I.NotificationActionTypeEnum.PUBLICATION_VERSION_RED_FLAG_RAISED]: {
         getText: (title) =>
             `The publication you raised a red flag on, <strong>${title}</strong> has had a new version published.`,

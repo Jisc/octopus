@@ -223,6 +223,18 @@ describe('Bulletin notifications', () => {
         );
 
         await notificationBulletin.createBulletin(
+            I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_VERSION_LINKED_SUCCESSOR,
+            publicationVersion.body,
+            previousPublishedVersion
+        );
+
+        await notificationBulletin.createBulletin(
+            I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_PEER_REVIEWED,
+            publicationVersion.body,
+            previousPublishedVersion
+        );
+
+        await notificationBulletin.createBulletin(
             I.NotificationActionTypeEnum.PUBLICATION_VERSION_RED_FLAG_RAISED,
             publicationVersion.body,
             previousPublishedVersion

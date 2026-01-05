@@ -44,15 +44,17 @@ model User {
 }
 
 model UserSettings {
-    id                                 String  @id @default(cuid())
-    userId                             String  @unique
-    enableBookmarkNotifications        Boolean @default(true)
-    enableBookmarkVersionNotifications Boolean @default(true)
-    enableBookmarkFlagNotifications    Boolean @default(true)
-    enableVersionFlagNotifications     Boolean @default(true)
-    enablePeerReviewNotifications      Boolean @default(true)
-    enableLinkedNotifications          Boolean @default(true)
-    user                               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id                                    String  @id @default(cuid())
+    userId                                String  @unique
+    enableBookmarkNotifications           Boolean @default(true)
+    enableBookmarkVersionNotifications    Boolean @default(true)
+    enableBookmarkFlagNotifications       Boolean @default(true)
+    enableBookmarkLinkedNotifications     Boolean @default(true)
+    enableBookmarkPeerReviewNotifications Boolean @default(true)
+    enableVersionFlagNotifications        Boolean @default(true)
+    enablePeerReviewNotifications         Boolean @default(true)
+    enableLinkedNotifications             Boolean @default(true)
+    user                                  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Verification {
@@ -696,6 +698,8 @@ enum NotificationActionTypeEnum {
     PUBLICATION_BOOKMARK_RED_FLAG_RAISED
     PUBLICATION_BOOKMARK_RED_FLAG_RESOLVED
     PUBLICATION_BOOKMARK_RED_FLAG_COMMENTED
+    PUBLICATION_BOOKMARK_VERSION_LINKED_SUCCESSOR
+    PUBLICATION_BOOKMARK_PEER_REVIEWED
     PUBLICATION_VERSION_RED_FLAG_RAISED
     PUBLICATION_VERSION_PEER_REVIEWED
     PUBLICATION_VERSION_LINKED_PREDECESSOR
