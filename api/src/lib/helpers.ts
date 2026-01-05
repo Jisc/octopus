@@ -4,13 +4,22 @@ import * as katex from 'katex';
 import * as I from 'interface';
 import { webcrypto } from 'crypto';
 
+DOMPurify.addHook('uponSanitizeAttribute', (node, data) => {
+    if (node.tagName === 'IFRAME' && data.attrName === 'src') {
+        const allowedIframeRegex = /^(https?:)?\/\/(player\.vimeo\.com)\/.*/; // Allow only vimeo iframes
+
+        if (!allowedIframeRegex.test(data.attrValue)) {
+            data.attrValue = ''; // Reject the attribute by setting it to empty
+        }
+    }
+});
+
 export const getSafeHTML = (content: string): string => {
     // Sanitize against XSS
     return DOMPurify.sanitize(content, {
+        ...DOMPurify,
         ADD_TAGS: ['iframe'],
-        ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src', 'style', 'width', 'height'],
-        // Allow only vimeo iframes
-        ALLOWED_URI_REGEXP: /^(https?:)?\/\/(player\.vimeo\.com)\/.*/
+        ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src', 'style', 'width', 'height']
     });
 };
 
