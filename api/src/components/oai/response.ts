@@ -313,7 +313,7 @@ export const generateResumptionToken = (params: {
         ...(params.until && { until: params.until })
     };
 
-    return Buffer.from(JSON.stringify(tokenData)).toString('base64url');
+    return Buffer.from(JSON.stringify(tokenData)).toString('base64');
 };
 
 export const parseResumptionToken = (
