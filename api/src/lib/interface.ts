@@ -831,6 +831,22 @@ export interface GeneratePDFQueryParams {
     generateNewPDF?: string;
 }
 
+export interface VimeoOEmbed {
+    title: string;
+    width: number;
+    height: number;
+    html: string;
+    author_name: string;
+    author_url: string;
+    upload_date: string;
+    video_id: number;
+    thumbnail_url: string;
+    thumbnail_width: number;
+    thumbnail_height: number;
+    description: string;
+    thumbnail_url_with_play_button: string;
+}
+
 export interface OrcidAffiliationSummaryDate {
     year: {
         value?: string;
