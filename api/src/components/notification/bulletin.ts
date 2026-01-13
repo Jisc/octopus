@@ -15,6 +15,8 @@ const NOTIFICATION_SETTINGS_MAP: Record<I.NotificationActionTypeEnum, keyof NonN
     [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_RAISED]: 'enableBookmarkFlagNotifications',
     [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_RESOLVED]: 'enableBookmarkFlagNotifications',
     [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_RED_FLAG_COMMENTED]: 'enableBookmarkFlagNotifications',
+    [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_VERSION_LINKED_SUCCESSOR]: 'enableBookmarkLinkedNotifications',
+    [I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_PEER_REVIEWED]: 'enableBookmarkPeerReviewNotifications',
     [I.NotificationActionTypeEnum.PUBLICATION_VERSION_RED_FLAG_RAISED]: 'enableVersionFlagNotifications',
     [I.NotificationActionTypeEnum.PUBLICATION_VERSION_PEER_REVIEWED]: 'enablePeerReviewNotifications',
     [I.NotificationActionTypeEnum.PUBLICATION_VERSION_LINKED_PREDECESSOR]: 'enableLinkedNotifications',
@@ -310,6 +312,62 @@ export const createBulletin = async (
             };
 
             entries = usersToBeNotified.map((user) => ({ userId: user.id, entityId, payload }));
+            break;
+        }
+
+        case I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_VERSION_LINKED_SUCCESSOR: {
+            const entityId = currentPublishedVersion.versionOf;
+
+            // We have to return the linked versions because we need the title for the payload
+            const { users, linkedVersions } = await userService.getLinkedBookmarksUsers(
+                entityId,
+                'PEER_REVIEW',
+                'exclude'
+            );
+
+            entries = users.map((user) => {
+                const userId = user.id;
+
+                const linkedVersion = linkedVersions.find(
+                    (lv) => user.bookmarks.find((b) => b.entityId === lv.versionOf)?.entityId === lv.versionOf
+                );
+
+                const payload = {
+                    title: linkedVersion?.title || '',
+                    url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf)
+                };
+
+                return { userId, entityId, payload };
+            });
+
+            break;
+        }
+
+        case I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_PEER_REVIEWED: {
+            const entityId = currentPublishedVersion.versionOf;
+
+            // We have to return the linked versions because we need the title for the payload
+            const { users, linkedVersions } = await userService.getLinkedBookmarksUsers(
+                entityId,
+                'PEER_REVIEW',
+                'include'
+            );
+
+            entries = users.map((user) => {
+                const userId = user.id;
+
+                const linkedVersion = linkedVersions.find(
+                    (lv) => user.bookmarks.find((b) => b.entityId === lv.versionOf)?.entityId === lv.versionOf
+                );
+
+                const payload = {
+                    title: linkedVersion?.title || '',
+                    url: Helpers.getPublicationUrl(currentPublishedVersion.versionOf)
+                };
+
+                return { userId, entityId, payload };
+            });
+
             break;
         }
 

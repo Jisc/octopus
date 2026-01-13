@@ -757,6 +757,22 @@ const createBulletinNotifications = async (
             previousVersion
         ),
 
+        //Notifies all users that bookmarked this publication version that a new version (EXCLUDING PEER REVIEWS) linked to it is now LIVE.
+        notificationBulletin.createBulletin(
+            I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_VERSION_LINKED_SUCCESSOR,
+            publicationVersion,
+            previousVersion,
+            { excludedUserIds }
+        ),
+
+        //Notifies all users that bookmarked this publication version that a new version (PEER REVIEW) linked to it is now LIVE.
+        notificationBulletin.createBulletin(
+            I.NotificationActionTypeEnum.PUBLICATION_BOOKMARK_PEER_REVIEWED,
+            publicationVersion,
+            previousVersion,
+            { excludedUserIds }
+        ),
+
         // Notify all users that red-flagged the previous publication version that a new version is now LIVE.
         notificationBulletin.createBulletin(
             I.NotificationActionTypeEnum.PUBLICATION_VERSION_RED_FLAG_RAISED,
