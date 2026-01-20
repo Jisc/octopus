@@ -21,6 +21,8 @@ import TableRow from '@tiptap/extension-table-row';
 import TextAlign from '@tiptap/extension-text-align';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
+import Vimeo from './extensions/vimeo-video';
+import VideoModal from './extensions/vimeo-video/VideoModal';
 
 type LetterIconType = {
     letter: string;
@@ -89,6 +91,7 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
     const [selected, setSelected] = React.useState(headingOptions[0]);
     const [linkModalVisible, setLinkModalVisible] = React.useState(false);
     const [imageModalVisible, setImageModalVisible] = React.useState(false);
+    const [videoModalVisible, setVideoModalVisible] = React.useState(false);
     const [linkUrl, setLinkUrl] = React.useState('');
     const importDocumentInput = React.useRef(null);
     const [image, setImage] = React.useState<Interfaces.TextEditorImage>({
@@ -484,6 +487,14 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
                         >
                             <FAIcons.FaImage {...buttonIconProps} />
                         </button>
+                        <button
+                            type="button"
+                            title="Video"
+                            onClick={() => setVideoModalVisible(true)}
+                            className={props.editor.isActive('video') ? activeMenuIconStyles : menuIconStyles}
+                        >
+                            <FAIcons.FaVideo {...buttonIconProps} />
+                        </button>
                         <span className="mx-2 inline-block h-6 w-px bg-grey-300" />
                         <button
                             type="button"
@@ -702,6 +713,8 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
                         </HeadlessUi.Dialog.Description>
                     </div>
                 </HeadlessUi.Dialog>
+
+                <VideoModal visible={videoModalVisible} setVisible={setVideoModalVisible} editor={props.editor} />
             </>
         )
     );
@@ -745,6 +758,9 @@ const TextEditor: React.FC<TextEditorProps> = (props) => {
                 placeholder: props.placeholder,
                 emptyEditorClass:
                     'cursor-text before:content-[attr(data-placeholder)] before:absolute before:opacity-60 before-pointer-events-none'
+            }),
+            Vimeo.configure({
+                dnt: true
             })
         ],
         onUpdate: ({ editor }) => props.contentChangeHandler(editor.getHTML()),

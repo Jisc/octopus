@@ -24,6 +24,51 @@ const formatPDFDate = (date: Date): string => {
 
 const doiLinkBase = `https://${process.env.STAGE === 'prod' ? 'doi.org' : 'handle.test.datacite.org'}/`;
 
+async function processVideos(htmlTemplate: string): Promise<string> {
+    const vimeoElemRegex = /<div[^>]*data-vimeo-video[^>]*>[\s\S]*?<\/div>/g;
+    const matches = htmlTemplate.matchAll(vimeoElemRegex);
+
+    if (!matches) {
+        return htmlTemplate;
+    }
+
+    const videoOEmbedCache = new Map<string, I.VimeoOEmbed>();
+
+    for (const match of matches) {
+        const videoSrc = cheerio.load(match[0])('iframe').attr('src');
+
+        if (!videoSrc) {
+            continue;
+        }
+
+        const src = videoSrc.split('?')[0];
+        let oEmbedData: I.VimeoOEmbed = {} as I.VimeoOEmbed;
+
+        if (videoOEmbedCache.has(src)) {
+            oEmbedData = videoOEmbedCache.get(src)!;
+        } else {
+            const embedURL = new URL('/api/oembed.json', 'https://vimeo.com');
+            embedURL.searchParams.append('url', src);
+
+            const embedResponse = await fetch(embedURL);
+            oEmbedData = (await embedResponse.json()) as I.VimeoOEmbed;
+            videoOEmbedCache.set(src, oEmbedData);
+        }
+
+        const {
+            title,
+            thumbnail_width: tWdith,
+            thumbnail_height: tHeight,
+            thumbnail_url_with_play_button: tURL
+        } = oEmbedData;
+
+        const imgTag = `<img src="${tURL}" alt="${title}" width="${tWdith}" height="${tHeight}" style="display: block;"/>`;
+        htmlTemplate = htmlTemplate.replace(match[0], imgTag);
+    }
+
+    return htmlTemplate;
+}
+
 const createPublicationHTMLTemplate = (
     publicationVersion: I.PublicationVersion,
     references: I.Reference[],
@@ -630,7 +675,7 @@ export const generatePublicationVersionPDF = async (
         null,
         true
     );
-    const htmlTemplate = createPublicationHTMLTemplate(publicationVersion, references, linkedTo);
+    let htmlTemplate = createPublicationHTMLTemplate(publicationVersion, references, linkedTo);
     const isLocal = process.env.STAGE === 'local';
 
     let browser: Browser | null = null;
@@ -649,6 +694,11 @@ export const generatePublicationVersionPDF = async (
         const page = await browser.newPage();
         await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
         console.log('Page viewport set');
+
+        htmlTemplate = await processVideos(htmlTemplate);
+
+        console.log('HTML template processed');
+
         await page.setContent(htmlTemplate, {
             waitUntil: htmlTemplate.includes('<img') ? ['load', 'networkidle0'] : undefined
         });
