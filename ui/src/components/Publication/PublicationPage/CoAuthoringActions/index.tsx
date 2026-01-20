@@ -26,6 +26,7 @@ const CoAuthoringActions: React.FC<Props> = (props) => {
     const { user } = Stores.useAuthStore();
     const [isLoading, setIsLoading] = React.useState<boolean>(props.isLoading);
     const [approvalRetentionChangeFeedback, setApprovalRetentionChangeFeedback] = React.useState<string>('');
+    const setToast = Stores.useToastStore((state) => state.setToast);
 
     const author = React.useMemo(
         () => props.publicationVersion.coAuthors.find((author) => author.linkedUser === user?.id),
@@ -58,6 +59,13 @@ const CoAuthoringActions: React.FC<Props> = (props) => {
                     },
                     user?.token
                 );
+                setToast({
+                    visible: true,
+                    title: 'Retain approval status saved successfully',
+                    message: '',
+                    icon: <OutlineIcons.CheckCircleIcon className="h-6 w-6 text-teal-600" />,
+                    dismiss: true
+                });
                 setRetainApproval(retainApproval);
                 setApprovalRetentionChangeFeedback('Your approval retention preference has been submitted.');
             } catch (err) {
