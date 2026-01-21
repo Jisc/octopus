@@ -45,7 +45,7 @@ async function processVideos(htmlTemplate: string): Promise<string> {
         let oEmbedData: I.VimeoOEmbed = {} as I.VimeoOEmbed;
 
         if (videoOEmbedCache.has(src)) {
-            oEmbedData = videoOEmbedCache.get(src)!;
+            oEmbedData = videoOEmbedCache.get(src) as I.VimeoOEmbed;
         } else {
             const embedURL = new URL('/api/oembed.json', 'https://vimeo.com');
             embedURL.searchParams.append('url', src);
