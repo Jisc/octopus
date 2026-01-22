@@ -21,9 +21,8 @@ const NodeView = (props: Readonly<{ node: Node }>) => {
                         src={oEmbed.thumbnail_url_with_play_button}
                         width={props.node.attrs.width || 640}
                         height={props.node.attrs.height || 360}
-                        style={{ display: 'block' }}
+                        className="block rounded-lg"
                         alt={`Vimeo video: ${oEmbed.title || 'Video Thumbnail'}`}
-                        className="rounded-lg"
                         aria-label={`Vimeo video thumbnail: ${oEmbed.title || 'Video'}`}
                     />
                     <Components.Alert
