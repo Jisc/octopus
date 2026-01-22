@@ -24,7 +24,6 @@ const NodeView = (props: Readonly<{ node: Node }>) => {
                         style={{ display: 'block' }}
                         alt={`Vimeo video: ${oEmbed.title || 'Video Thumbnail'}`}
                         className="rounded-lg"
-                        role="img"
                         aria-label={`Vimeo video thumbnail: ${oEmbed.title || 'Video'}`}
                     />
                     <Components.Alert
