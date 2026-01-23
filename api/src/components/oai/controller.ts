@@ -50,24 +50,20 @@ const listRecords = async (event: I.APIRequest<undefined, I.GetOAIRequestQueryPa
         }
     }
 
-    const publications = await publicationService.getOpenSearchPublications({
+    const { data, metadata } = await publicationVersionService.getAllOAIPublicationVersions({
         limit,
         offset,
-        authorType: 'individual',
-        dateFrom: from,
-        dateTo: until
+        from,
+        until
     });
 
-    const publicationIds: string[] = publications.body.hits.hits.map((hit) => hit._id as string);
-    const publicationVersions = await publicationVersionService.getAllByPublicationIds(publicationIds);
-
-    if (publicationVersions.length === 0) {
+    if (data.length === 0) {
         return response.xml(200, oaiResponse.noRecordsMatchResponse());
     }
 
     let resumptionToken = '';
-    const totalResults = publications.body.hits.total.value;
-    const hasMoreResults = offset + publicationVersions.length < totalResults;
+    const totalResults = metadata.total;
+    const hasMoreResults = offset + data.length < totalResults;
 
     if (hasMoreResults) {
         resumptionToken = oaiResponse.generateResumptionToken({
@@ -78,12 +74,7 @@ const listRecords = async (event: I.APIRequest<undefined, I.GetOAIRequestQueryPa
         });
     }
 
-    const listRecordsResponse = oaiResponse.listRecordsResponse(
-        publicationVersions,
-        queryParams,
-        offset,
-        resumptionToken
-    );
+    const listRecordsResponse = oaiResponse.listRecordsResponse(data, queryParams, offset, resumptionToken);
 
     return response.xml(200, listRecordsResponse);
 };
@@ -112,24 +103,20 @@ const listIdentifiers = async (event: I.APIRequest<undefined, I.GetOAIRequestQue
         }
     }
 
-    const publications = await publicationService.getOpenSearchPublications({
+    const { data, metadata } = await publicationVersionService.getAllOAIPublicationVersions({
         limit,
         offset,
-        authorType: 'individual',
-        dateFrom: from,
-        dateTo: until
+        from,
+        until
     });
 
-    const publicationIds: string[] = publications.body.hits.hits.map((hit) => hit._id as string);
-    const publicationVersions = await publicationVersionService.getAllByPublicationIds(publicationIds);
-
-    if (publicationVersions.length === 0) {
+    if (data.length === 0) {
         return response.xml(200, oaiResponse.noRecordsMatchResponse());
     }
 
     let resumptionToken = '';
-    const totalResults = publications.body.hits.total.value;
-    const hasMoreResults = offset + publicationVersions.length < totalResults;
+    const totalResults = metadata.total;
+    const hasMoreResults = offset + data.length < totalResults;
 
     if (hasMoreResults) {
         resumptionToken = oaiResponse.generateResumptionToken({
@@ -140,12 +127,7 @@ const listIdentifiers = async (event: I.APIRequest<undefined, I.GetOAIRequestQue
         });
     }
 
-    const listIdentifiersResponse = oaiResponse.listIdentifiersResponse(
-        publicationVersions,
-        queryParams,
-        offset,
-        resumptionToken
-    );
+    const listIdentifiersResponse = oaiResponse.listIdentifiersResponse(data, queryParams, offset, resumptionToken);
 
     return response.xml(200, listIdentifiersResponse);
 };

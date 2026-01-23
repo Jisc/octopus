@@ -176,6 +176,72 @@ export const getOAIPublicationVersion = (doiString: string) =>
         }
     });
 
+export const getAllOAIPublicationVersions = async (opts: {
+    limit: number;
+    offset: number;
+    from?: string;
+    until?: string;
+}) => {
+    const where: Prisma.PublicationVersionWhereInput = {
+        isLatestLiveVersion: true,
+        doi: { not: null },
+        publishedDate: {
+            ...(opts.from ? { gte: new Date(opts.from) } : {}),
+            ...(opts.until ? { lte: new Date(opts.until) } : {})
+        },
+        coAuthors: {
+            some: {
+                confirmedCoAuthor: true,
+                user: {
+                    role: { not: 'ORGANISATION' }
+                }
+            }
+        }
+    };
+
+    const [publicationVersions, total] = await Promise.all([
+        client.prisma.publicationVersion.findMany({
+            skip: opts.offset,
+            take: opts.limit,
+            where,
+            select: {
+                doi: true,
+                createdAt: true,
+                description: true,
+                funders: true,
+                fundersStatement: true,
+                keywords: true,
+                language: true,
+                licence: true,
+                publishedDate: true,
+                title: true,
+                topics: true,
+                versionOf: true,
+                coAuthors: {
+                    select: {
+                        user: {
+                            select: {
+                                firstName: true,
+                                lastName: true
+                            }
+                        }
+                    }
+                }
+            }
+        }),
+        client.prisma.publicationVersion.count({ where })
+    ]);
+
+    return {
+        data: publicationVersions,
+        metadata: {
+            total,
+            limit: opts.limit,
+            offset: opts.offset
+        }
+    };
+};
+
 const getVersionFilter = (versionFilter: string) => ({
     ...(typeof versionFilter === 'number' || Number(versionFilter)
         ? { versionNumber: Number(versionFilter) }

@@ -300,12 +300,14 @@ export const listMetadataFormatsResponse = (params: I.GetOAIRequestQueryParams):
     return response.up().end(writerOptions);
 };
 
-export const generateResumptionToken = (params: {
+type ResumptionToken = {
     offset: number;
     limit: number;
     from?: string;
     until?: string;
-}): string => {
+};
+
+export const generateResumptionToken = (params: ResumptionToken): string => {
     const tokenData = {
         offset: params.offset,
         limit: params.limit,
@@ -313,21 +315,14 @@ export const generateResumptionToken = (params: {
         ...(params.until && { until: params.until })
     };
 
-    return Buffer.from(JSON.stringify(tokenData)).toString('base64');
+    return Buffer.from(JSON.stringify(tokenData)).toString('base64url');
 };
 
-export const parseResumptionToken = (
-    token: string
-): {
-    offset: number;
-    limit: number;
-    from?: string;
-    until?: string;
-} | null => {
+export const parseResumptionToken = (token: string): ResumptionToken | null => {
     try {
-        const decoded = Buffer.from(token, 'base64').toString('utf-8');
+        const decoded = Buffer.from(token, 'base64url').toString('utf-8');
 
-        return JSON.parse(decoded);
+        return JSON.parse(decoded) as ResumptionToken;
     } catch {
         return null;
     }
