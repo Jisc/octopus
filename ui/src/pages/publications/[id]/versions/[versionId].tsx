@@ -133,6 +133,8 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
         }
     }
 
+    console.log(publicationVersion?.coAuthors);
+
     if (publicationVersion) {
         return {
             props: {
@@ -698,10 +700,14 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
 
     const alerts = generateAlertComponents();
 
-    return publication && publicationVersion ? (
+    const noIndex = props.publicationVersion.user.deleted || !props.publicationVersion.isLatestLiveVersion;
+
+    return (
         <>
             <Head>
                 <title lang={languageIfNotEnglish}>{pageTitle}</title>
+                <meta name="robots" content={ noIndex ? 'noindex, nofollow' : 'index, follow' }
+                />
                 <meta
                     name="description"
                     lang={languageIfNotEnglish}
@@ -724,138 +730,478 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
                 />
             </Head>
 
-            <Layouts.Publication
-                fixedHeader={false}
-                publicationId={
-                    publicationVersion.publication.type !== 'PEER_REVIEW'
-                        ? publicationVersion.publication.id
-                        : undefined
-                }
-            >
-                <section
-                    id={
-                        publicationVersion.user.role === 'ORGANISATION'
-                            ? `organisation-${publicationVersion.user.id}-publication`
+            {publication && publicationVersion ? (
+                <Layouts.Publication
+                    fixedHeader={false}
+                    publicationId={
+                        publicationVersion.publication.type !== 'PEER_REVIEW'
+                            ? publicationVersion.publication.id
                             : undefined
                     }
-                    className="col-span-12 lg:col-span-8 xl:col-span-9"
                 >
-                    {alerts}
-                    {showApprovalsTracker && (
-                        <>
-                            <Components.PublicationPageCoAuthoringActions
-                                publicationVersion={publicationVersion}
-                                isCorrespondingAuthor={isCorrespondingAuthor}
-                                isReadyForPublish={isReadyForPublish}
-                                isLoading={isLoading}
-                                onUnlockPublication={handleUnlock}
-                                onApprove={handleApproval}
-                                onCancelApproval={handleCancelApproval}
-                                onPublish={handlePublish}
-                                onEditAffiliations={handleOpenAffiliationsModal}
-                                setServerError={setServerError}
-                            />
-                            <div className="pb-16">
-                                <Components.ApprovalsTracker
+                    <section
+                        id={
+                            publicationVersion.user.role === 'ORGANISATION'
+                                ? `organisation-${publicationVersion.user.id}-publication`
+                                : undefined
+                        }
+                        className="col-span-12 lg:col-span-8 xl:col-span-9"
+                    >
+                        {alerts}
+                        {showApprovalsTracker && (
+                            <>
+                                <Components.PublicationPageCoAuthoringActions
                                     publicationVersion={publicationVersion}
-                                    onError={setServerError}
+                                    isCorrespondingAuthor={isCorrespondingAuthor}
+                                    isReadyForPublish={isReadyForPublish}
+                                    isLoading={isLoading}
+                                    onUnlockPublication={handleUnlock}
+                                    onApprove={handleApproval}
+                                    onCancelApproval={handleCancelApproval}
+                                    onPublish={handlePublish}
                                     onEditAffiliations={handleOpenAffiliationsModal}
-                                    refreshPublicationVersionData={mutatePublicationVersion}
+                                    setServerError={setServerError}
+                                />
+                                <div className="pb-16">
+                                    <Components.ApprovalsTracker
+                                        publicationVersion={publicationVersion}
+                                        onError={setServerError}
+                                        onEditAffiliations={handleOpenAffiliationsModal}
+                                        refreshPublicationVersionData={mutatePublicationVersion}
+                                    />
+                                </div>
+                                {author && (
+                                    <Components.EditAffiliationsModal
+                                        author={author}
+                                        autoUpdate={isCorrespondingAuthor || !author.confirmedCoAuthor}
+                                        open={isEditingAffiliations}
+                                        onClose={handleCloseAffiliationsModal}
+                                    />
+                                )}
+                            </>
+                        )}
+
+                        {!!uniqueRedFlagCategoryList.length && (
+                            <Components.Alert
+                                title="This publication has active red flags for:"
+                                severity="RED_FLAG"
+                                className="mb-4"
+                            >
+                                <ul className="mb-4 mt-3">
+                                    {uniqueRedFlagCategoryList.map((category) => (
+                                        <li key={category} className="text-sm text-red-700">
+                                            - {Config.values.octopusInformation.redFlagReasons[category].nicename}
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <button
+                                    aria-label="View red flags"
+                                    title="View red flags"
+                                    onClick={() =>
+                                        document.getElementById('red-flags')?.scrollIntoView({ behavior: 'smooth' })
+                                    }
+                                    className="mt-2 block rounded border-transparent text-sm font-medium text-red-700 underline outline-0 hover:text-red-800 focus:overflow-hidden focus:ring-2 focus:ring-yellow-400"
+                                >
+                                    View flags
+                                </button>
+                            </Components.Alert>
+                        )}
+                        <header>
+                            <div className="grid w-full grid-cols-8">
+                                {publicationVersion.isLatestLiveVersion && (
+                                    <Components.PublicationPageHeaderActions
+                                        authorIds={authors.flatMap((coAuthor) =>
+                                            coAuthor.linkedUser ? [coAuthor.linkedUser] : []
+                                        )}
+                                        publicationId={publication.id}
+                                        publicationType={publication.type}
+                                    />
+                                )}
+                                <h1
+                                    lang={languageIfNotEnglish}
+                                    className="col-span-7 mb-4 block font-montserrat text-2xl font-bold leading-tight text-grey-800 transition-colors duration-500 dark:text-white-50 md:text-3xl xl:text-3xl xl:leading-normal"
+                                >
+                                    {publicationVersion.title}
+                                </h1>
+                                {isBookmarkButtonVisible && (
+                                    <div className="col-span-1 grid justify-items-end">
+                                        <button
+                                            className="h-8 hover:cursor-pointer focus:outline-none focus:ring focus:ring-yellow-200 focus:ring-offset-2 dark:outline-none dark:focus:ring dark:focus:ring-yellow-600 dark:focus:ring-offset-1"
+                                            onClick={onBookmarkHandler}
+                                            aria-label="toggle-bookmark"
+                                            title={`${isBookmarked ? 'Remove bookmark' : 'Bookmark this publication'}`}
+                                        >
+                                            <OutlineIcons.BookmarkIcon
+                                                className={`h-8 w-8 ${
+                                                    isBookmarked
+                                                        ? 'fill-blue-700 dark:fill-blue-50'
+                                                        : 'fill-transparent'
+                                                } text-blue-700 transition duration-150 dark:text-blue-50`}
+                                            />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <Components.AuthorList className="mb-4" authors={confirmedAuthors} />
+
+                            <Framer.AnimatePresence>
+                                {/** API will only return versions that the current user has permission to see */}
+                                {publication && publication.versions.length !== publicationVersion.versionNumber && (
+                                    <Framer.motion.p
+                                        className="mb-4 text-sm leading-relaxed dark:text-white-50"
+                                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                                        animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                                    >
+                                        <OutlineIcons.ExclamationCircleIcon className="inline w-6 stroke-2 align-bottom text-red-600 dark:text-red-500" />{' '}
+                                        A newer version of this publication exists
+                                    </Framer.motion.p>
+                                )}
+                            </Framer.AnimatePresence>
+
+                            <div className="block space-y-8 lg:hidden">
+                                {showVersionsAccordion && (
+                                    <Components.VersionsAccordion
+                                        id="mobile-versions-accordion"
+                                        versions={publication.versions}
+                                        selectedVersion={publicationVersion}
+                                        controlRequests={controlRequests}
+                                        onServerError={setServerError}
+                                        onUnlockPublication={handleUnlock}
+                                    />
+                                )}
+
+                                {publicationVersion && (
+                                    <SidebarCard
+                                        publicationVersion={publicationVersion}
+                                        linkedFrom={linkedFrom}
+                                        sectionList={sectionList}
+                                        flags={flags}
+                                    />
+                                )}
+
+                                <Components.RelatedPublications
+                                    id="mobile-related-publications"
+                                    publicationId={props.publicationId}
+                                    type={publication.type}
+                                    crosslinks={crosslinks}
+                                    refreshCrosslinks={mutateCrosslinks}
                                 />
                             </div>
-                            {author && (
-                                <Components.EditAffiliationsModal
-                                    author={author}
-                                    autoUpdate={isCorrespondingAuthor || !author.confirmedCoAuthor}
-                                    open={isEditingAffiliations}
-                                    onClose={handleCloseAffiliationsModal}
-                                />
-                            )}
-                        </>
-                    )}
+                        </header>
 
-                    {!!uniqueRedFlagCategoryList.length && (
-                        <Components.Alert
-                            title="This publication has active red flags for:"
-                            severity="RED_FLAG"
-                            className="mb-4"
-                        >
-                            <ul className="mb-4 mt-3">
-                                {uniqueRedFlagCategoryList.map((category) => (
-                                    <li key={category} className="text-sm text-red-700">
-                                        - {Config.values.octopusInformation.redFlagReasons[category].nicename}
-                                    </li>
-                                ))}
-                            </ul>
+                        {/** Full text */}
+                        <Components.ContentSection id="main-text" hasBreak isMainText>
+                            <div lang={languageIfNotEnglish}>
+                                <Components.ParseHTML content={processedContent} />
+                            </div>
+                        </Components.ContentSection>
 
-                            <button
-                                aria-label="View red flags"
-                                title="View red flags"
-                                onClick={() =>
-                                    document.getElementById('red-flags')?.scrollIntoView({ behavior: 'smooth' })
-                                }
-                                className="mt-2 block rounded border-transparent text-sm font-medium text-red-700 underline outline-0 hover:text-red-800 focus:overflow-hidden focus:ring-2 focus:ring-yellow-400"
+                        {/** Additional information */}
+                        {showAdditionalInformation && (
+                            <Components.ContentSection
+                                id="additional-information"
+                                title="Additional parts of this work hosted elsewhere"
+                                hasBreak
                             >
-                                View flags
-                            </button>
-                        </Components.Alert>
-                    )}
-                    <header>
-                        <div className="grid w-full grid-cols-8">
-                            {publicationVersion.isLatestLiveVersion && (
-                                <Components.PublicationPageHeaderActions
-                                    authorIds={authors.flatMap((coAuthor) =>
-                                        coAuthor.linkedUser ? [coAuthor.linkedUser] : []
-                                    )}
-                                    publicationId={publication.id}
-                                    publicationType={publication.type}
-                                />
-                            )}
-                            <h1
-                                lang={languageIfNotEnglish}
-                                className="col-span-7 mb-4 block font-montserrat text-2xl font-bold leading-tight text-grey-800 transition-colors duration-500 dark:text-white-50 md:text-3xl xl:text-3xl xl:leading-normal"
-                            >
-                                {publicationVersion.title}
-                            </h1>
-                            {isBookmarkButtonVisible && (
-                                <div className="col-span-1 grid justify-items-end">
-                                    <button
-                                        className="h-8 hover:cursor-pointer focus:outline-none focus:ring focus:ring-yellow-200 focus:ring-offset-2 dark:outline-none dark:focus:ring dark:focus:ring-yellow-600 dark:focus:ring-offset-1"
-                                        onClick={onBookmarkHandler}
-                                        aria-label="toggle-bookmark"
-                                        title={`${isBookmarked ? 'Remove bookmark' : 'Bookmark this publication'}`}
-                                    >
-                                        <OutlineIcons.BookmarkIcon
-                                            className={`h-8 w-8 ${
-                                                isBookmarked ? 'fill-blue-700 dark:fill-blue-50' : 'fill-transparent'
-                                            } text-blue-700 transition duration-150 dark:text-blue-50`}
+                                <div className="flex flex-col space-y-8">
+                                    {publicationVersion.additionalInformation.map((additionalInfoEntry) => (
+                                        <Components.AdditionalInformationCard
+                                            key={additionalInfoEntry.id}
+                                            additionalInformation={additionalInfoEntry}
+                                            publicationLanguage={languageIfNotEnglish}
                                         />
-                                    </button>
+                                    ))}
                                 </div>
-                            )}
-                        </div>
+                            </Components.ContentSection>
+                        )}
 
-                        <Components.AuthorList className="mb-4" authors={confirmedAuthors} />
+                        {/* References */}
+                        {showReferences && (
+                            <Components.ContentSection id="references" title="References" hasBreak>
+                                {references.map((reference) => (
+                                    <div lang={languageIfNotEnglish} key={reference.id} className="py-2 break-anywhere">
+                                        <Components.ParseHTML content={reference.text} />
+                                        {reference.location && (
+                                            <div className="break-all underline dark:text-white-50">
+                                                <Components.Link href={reference.location} openNew>
+                                                    {reference.location}
+                                                </Components.Link>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </Components.ContentSection>
+                        )}
 
-                        <Framer.AnimatePresence>
-                            {/** API will only return versions that the current user has permission to see */}
-                            {publication && publication.versions.length !== publicationVersion.versionNumber && (
-                                <Framer.motion.p
-                                    className="mb-4 text-sm leading-relaxed dark:text-white-50"
-                                    initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                                    animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
-                                    exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                        {(showParentPublications || showChildProblems) && (
+                            <div id="linked-publications">
+                                {/* Parent publications */}
+                                {showParentPublications && (
+                                    <Components.ContentSection
+                                        id="publications-linked-to"
+                                        title="Publications above this in the hierarchy"
+                                        hasBreak
+                                    >
+                                        <Components.List ordered={false}>
+                                            {parentPublications.map((link) => (
+                                                <Components.ListItem
+                                                    key={link.id}
+                                                    className="flex items-center font-semibold leading-3"
+                                                >
+                                                    <Components.PublicationLink link={link} showType={false} />
+                                                </Components.ListItem>
+                                            ))}
+                                        </Components.List>
+                                    </Components.ContentSection>
+                                )}
+
+                                {/* Child problems */}
+                                {showChildProblems && (
+                                    <Components.ContentSection
+                                        id="problems-linked-from"
+                                        title="Research problems below this in the hierarchy"
+                                        hasBreak
+                                    >
+                                        <Components.List ordered={false}>
+                                            {childProblems.map((link) => (
+                                                <Components.ListItem
+                                                    key={link.id}
+                                                    className="flex items-center font-semibold leading-3"
+                                                >
+                                                    <Components.PublicationLink link={link} showType={false} />
+                                                </Components.ListItem>
+                                            ))}
+                                        </Components.List>
+                                    </Components.ContentSection>
+                                )}
+                            </div>
+                        )}
+                        {showTopics && (
+                            <Components.ContentSection
+                                id="topics"
+                                title="Research topics above this in the hierarchy"
+                                hasBreak
+                            >
+                                <Components.List ordered={false}>
+                                    {publicationVersion.topics.map((topic) => (
+                                        <Components.ListItem key={topic.id}>
+                                            <Components.Link
+                                                href={`${Config.urls.viewTopic.path}/${topic.id}`}
+                                                className="mb-2 text-teal-600 transition-colors duration-500 hover:underline dark:text-teal-400"
+                                            >
+                                                {topic.title}
+                                            </Components.Link>
+                                        </Components.ListItem>
+                                    ))}
+                                </Components.List>
+                            </Components.ContentSection>
+                        )}
+
+                        {/* Linked peer reviews */}
+                        {!!showPeerReviews && (
+                            <Components.ContentSection
+                                id="peer-reviews"
+                                title={`Peer reviews created from this version of this ${Helpers.formatPublicationType(
+                                    publicationVersion.publication.type
+                                )}`}
+                                hasBreak
+                            >
+                                <Components.List ordered={false}>
+                                    {thisVersionPeerReviews.map((link) => (
+                                        <Components.ListItem
+                                            key={link.id}
+                                            className="flex items-center font-semibold leading-3"
+                                        >
+                                            <Components.PublicationLink link={link} showType={false} />
+                                        </Components.ListItem>
+                                    ))}
+                                </Components.List>
+                            </Components.ContentSection>
+                        )}
+
+                        {/* Ethical statement */}
+                        {showEthicalStatement && (
+                            <Components.ContentSection id="ethical-statement" title="Ethical statement" hasBreak>
+                                <>
+                                    <p
+                                        lang={languageIfNotEnglish}
+                                        className="block text-grey-800 transition-colors duration-500 dark:text-white-50"
+                                    >
+                                        {publicationVersion.ethicalStatement &&
+                                            parse(publicationVersion.ethicalStatement)}
+                                    </p>
+                                    {!!publicationVersion.ethicalStatementFreeText && (
+                                        <p
+                                            lang={languageIfNotEnglish}
+                                            className="mt-4 block text-sm text-grey-700 transition-colors duration-500 dark:text-white-100"
+                                        >
+                                            {parse(publicationVersion.ethicalStatementFreeText)}
+                                        </p>
+                                    )}
+                                </>
+                            </Components.ContentSection>
+                        )}
+
+                        {/* Data permissions statement */}
+                        {!!publicationVersion.dataPermissionsStatement && (
+                            <Components.ContentSection
+                                id="data-permissions-statement"
+                                title="Data permissions statement"
+                                hasBreak
+                            >
+                                <>
+                                    <p
+                                        lang={languageIfNotEnglish}
+                                        className="mb-2 block text-grey-800 transition-colors duration-500 dark:text-white-50"
+                                    >
+                                        {parse(publicationVersion.dataPermissionsStatement)}
+                                    </p>
+                                    {publicationVersion.dataPermissionsStatementProvidedBy?.length && (
+                                        <p
+                                            lang={languageIfNotEnglish}
+                                            className="mt-4 block text-sm text-grey-700 transition-colors duration-500 dark:text-white-100"
+                                        >
+                                            {parse(publicationVersion.dataPermissionsStatementProvidedBy)}
+                                        </p>
+                                    )}
+                                </>
+                            </Components.ContentSection>
+                        )}
+
+                        {/* Data access statement */}
+                        {!!publicationVersion.dataAccessStatement && (
+                            <Components.ContentSection
+                                id="data-access-statement"
+                                title="Data access statement"
+                                hasBreak
+                            >
+                                <p
+                                    lang={languageIfNotEnglish}
+                                    className="block text-grey-800 transition-colors duration-500 dark:text-white-50"
                                 >
-                                    <OutlineIcons.ExclamationCircleIcon className="inline w-6 stroke-2 align-bottom text-red-600 dark:text-red-500" />{' '}
-                                    A newer version of this publication exists
-                                </Framer.motion.p>
-                            )}
-                        </Framer.AnimatePresence>
+                                    {parse(publicationVersion.dataAccessStatement)}
+                                </p>
+                            </Components.ContentSection>
+                        )}
 
-                        <div className="block space-y-8 lg:hidden">
+                        {/* Self declaration */}
+                        {publicationVersion.selfDeclaration && (
+                            <Components.ContentSection id="self-declaration" title="Self declaration" hasBreak>
+                                <p className="mt-4 block text-sm text-grey-700 transition-colors duration-500 dark:text-white-100">
+                                    {publicationVersion.publication.type === 'PROTOCOL' &&
+                                        'Data has not yet been collected according to this method/protocol.'}
+                                    {publicationVersion.publication.type === 'HYPOTHESIS' &&
+                                        'Data has not yet been collected to test this hypothesis (i.e. this is a preregistration)'}
+                                </p>
+                            </Components.ContentSection>
+                        )}
+
+                        {/* Red flags */}
+                        {showRedFlags && (
+                            <Components.ContentSection id="red-flags" title="Red flags" hasBreak>
+                                <div className="mt-6 space-y-8">
+                                    {activeFlags && !!activeFlags.length ? (
+                                        <div>
+                                            <h2 className="mb-1 font-montserrat font-semibold text-grey-800 transition-colors duration-500 dark:text-white-50 ">
+                                                Active
+                                            </h2>
+                                            <div className="space-y-4">
+                                                {activeFlags.map((flag) => (
+                                                    <Components.FlagPreview
+                                                        key={flag.id}
+                                                        publicationId={publicationVersion.publication.id}
+                                                        flag={flag}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ) : null}
+                                    {inactiveFlags && !!inactiveFlags.length ? (
+                                        <div>
+                                            <h2 className="mb-1 font-montserrat font-semibold text-grey-800 transition-colors duration-500 dark:text-white-50 ">
+                                                Resolved
+                                            </h2>
+                                            <div className="space-y-4">
+                                                {inactiveFlags.map((flag) => (
+                                                    <Components.FlagPreview
+                                                        key={flag.id}
+                                                        publicationId={publicationVersion.publication.id}
+                                                        flag={flag}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ) : null}
+                                </div>
+                            </Components.ContentSection>
+                        )}
+                        {/* Publication funders section */}
+                        <Components.ContentSection id="funders" title="Funders" hasBreak>
+                            {!publicationVersion.funders?.length && !publicationVersion.fundersStatement ? (
+                                <p className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100">
+                                    No sources of funding have been specified for this{' '}
+                                    {Helpers.formatPublicationType(publicationVersion.publication.type)}.
+                                </p>
+                            ) : (
+                                <>
+                                    {publicationVersion.funders?.length ? (
+                                        <>
+                                            <p className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100">
+                                                This{' '}
+                                                {Helpers.formatPublicationType(publicationVersion.publication.type)} has
+                                                the following sources of funding:
+                                            </p>
+                                            <ul className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100">
+                                                {publicationVersion.funders?.map((funder) => {
+                                                    return (
+                                                        <li key={funder.id} className="ml-7 mt-1 list-disc">
+                                                            <a
+                                                                href={funder.link}
+                                                                className="text-teal-600 transition-colors duration-500 hover:underline dark:text-teal-400"
+                                                            >
+                                                                {funder.name}
+                                                            </a>{' '}
+                                                            - {funder.city}, {funder.country}
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
+                                        </>
+                                    ) : null}
+                                    {publicationVersion.fundersStatement ? (
+                                        <p
+                                            lang={languageIfNotEnglish}
+                                            className="block pt-2 leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100"
+                                        >
+                                            {parse(publicationVersion.fundersStatement)}
+                                        </p>
+                                    ) : null}
+                                </>
+                            )}
+                        </Components.ContentSection>
+
+                        {/** Conflict of interest */}
+                        <Components.ContentSection id="coi" title="Conflict of interest">
+                            <p
+                                lang={publicationVersion.conflictOfInterestText ? languageIfNotEnglish : undefined}
+                                className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100"
+                            >
+                                {publicationVersion.conflictOfInterestStatus
+                                    ? publicationVersion.conflictOfInterestText
+                                    : `This ${Helpers.formatPublicationType(
+                                          publicationVersion.publication.type
+                                      )} does not have any specified conflicts of interest.`}
+                            </p>
+                        </Components.ContentSection>
+                    </section>
+                    <aside className="relative hidden lg:col-span-4 lg:block xl:col-span-3">
+                        <div className="space-y-8">
                             {showVersionsAccordion && (
                                 <Components.VersionsAccordion
-                                    id="mobile-versions-accordion"
+                                    id="desktop-versions-accordion"
                                     versions={publication.versions}
                                     selectedVersion={publicationVersion}
                                     controlRequests={controlRequests}
@@ -863,356 +1209,24 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
                                     onUnlockPublication={handleUnlock}
                                 />
                             )}
-
-                            {publicationVersion && (
-                                <SidebarCard
-                                    publicationVersion={publicationVersion}
-                                    linkedFrom={linkedFrom}
-                                    sectionList={sectionList}
-                                    flags={flags}
-                                />
-                            )}
-
+                            <SidebarCard
+                                publicationVersion={publicationVersion}
+                                linkedFrom={linkedFrom}
+                                sectionList={sectionList}
+                                flags={flags}
+                            />
                             <Components.RelatedPublications
-                                id="mobile-related-publications"
+                                id="desktop-related-publications"
                                 publicationId={props.publicationId}
-                                type={publication.type}
                                 crosslinks={crosslinks}
+                                type={publication.type}
                                 refreshCrosslinks={mutateCrosslinks}
                             />
                         </div>
-                    </header>
-
-                    {/** Full text */}
-                    <Components.ContentSection id="main-text" hasBreak isMainText>
-                        <div lang={languageIfNotEnglish}>
-                            <Components.ParseHTML content={processedContent} />
-                        </div>
-                    </Components.ContentSection>
-
-                    {/** Additional information */}
-                    {showAdditionalInformation && (
-                        <Components.ContentSection
-                            id="additional-information"
-                            title="Additional parts of this work hosted elsewhere"
-                            hasBreak
-                        >
-                            <div className="flex flex-col space-y-8">
-                                {publicationVersion.additionalInformation.map((additionalInfoEntry) => (
-                                    <Components.AdditionalInformationCard
-                                        key={additionalInfoEntry.id}
-                                        additionalInformation={additionalInfoEntry}
-                                        publicationLanguage={languageIfNotEnglish}
-                                    />
-                                ))}
-                            </div>
-                        </Components.ContentSection>
-                    )}
-
-                    {/* References */}
-                    {showReferences && (
-                        <Components.ContentSection id="references" title="References" hasBreak>
-                            {references.map((reference) => (
-                                <div lang={languageIfNotEnglish} key={reference.id} className="py-2 break-anywhere">
-                                    <Components.ParseHTML content={reference.text} />
-                                    {reference.location && (
-                                        <div className="break-all underline dark:text-white-50">
-                                            <Components.Link href={reference.location} openNew>
-                                                {reference.location}
-                                            </Components.Link>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </Components.ContentSection>
-                    )}
-
-                    {(showParentPublications || showChildProblems) && (
-                        <div id="linked-publications">
-                            {/* Parent publications */}
-                            {showParentPublications && (
-                                <Components.ContentSection
-                                    id="publications-linked-to"
-                                    title="Publications above this in the hierarchy"
-                                    hasBreak
-                                >
-                                    <Components.List ordered={false}>
-                                        {parentPublications.map((link) => (
-                                            <Components.ListItem
-                                                key={link.id}
-                                                className="flex items-center font-semibold leading-3"
-                                            >
-                                                <Components.PublicationLink link={link} showType={false} />
-                                            </Components.ListItem>
-                                        ))}
-                                    </Components.List>
-                                </Components.ContentSection>
-                            )}
-
-                            {/* Child problems */}
-                            {showChildProblems && (
-                                <Components.ContentSection
-                                    id="problems-linked-from"
-                                    title="Research problems below this in the hierarchy"
-                                    hasBreak
-                                >
-                                    <Components.List ordered={false}>
-                                        {childProblems.map((link) => (
-                                            <Components.ListItem
-                                                key={link.id}
-                                                className="flex items-center font-semibold leading-3"
-                                            >
-                                                <Components.PublicationLink link={link} showType={false} />
-                                            </Components.ListItem>
-                                        ))}
-                                    </Components.List>
-                                </Components.ContentSection>
-                            )}
-                        </div>
-                    )}
-                    {showTopics && (
-                        <Components.ContentSection
-                            id="topics"
-                            title="Research topics above this in the hierarchy"
-                            hasBreak
-                        >
-                            <Components.List ordered={false}>
-                                {publicationVersion.topics.map((topic) => (
-                                    <Components.ListItem key={topic.id}>
-                                        <Components.Link
-                                            href={`${Config.urls.viewTopic.path}/${topic.id}`}
-                                            className="mb-2 text-teal-600 transition-colors duration-500 hover:underline dark:text-teal-400"
-                                        >
-                                            {topic.title}
-                                        </Components.Link>
-                                    </Components.ListItem>
-                                ))}
-                            </Components.List>
-                        </Components.ContentSection>
-                    )}
-
-                    {/* Linked peer reviews */}
-                    {!!showPeerReviews && (
-                        <Components.ContentSection
-                            id="peer-reviews"
-                            title={`Peer reviews created from this version of this ${Helpers.formatPublicationType(
-                                publicationVersion.publication.type
-                            )}`}
-                            hasBreak
-                        >
-                            <Components.List ordered={false}>
-                                {thisVersionPeerReviews.map((link) => (
-                                    <Components.ListItem
-                                        key={link.id}
-                                        className="flex items-center font-semibold leading-3"
-                                    >
-                                        <Components.PublicationLink link={link} showType={false} />
-                                    </Components.ListItem>
-                                ))}
-                            </Components.List>
-                        </Components.ContentSection>
-                    )}
-
-                    {/* Ethical statement */}
-                    {showEthicalStatement && (
-                        <Components.ContentSection id="ethical-statement" title="Ethical statement" hasBreak>
-                            <>
-                                <p
-                                    lang={languageIfNotEnglish}
-                                    className="block text-grey-800 transition-colors duration-500 dark:text-white-50"
-                                >
-                                    {publicationVersion.ethicalStatement && parse(publicationVersion.ethicalStatement)}
-                                </p>
-                                {!!publicationVersion.ethicalStatementFreeText && (
-                                    <p
-                                        lang={languageIfNotEnglish}
-                                        className="mt-4 block text-sm text-grey-700 transition-colors duration-500 dark:text-white-100"
-                                    >
-                                        {parse(publicationVersion.ethicalStatementFreeText)}
-                                    </p>
-                                )}
-                            </>
-                        </Components.ContentSection>
-                    )}
-
-                    {/* Data permissions statement */}
-                    {!!publicationVersion.dataPermissionsStatement && (
-                        <Components.ContentSection
-                            id="data-permissions-statement"
-                            title="Data permissions statement"
-                            hasBreak
-                        >
-                            <>
-                                <p
-                                    lang={languageIfNotEnglish}
-                                    className="mb-2 block text-grey-800 transition-colors duration-500 dark:text-white-50"
-                                >
-                                    {parse(publicationVersion.dataPermissionsStatement)}
-                                </p>
-                                {publicationVersion.dataPermissionsStatementProvidedBy?.length && (
-                                    <p
-                                        lang={languageIfNotEnglish}
-                                        className="mt-4 block text-sm text-grey-700 transition-colors duration-500 dark:text-white-100"
-                                    >
-                                        {parse(publicationVersion.dataPermissionsStatementProvidedBy)}
-                                    </p>
-                                )}
-                            </>
-                        </Components.ContentSection>
-                    )}
-
-                    {/* Data access statement */}
-                    {!!publicationVersion.dataAccessStatement && (
-                        <Components.ContentSection id="data-access-statement" title="Data access statement" hasBreak>
-                            <p
-                                lang={languageIfNotEnglish}
-                                className="block text-grey-800 transition-colors duration-500 dark:text-white-50"
-                            >
-                                {parse(publicationVersion.dataAccessStatement)}
-                            </p>
-                        </Components.ContentSection>
-                    )}
-
-                    {/* Self declaration */}
-                    {publicationVersion.selfDeclaration && (
-                        <Components.ContentSection id="self-declaration" title="Self declaration" hasBreak>
-                            <p className="mt-4 block text-sm text-grey-700 transition-colors duration-500 dark:text-white-100">
-                                {publicationVersion.publication.type === 'PROTOCOL' &&
-                                    'Data has not yet been collected according to this method/protocol.'}
-                                {publicationVersion.publication.type === 'HYPOTHESIS' &&
-                                    'Data has not yet been collected to test this hypothesis (i.e. this is a preregistration)'}
-                            </p>
-                        </Components.ContentSection>
-                    )}
-
-                    {/* Red flags */}
-                    {showRedFlags && (
-                        <Components.ContentSection id="red-flags" title="Red flags" hasBreak>
-                            <div className="mt-6 space-y-8">
-                                {activeFlags && !!activeFlags.length ? (
-                                    <div>
-                                        <h2 className="mb-1 font-montserrat font-semibold text-grey-800 transition-colors duration-500 dark:text-white-50 ">
-                                            Active
-                                        </h2>
-                                        <div className="space-y-4">
-                                            {activeFlags.map((flag) => (
-                                                <Components.FlagPreview
-                                                    key={flag.id}
-                                                    publicationId={publicationVersion.publication.id}
-                                                    flag={flag}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-                                ) : null}
-                                {inactiveFlags && !!inactiveFlags.length ? (
-                                    <div>
-                                        <h2 className="mb-1 font-montserrat font-semibold text-grey-800 transition-colors duration-500 dark:text-white-50 ">
-                                            Resolved
-                                        </h2>
-                                        <div className="space-y-4">
-                                            {inactiveFlags.map((flag) => (
-                                                <Components.FlagPreview
-                                                    key={flag.id}
-                                                    publicationId={publicationVersion.publication.id}
-                                                    flag={flag}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-                                ) : null}
-                            </div>
-                        </Components.ContentSection>
-                    )}
-                    {/* Publication funders section */}
-                    <Components.ContentSection id="funders" title="Funders" hasBreak>
-                        {!publicationVersion.funders?.length && !publicationVersion.fundersStatement ? (
-                            <p className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100">
-                                No sources of funding have been specified for this{' '}
-                                {Helpers.formatPublicationType(publicationVersion.publication.type)}.
-                            </p>
-                        ) : (
-                            <>
-                                {publicationVersion.funders?.length ? (
-                                    <>
-                                        <p className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100">
-                                            This {Helpers.formatPublicationType(publicationVersion.publication.type)}{' '}
-                                            has the following sources of funding:
-                                        </p>
-                                        <ul className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100">
-                                            {publicationVersion.funders?.map((funder) => {
-                                                return (
-                                                    <li key={funder.id} className="ml-7 mt-1 list-disc">
-                                                        <a
-                                                            href={funder.link}
-                                                            className="text-teal-600 transition-colors duration-500 hover:underline dark:text-teal-400"
-                                                        >
-                                                            {funder.name}
-                                                        </a>{' '}
-                                                        - {funder.city}, {funder.country}
-                                                    </li>
-                                                );
-                                            })}
-                                        </ul>
-                                    </>
-                                ) : null}
-                                {publicationVersion.fundersStatement ? (
-                                    <p
-                                        lang={languageIfNotEnglish}
-                                        className="block pt-2 leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100"
-                                    >
-                                        {parse(publicationVersion.fundersStatement)}
-                                    </p>
-                                ) : null}
-                            </>
-                        )}
-                    </Components.ContentSection>
-
-                    {/** Conflict of interest */}
-                    <Components.ContentSection id="coi" title="Conflict of interest">
-                        <p
-                            lang={publicationVersion.conflictOfInterestText ? languageIfNotEnglish : undefined}
-                            className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100"
-                        >
-                            {publicationVersion.conflictOfInterestStatus
-                                ? publicationVersion.conflictOfInterestText
-                                : `This ${Helpers.formatPublicationType(
-                                      publicationVersion.publication.type
-                                  )} does not have any specified conflicts of interest.`}
-                        </p>
-                    </Components.ContentSection>
-                </section>
-                <aside className="relative hidden lg:col-span-4 lg:block xl:col-span-3">
-                    <div className="space-y-8">
-                        {showVersionsAccordion && (
-                            <Components.VersionsAccordion
-                                id="desktop-versions-accordion"
-                                versions={publication.versions}
-                                selectedVersion={publicationVersion}
-                                controlRequests={controlRequests}
-                                onServerError={setServerError}
-                                onUnlockPublication={handleUnlock}
-                            />
-                        )}
-                        <SidebarCard
-                            publicationVersion={publicationVersion}
-                            linkedFrom={linkedFrom}
-                            sectionList={sectionList}
-                            flags={flags}
-                        />
-                        <Components.RelatedPublications
-                            id="desktop-related-publications"
-                            publicationId={props.publicationId}
-                            crosslinks={crosslinks}
-                            type={publication.type}
-                            refreshCrosslinks={mutateCrosslinks}
-                        />
-                    </div>
-                </aside>
-            </Layouts.Publication>
+                    </aside>
+                </Layouts.Publication>
+            ) : null}
         </>
-    ) : (
-        <></>
     );
 };
 

@@ -41,6 +41,7 @@ export interface PublicationVersionUser {
     firstName: string;
     lastName: string;
     email: string;
+    deleted: boolean;
     createdAt: string;
     updatedAt: string;
     role: Types.UserRole;
@@ -185,6 +186,7 @@ export interface CoAuthor {
         orcid: string;
         role: Types.UserRole;
         url?: string;
+        deleted: boolean;
     };
 }
 

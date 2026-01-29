@@ -34,7 +34,7 @@ const initialPublicationVersion: Interfaces.PublicationVersion = {
         type: 'PROBLEM',
         doi: '',
         url_slug: '',
-        archived: false
+        archived: false,
     },
     publicationStatus: [],
     funders: [],
@@ -47,6 +47,7 @@ const initialPublicationVersion: Interfaces.PublicationVersion = {
         email: '',
         createdAt: '',
         updatedAt: '',
+        deleted: false,
         role: 'USER'
     },
     topics: [],

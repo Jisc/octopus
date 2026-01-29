@@ -31,7 +31,8 @@ export const generateSitemaps = async (category: 'publications' | 'users'): Prom
             }
         }),
         select: {
-            id: true
+            id: true,
+            ...(category === "users" && { deleted: false })
         },
         orderBy: {
             id: 'asc'
