@@ -20,7 +20,8 @@ describe('Users Search Result', () => {
                     orcid: 'test-orcid-id',
                     role: 'USER',
                     employment: [],
-                    updatedAt: ''
+                    updatedAt: '',
+                    deleted: false
                 }}
             />
         );
@@ -40,7 +41,8 @@ describe('Users Search Result', () => {
                     orcid: 'test-orcid-id',
                     role: 'USER',
                     employment: [],
-                    updatedAt: ''
+                    updatedAt: '',
+                    deleted: false
                 }}
             />
         );
@@ -91,7 +93,8 @@ describe('Users Search Result', () => {
                             organisation: employer2
                         }
                     ],
-                    updatedAt: ''
+                    updatedAt: '',
+                    deleted: false
                 }}
             />
         );
@@ -143,7 +146,8 @@ describe('Users Search Result', () => {
                             organisation: employer2
                         }
                     ],
-                    updatedAt: ''
+                    updatedAt: '',
+                    deleted: false
                 }}
             />
         );
@@ -181,7 +185,8 @@ describe('Users Search Result', () => {
                             organisation: employer1
                         }
                     ],
-                    updatedAt: ''
+                    updatedAt: '',
+                    deleted: false
                 }}
             />
         );
@@ -221,7 +226,8 @@ describe('Users Search Result', () => {
                             organisation: employer1
                         }
                     ],
-                    updatedAt: ''
+                    updatedAt: '',
+                    deleted: false
                 }}
             />
         );
@@ -259,7 +265,8 @@ describe('Users Search Result', () => {
                             organisation: employer1
                         }
                     ],
-                    updatedAt: ''
+                    updatedAt: '',
+                    deleted: false
                 }}
             />
         );

@@ -9,7 +9,8 @@ export const testCoreUser: Interfaces.CoreUser = {
     createdAt: '2023-02-27T09:50:00.000Z',
     updatedAt: '2023-02-27T09:50:00.000Z',
     orcid: 'test',
-    employment: []
+    employment: [],
+    deleted: false
 };
 
 export const testPublicationVersion: Interfaces.PublicationVersion = {
@@ -67,7 +68,8 @@ export const testPublicationVersion: Interfaces.PublicationVersion = {
                 firstName: testCoreUser.firstName,
                 lastName: testCoreUser.lastName,
                 role: testCoreUser.role,
-                orcid: testCoreUser.orcid
+                orcid: testCoreUser.orcid,
+                deleted: false
             }
         }
     ],
@@ -157,7 +159,8 @@ export const testFlag: Interfaces.Flag = {
         createdAt: testUser2.createdAt,
         updatedAt: testUser2.updatedAt,
         orcid: testUser2.orcid,
-        employment: testUser2.employment
+        employment: testUser2.employment,
+        deleted: false
     }
 };
 

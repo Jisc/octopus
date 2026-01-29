@@ -227,6 +227,7 @@ export interface CoreUser {
     updatedAt: string;
     orcid: string;
     employment: EmploymentRecord[];
+    deleted: boolean;
 }
 export interface User extends CoreUser {
     education: EducationRecord[];
