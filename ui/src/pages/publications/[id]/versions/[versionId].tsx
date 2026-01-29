@@ -133,8 +133,6 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
         }
     }
 
-    console.log(publicationVersion?.coAuthors);
-
     if (publicationVersion) {
         return {
             props: {
