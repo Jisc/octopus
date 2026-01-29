@@ -18,7 +18,7 @@ const VideoModal = (props: { visible: boolean; setVisible: (visible: boolean) =>
     if (videoURL) {
         const validVimeoUrl = /^(https?:\/\/)?(www\.)?(vimeo\.com\/)([0-9]+)(\/)?(#.*)?$/.test(videoURL);
         if (!validVimeoUrl) {
-            videoURLError = 'Please enter a valid Vimeo URL.';
+            videoURLError = 'Please enter a valid, public Vimeo URL.';
         } else {
             videoURLError = '';
         }

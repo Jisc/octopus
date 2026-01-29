@@ -27,7 +27,7 @@ const NodeView = (props: Readonly<{ node: Node }>) => {
                     />
                     <Components.Alert
                         severity="INFO"
-                        title="Use the preview option to play this video"
+                        title="Preview this publication to play this video"
                         className="not-prose w-fit absolute top-2 left-2"
                     />
                     {oEmbed.title && <figcaption className="sr-only">{oEmbed.title}</figcaption>}
