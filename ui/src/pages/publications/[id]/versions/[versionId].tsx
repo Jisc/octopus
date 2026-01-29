@@ -706,8 +706,7 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
         <>
             <Head>
                 <title lang={languageIfNotEnglish}>{pageTitle}</title>
-                <meta name="robots" content={ noIndex ? 'noindex, nofollow' : 'index, follow' }
-                />
+                <meta name="robots" content={noIndex ? 'noindex, nofollow' : 'index, follow'} />
                 <meta
                     name="description"
                     lang={languageIfNotEnglish}
