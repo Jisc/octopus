@@ -20,7 +20,6 @@ const deleteUser = async (
     const anonymizedData = {
         orcid: null,
         orcidAccessToken: null,
-        lastName: null,
         email: null,
         locked: true,
         deleted: true,
