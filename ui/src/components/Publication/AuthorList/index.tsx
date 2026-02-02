@@ -52,6 +52,18 @@ const AuthorList: React.FC<AuthorListProps> = (props) => {
                     <Assets.OrcidLogoIcon width={24} />
                 </Components.Link>
             ));
+
+        if (author.user?.deleted) {
+            return (
+                <span
+                    key={author.id}
+                    className="author-name text-grey-800 transition-colors duration-500 dark:text-white-100"
+                >
+                    {Helpers.abbreviateUserName(author.user)}
+                </span>
+            );
+        }
+
         return (
             <div key={author.id} className="flex w-fit items-center">
                 <Components.Link

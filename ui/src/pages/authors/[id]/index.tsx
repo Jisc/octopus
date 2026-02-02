@@ -123,7 +123,8 @@ const Author: Types.NextPage<Props> = (props): React.ReactElement => {
                         lastName: props.user.lastName,
                         orcid: props.user.orcid,
                         updatedAt: props.user.updatedAt,
-                        role: props.user.role
+                        role: props.user.role,
+                        deleted: false
                     };
 
                     version.publication = {

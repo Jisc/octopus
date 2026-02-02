@@ -18,18 +18,32 @@ const listSitemapBucket = (): Promise<ListObjectsV2CommandOutput> =>
 export const generateSitemaps = async (category: 'publications' | 'users'): Promise<void> => {
     // The maximum number of URLs per sitemap (the maximum google can take in one go)
     const URL_LIMIT = 50000;
-    // DB query options - publications should only be live ones, users can be any.
-    const queryOptions: Prisma.PublicationFindManyArgs | Prisma.UserFindManyArgs = {
+
+    const publicationsQueryOptions: Prisma.PublicationFindManyArgs = {
         take: URL_LIMIT,
-        ...(category === 'publications' && {
-            where: {
-                versions: {
-                    some: {
-                        currentStatus: 'LIVE'
+        where: {
+            versions: {
+                some: {
+                    currentStatus: 'LIVE',
+                    user: {
+                        deleted: false
                     }
                 }
             }
-        }),
+        },
+        select: {
+            id: true
+        },
+        orderBy: {
+            id: 'asc'
+        }
+    };
+
+    const usersQueryOptions: Prisma.UserFindManyArgs = {
+        take: URL_LIMIT,
+        where: {
+            deleted: false
+        },
         select: {
             id: true
         },
@@ -41,8 +55,8 @@ export const generateSitemaps = async (category: 'publications' | 'users'): Prom
     // Get IDs for first sitemap
     let queryResults =
         category === 'publications'
-            ? await client.prisma.publication.findMany(queryOptions)
-            : await client.prisma.user.findMany(queryOptions as Prisma.UserFindManyArgs);
+            ? await client.prisma.publication.findMany(publicationsQueryOptions)
+            : await client.prisma.user.findMany(usersQueryOptions);
     let sitemapCount = 0;
 
     // Put sitemap into S3 and fetch next sitemap's worth of IDs using a cursor
@@ -64,7 +78,9 @@ export const generateSitemaps = async (category: 'publications' | 'users'): Prom
                     .join('')}
             </urlset>
         `;
+
         sitemapCount++;
+
         await s3.client.send(
             new PutObjectCommand({
                 Bucket: s3.buckets.sitemaps,
@@ -73,6 +89,7 @@ export const generateSitemaps = async (category: 'publications' | 'users'): Prom
                 Body: sitemap
             })
         );
+
         queryResults =
             category === 'publications'
                 ? await client.prisma.publication.findMany({
@@ -80,14 +97,14 @@ export const generateSitemaps = async (category: 'publications' | 'users'): Prom
                       cursor: {
                           id: queryResults[queryResults.length - 1].id
                       },
-                      ...queryOptions
+                      ...publicationsQueryOptions
                   })
                 : await client.prisma.user.findMany({
                       skip: 1,
                       cursor: {
                           id: queryResults[queryResults.length - 1].id
                       },
-                      ...(queryOptions as Prisma.UserFindManyArgs)
+                      ...usersQueryOptions
                   });
     }
 

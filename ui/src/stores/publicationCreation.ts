@@ -47,6 +47,7 @@ const initialPublicationVersion: Interfaces.PublicationVersion = {
         email: '',
         createdAt: '',
         updatedAt: '',
+        deleted: false,
         role: 'USER'
     },
     topics: [],

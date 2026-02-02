@@ -65,7 +65,8 @@ export const defaultPublicationVersionInclude = {
                     lastName: true,
                     orcid: true,
                     role: true,
-                    url: true
+                    url: true,
+                    deleted: true
                 }
             }
         },
@@ -81,6 +82,7 @@ export const defaultPublicationVersionInclude = {
             lastName: true,
             createdAt: true,
             updatedAt: true,
+            deleted: true,
             role: true,
             url: true
         }

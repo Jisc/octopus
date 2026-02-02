@@ -108,6 +108,7 @@ export const getAll = async (filters: I.UserFilters) => {
     }
 
     const where = {
+        deleted: false,
         AND: prismaFilters
     };
 

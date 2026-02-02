@@ -15,13 +15,13 @@ const organisationalAccountWithoutUrl = {
     affiliations: [],
     isIndependent: true,
     retainApproval: true,
-    user: { firstName: 'Jisc', lastName: '', orcid: '', role: 'ORGANISATION' as Types.UserRole }
+    user: { firstName: 'Jisc', lastName: '', orcid: '', role: 'ORGANISATION' as Types.UserRole, deleted: false }
 };
 
 const organisationalAccountWithUrl = {
     ...organisationalAccountWithoutUrl,
     id: 'test2',
-    user: { ...organisationalAccountWithoutUrl.user, url: 'https://test.org' }
+    user: { ...organisationalAccountWithoutUrl.user, url: 'https://test.org', deleted: false }
 };
 
 const standardAccount = {
@@ -31,7 +31,8 @@ const standardAccount = {
         firstName: 'John',
         lastName: 'Doe',
         orcid: 'test',
-        role: 'USER' as Types.UserRole
+        role: 'USER' as Types.UserRole,
+        deleted: false
     }
 };
 

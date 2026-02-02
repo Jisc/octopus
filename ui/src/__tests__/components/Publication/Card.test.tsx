@@ -69,7 +69,8 @@ describe('Individual cases', () => {
                                 firstName: 'Test',
                                 lastName: 'User',
                                 role: 'USER',
-                                orcid: '0000-0002-1234-5678'
+                                orcid: '0000-0002-1234-5678',
+                                deleted: false
                             }
                         }
                     ]
