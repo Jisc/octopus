@@ -157,7 +157,8 @@ export const getByOrcid = (orcid: string) =>
 export const get = (id: string, isAccountOwner = false) =>
     client.prisma.user.findUnique({
         where: {
-            id
+            id,
+            deleted: false
         },
         select: {
             id: true,
@@ -461,6 +462,9 @@ export const getPublications = async (
 
 export const getUserList = async () => {
     const users = await client.prisma.user.findMany({
+        where: {
+            deleted: false
+        },
         select: {
             email: true,
             firstName: true,
@@ -503,6 +507,7 @@ export const updateUser = async (id: string, data: Prisma.UserUpdateInput) =>
 export const getBookmarkedUsers = async (publicationId: string) => {
     return client.prisma.user.findMany({
         where: {
+            deleted: false,
             bookmarks: {
                 some: {
                     entityId: publicationId
@@ -522,6 +527,7 @@ export const getUsersWithOutstandingFlagsInTimeInterval = async (
 ) => {
     const usersWithRecentFlags = await client.prisma.user.findMany({
         where: {
+            deleted: false,
             PublicationFlags: {
                 some: {
                     publicationId: publicationId,
@@ -557,6 +563,7 @@ export const getUsersWithDirectLinkToVersion = async (
 
     const usersWithLinkedPublicationsToVersion = await client.prisma.user.findMany({
         where: {
+            deleted: false,
             publicationVersions: {
                 some: {
                     publication: {
@@ -587,6 +594,7 @@ export const getUsersWithDirectLinkFromVersion = async (
 
     const usersWithLinkedPublicationsFromVersion = await client.prisma.user.findMany({
         where: {
+            deleted: false,
             publicationVersions: {
                 some: {
                     publication: {
