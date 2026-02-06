@@ -111,10 +111,10 @@ const EditAffiliationsModal: React.FC<Props> = (props) => {
     }, [isUpdating, orcidAffiliations, props]);
 
     return (
-        <HeadlessUI.Transition.Root show={props.open} as={React.Fragment}>
+        <HeadlessUI.Transition show={props.open} as={React.Fragment}>
             <HeadlessUI.Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={handleCancelChanges}>
                 <div className="flex min-h-full items-center justify-center text-center">
-                    <HeadlessUI.Transition.Child
+                    <HeadlessUI.TransitionChild
                         as={React.Fragment}
                         enter="ease-out duration-300"
                         enterFrom="opacity-0"
@@ -123,10 +123,10 @@ const EditAffiliationsModal: React.FC<Props> = (props) => {
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <HeadlessUI.Dialog.Overlay className="fixed inset-0 bg-grey-800 bg-opacity-75 transition-opacity dark:bg-grey-900" />
-                    </HeadlessUI.Transition.Child>
+                        <HeadlessUI.DialogBackdrop className="fixed inset-0 bg-grey-800 bg-opacity-75 transition-opacity dark:bg-grey-900" />
+                    </HeadlessUI.TransitionChild>
 
-                    <HeadlessUI.Transition.Child
+                    <HeadlessUI.TransitionChild
                         enter="ease-out duration-300"
                         enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         enterTo="opacity-100 translate-y-0 sm:scale-100"
@@ -137,12 +137,12 @@ const EditAffiliationsModal: React.FC<Props> = (props) => {
                         <div className="relative mx-8 my-20 inline-block w-11/12 transform overflow-hidden rounded-lg bg-white-50 pb-4 text-left align-bottom shadow-xl transition-all sm:align-middle xl:max-w-5xl">
                             <Components.ModalBarLoader loading={isUpdating} />
                             <div className="px-4 pt-5 sm:px-8 sm:py-6">
-                                <HeadlessUI.Dialog.Title
+                                <HeadlessUI.DialogTitle
                                     as="h3"
                                     className="pb-8 text-center font-montserrat text-lg font-medium leading-6 text-grey-900"
                                 >
                                     Choose your affiliation(s) for this publication
-                                </HeadlessUI.Dialog.Title>
+                                </HeadlessUI.DialogTitle>
 
                                 <p className="mb-2 block text-sm leading-snug text-grey-700 transition-colors duration-500 dark:text-white-100">
                                     The following affiliations are present on{' '}
@@ -215,10 +215,10 @@ const EditAffiliationsModal: React.FC<Props> = (props) => {
                                 </div>
                             </div>
                         </div>
-                    </HeadlessUI.Transition.Child>
+                    </HeadlessUI.TransitionChild>
                 </div>
             </HeadlessUI.Dialog>
-        </HeadlessUI.Transition.Root>
+        </HeadlessUI.Transition>
     );
 };
 

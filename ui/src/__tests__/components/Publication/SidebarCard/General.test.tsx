@@ -34,7 +34,7 @@ describe('Basic tests', () => {
                 Config.values.octopusInformation.licences[TestUtils.testPublicationVersion.licence].nicename
             )
         ).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: 'Licence' })).toHaveAttribute(
+        expect(screen.getByTitle('Licence')).toHaveAttribute(
             'href',
             Config.values.octopusInformation.licences[TestUtils.testPublicationVersion.licence].link
         );

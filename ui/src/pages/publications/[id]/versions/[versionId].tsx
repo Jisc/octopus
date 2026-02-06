@@ -180,10 +180,6 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
 
     const isVerifiedWithName = user?.email && (user.firstName || user.lastName);
 
-    useEffect(() => {
-        setBookmarkId(props.bookmarkId);
-    }, [props.bookmarkId, props.publicationId]);
-
     const { data: publicationVersion, mutate: mutatePublicationVersion } = useSWR<Interfaces.PublicationVersion>(
         `${Config.endpoints.publications}/${props.publicationId}/publication-versions/${props.publicationVersion.id}`,
         null,
@@ -286,10 +282,9 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
         { title: 'Conflict of interest', href: 'coi' }
     ];
 
-    const languageIfNotEnglish = React.useMemo(
-        () => (publicationVersion?.language ? Helpers.languageIfNotEnglish(publicationVersion.language) : undefined),
-        [publicationVersion?.language]
-    );
+    const languageIfNotEnglish = publicationVersion?.language
+        ? Helpers.languageIfNotEnglish(publicationVersion.language)
+        : undefined;
 
     const currentCoAuthor = React.useMemo(
         () => publicationVersion?.coAuthors?.find((coAuthor) => coAuthor.linkedUser === user?.id),
@@ -312,23 +307,20 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
         return 'INFO';
     }, [publicationVersion, user?.id, currentCoAuthor?.confirmedCoAuthor]);
 
-    const updateApproval = React.useCallback(
-        async (confirm: boolean) => {
-            setServerError('');
-            try {
-                await api.patch(
-                    `/publication-versions/${publicationVersion?.id}/coauthors/${currentCoAuthor?.id}`,
-                    {
-                        confirm
-                    },
-                    user?.token
-                );
-            } catch (err) {
-                setServerError(axios.isAxiosError(err) ? err.response?.data?.message : (err as Error).message);
-            }
-        },
-        [publicationVersion?.id, user?.token]
-    );
+    const updateApproval = async (confirm: boolean) => {
+        setServerError('');
+        try {
+            await api.patch(
+                `/publication-versions/${publicationVersion?.id}/coauthors/${currentCoAuthor?.id}`,
+                {
+                    confirm
+                },
+                user?.token
+            );
+        } catch (err) {
+            setServerError(axios.isAxiosError(err) ? err.response?.data?.message : (err as Error).message);
+        }
+    };
 
     const onBookmarkHandler = async () => {
         if (isBookmarked) {
@@ -363,7 +355,7 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
         }
     };
 
-    const handlePublish = React.useCallback(async () => {
+    const handlePublish = async () => {
         let modalDescription: React.ReactNode[] = [];
         modalDescription.push(
             <p key="no-changes-post-publication">It is not possible to make any changes post-publication.</p>
@@ -407,7 +399,7 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
                 setIsLoading(false);
             }
         }
-    }, [confirmation, linkedTo, publicationVersion?.id, router]);
+    };
 
     const handleUnlock = async () => {
         if (isUnlocking) {
@@ -531,7 +523,7 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
         [activeFlags]
     );
 
-    const authors = publicationVersion?.coAuthors || [];
+    const authors = useMemo(() => publicationVersion?.coAuthors || [], [publicationVersion?.coAuthors]);
 
     const confirmedAuthors = useMemo(
         () => authors.filter((author) => author.confirmedCoAuthor && author.user),

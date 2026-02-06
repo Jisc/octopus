@@ -67,10 +67,6 @@ const Topic: Types.NextPage<Props> = (props): React.ReactElement => {
     const showParents = Boolean(topic.parents.length);
     const showPublications = Boolean(topic.publicationVersions.length);
 
-    useEffect(() => {
-        setBookmarkId(props.bookmarkId);
-    }, [props.bookmarkId, props.topic.id]);
-
     // if current topic has only one parent, fetch the parent and check if it's the god topic
     const { data: parentTopic } = useSWR<Interfaces.Topic>(
         topic.parents.length === 1 ? `${Config.endpoints.topics}/${props.topic.parents[0].id}` : null

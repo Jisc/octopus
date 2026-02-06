@@ -1,6 +1,6 @@
 import React from 'react';
 
-const OctopusLogo: React.FC = (): JSX.Element => {
+const OctopusLogo: React.FC = (): React.ReactElement => {
     return (
         <svg width="54" height="51" viewBox="0 0 54 51" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path

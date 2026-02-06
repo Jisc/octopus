@@ -214,6 +214,7 @@ const Verify: Types.NextPage<Props> = (props): React.ReactElement => {
                             />
                         </label>
                         <HeadlessUI.Transition
+                            as="div"
                             show={!showCode}
                             enter="fade duration-500"
                             enterFrom="opacity-0"
@@ -260,6 +261,7 @@ const Verify: Types.NextPage<Props> = (props): React.ReactElement => {
                             </span>
                         </HeadlessUI.Transition>
                         <HeadlessUI.Transition
+                            as="div"
                             show={showCode}
                             enter="delay-100 fade duration-500"
                             enterFrom="opacity-0"
@@ -293,6 +295,7 @@ const Verify: Types.NextPage<Props> = (props): React.ReactElement => {
                                     className="justify-self-end px-0"
                                 />
                                 <HeadlessUI.Transition
+                                    as="div"
                                     show={loading && !success}
                                     enter="fade duration-500"
                                     enterFrom="opacity-0"
@@ -304,6 +307,7 @@ const Verify: Types.NextPage<Props> = (props): React.ReactElement => {
                                     <OutlineIcons.ArrowPathIcon className="h-5 w-5 animate-reverse-spin text-teal-600 transition-colors duration-500 dark:text-teal-400" />
                                 </HeadlessUI.Transition>
                                 <HeadlessUI.Transition
+                                    as="div"
                                     show={success}
                                     enter="delay-100 fade duration-500"
                                     enterFrom="opacity-0"

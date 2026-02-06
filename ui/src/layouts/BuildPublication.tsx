@@ -362,6 +362,7 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
 
     // Option selected from modal
     const save = useCallback(async () => {
+        console.log('Save called');
         setSaveModalLoading(true);
         try {
             await saveCurrent('Publication successfully saved');

@@ -14,6 +14,7 @@ import * as Config from '@/config';
 import * as Types from '@/types';
 import * as Helpers from '@/helpers';
 import * as OutlineIcons from '@heroicons/react/24/outline';
+import Image from 'next/image';
 
 /**
  * rich text render options
@@ -81,11 +82,13 @@ const renderOptions: Options = {
         [BLOCKS.EMBEDDED_ASSET]: (node) => {
             // render the EMBEDDED_ASSET
             return (
-                <img
+                <Image
                     src={`https://${node.data.target.fields.file.url}`}
                     alt={node.data.target.fields.description}
                     className="w-full py-4"
                     loading="lazy"
+                    width={node.data.target.fields.file.details.image.width}
+                    height={node.data.target.fields.file.details.image.height}
                 />
             );
         },

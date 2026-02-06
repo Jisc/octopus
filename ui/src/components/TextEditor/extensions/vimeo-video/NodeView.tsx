@@ -4,6 +4,7 @@ import * as Components from '@/components';
 
 import React from 'react';
 import { fetchEmbedData, OEmbed } from './utils';
+import Image from 'next/image';
 
 const NodeView = (props: Readonly<{ node: Node }>) => {
     const { node } = props;
@@ -17,7 +18,7 @@ const NodeView = (props: Readonly<{ node: Node }>) => {
         <NodeViewWrapper>
             {oEmbed ? (
                 <figure className="relative w-fit">
-                    <img
+                    <Image
                         src={oEmbed.thumbnail_url_with_play_button}
                         width={props.node.attrs.width || 640}
                         height={props.node.attrs.height || 360}

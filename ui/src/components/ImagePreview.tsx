@@ -1,5 +1,6 @@
 import React from 'react';
 import * as OutlineIcons from '@heroicons/react/24/outline';
+import Image from 'next/image';
 
 type Props = {
     id: string;
@@ -22,7 +23,7 @@ const ImagePreview: React.FC<Props> = (props): React.ReactElement => (
             </button>
         )}
 
-        {props.source ? <img src={props.source} alt="preview" className="w-full object-cover" /> : <></>}
+        {props.source ? <Image src={props.source} alt="preview" className="w-full object-cover" fill /> : <></>}
     </div>
 );
 

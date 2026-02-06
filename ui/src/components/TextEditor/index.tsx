@@ -23,6 +23,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import Vimeo from './extensions/vimeo-video';
 import VideoModal from './extensions/vimeo-video/VideoModal';
+import Image from 'next/image';
 
 type LetterIconType = {
     letter: string;
@@ -296,7 +297,7 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
                 props.setLoading(false);
             }
         }
-    }, [props.loading, props.setLoading, props.editor, headingOptions]);
+    }, [props, headingOptions]);
 
     const buttonIconProps = {
         className: 'h-3 w-3 text-grey-700',
@@ -310,21 +311,21 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
                 <div className="flex sticky top-0 w-full pt-2 bg-white-50 z-10 border-b-2 border-grey-300">
                     <HeadlessUi.Listbox value={selected} onChange={setSelected}>
                         <div className="relative my-1">
-                            <HeadlessUi.Listbox.Button className="relative w-full cursor-default rounded-lg py-2 pl-3 pr-10 text-left hover:cursor-pointer hover:bg-grey-100 focus:outline-yellow-500 sm:text-sm">
+                            <HeadlessUi.ListboxButton className="relative w-full cursor-default rounded-lg py-2 pl-3 pr-10 text-left hover:cursor-pointer hover:bg-grey-100 focus:outline-yellow-500 sm:text-sm">
                                 <span className="block truncate">{selected.name}</span>
                                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                     <SolidIcon.ChevronUpDownIcon className="h-5 w-5 text-grey-400" aria-hidden="true" />
                                 </span>
-                            </HeadlessUi.Listbox.Button>
+                            </HeadlessUi.ListboxButton>
                             <HeadlessUi.Transition
                                 as={React.Fragment}
                                 leave="transition ease-in duration-100"
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0"
                             >
-                                <HeadlessUi.Listbox.Options className="absolute z-40 mt-1 max-h-60 w-fit rounded-md bg-white-50 py-1 text-base shadow-sm sm:text-sm">
+                                <HeadlessUi.ListboxOptions className="absolute z-40 mt-1 max-h-60 w-fit rounded-md bg-white-50 py-1 text-base shadow-sm sm:text-sm">
                                     {headingOptions.map((heading, index) => (
-                                        <HeadlessUi.Listbox.Option
+                                        <HeadlessUi.ListboxOption
                                             key={index}
                                             className={({ active }) =>
                                                 `${active ? 'text-slate-800  bg-grey-50' : 'text-slate-600'}
@@ -345,9 +346,9 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
                                                     </button>
                                                 </>
                                             )}
-                                        </HeadlessUi.Listbox.Option>
+                                        </HeadlessUi.ListboxOption>
                                     ))}
-                                </HeadlessUi.Listbox.Options>
+                                </HeadlessUi.ListboxOptions>
                             </HeadlessUi.Transition>
                         </div>
                     </HeadlessUi.Listbox>
@@ -584,11 +585,11 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
                     onClose={() => setLinkModalVisible(false)}
                     className="fixed inset-0 z-10 overflow-y-auto"
                 >
-                    <HeadlessUi.Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
+                    <HeadlessUi.DialogBackdrop className="fixed inset-0 bg-black opacity-30" />
 
                     <div className="relative top-[30%] mx-auto max-w-sm rounded bg-white-50 p-4 shadow-sm">
-                        <HeadlessUi.Dialog.Title className="sr-only">Add your link</HeadlessUi.Dialog.Title>
-                        <HeadlessUi.Dialog.Description>
+                        <HeadlessUi.DialogTitle className="sr-only">Add your link</HeadlessUi.DialogTitle>
+                        <HeadlessUi.Description>
                             <label htmlFor="link" className="mt-4 block text-sm font-medium text-grey-700">
                                 Enter your link
                             </label>
@@ -603,7 +604,7 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
                                     className="block w-full rounded-md border-grey-300 shadow-sm placeholder:font-light focus:border-yellow-500 focus:outline-none focus:ring-yellow-500 sm:text-sm"
                                 />
                             </div>
-                        </HeadlessUi.Dialog.Description>
+                        </HeadlessUi.Description>
 
                         <div className="mt-6 flex justify-between">
                             <button
@@ -631,11 +632,11 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
                     }}
                     className="fixed inset-0 z-10 grid place-items-center overflow-y-auto py-20"
                 >
-                    <HeadlessUi.Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
+                    <HeadlessUi.DialogBackdrop className="fixed inset-0 bg-black opacity-30" />
 
                     <div className="relative w-11/12 rounded bg-white-50 p-4 shadow-sm md:w-9/12 lg:w-160 xl:w-192">
-                        <HeadlessUi.Dialog.Title className="sr-only">Add an image</HeadlessUi.Dialog.Title>
-                        <HeadlessUi.Dialog.Description>
+                        <HeadlessUi.DialogTitle className="sr-only">Add an image</HeadlessUi.DialogTitle>
+                        <HeadlessUi.Description>
                             <Components.Tabs
                                 tabHead={['File upload', 'URL source']}
                                 tabBody={[
@@ -654,7 +655,7 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
                                     />
                                 ]}
                             />
-                        </HeadlessUi.Dialog.Description>
+                        </HeadlessUi.Description>
                     </div>
                 </HeadlessUi.Dialog>
 
@@ -664,13 +665,13 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
                     className="fixed inset-0 z-10 overflow-y-auto"
                     title="Document Import"
                 >
-                    <HeadlessUi.Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
+                    <HeadlessUi.DialogBackdrop className="fixed inset-0 bg-black opacity-30" />
 
                     <div className="relative top-[30%] mx-auto w-11/12 rounded bg-white-50 p-4 shadow-sm md:w-9/12 lg:w-128 xl:w-160">
-                        <HeadlessUi.Dialog.Title className="sr-only">
+                        <HeadlessUi.DialogTitle className="sr-only">
                             Import a Word document (.docx only)
-                        </HeadlessUi.Dialog.Title>
-                        <HeadlessUi.Dialog.Description>
+                        </HeadlessUi.DialogTitle>
+                        <HeadlessUi.Description>
                             <label htmlFor="document-import">
                                 <input
                                     name="document-import"
@@ -710,7 +711,7 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
                                     actionType="NEGATIVE"
                                 />
                             </div>
-                        </HeadlessUi.Dialog.Description>
+                        </HeadlessUi.Description>
                     </div>
                 </HeadlessUi.Dialog>
 
@@ -732,6 +733,7 @@ const TextEditor: React.FC<TextEditorProps> = (props) => {
 
     const textEditor = tiptap.useEditor({
         autofocus: true,
+        immediatelyRender: false,
         extensions: [
             StarterKit,
             Mathematics.configure({
@@ -787,7 +789,7 @@ const TextEditor: React.FC<TextEditorProps> = (props) => {
                     title="Import from Microsoft Word (.docx)"
                     className={guidanceButtonClasses}
                 >
-                    <img src="/images/docx.svg" alt="Word Document" className="h-6 w-6" />
+                    <Image src="/images/docx.svg" alt="Word Document" width={24} height={24} />
                     <span>Import from Microsoft Word (.docx)</span>
                 </button>
                 <Components.Link

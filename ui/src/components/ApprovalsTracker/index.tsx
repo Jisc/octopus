@@ -367,6 +367,7 @@ const ApprovalsTracker: React.FC<Props> = (props): React.ReactElement => {
                     title="Change author's email"
                 >
                     <input
+                        autoFocus
                         autoComplete="off"
                         className="my-4 w-full rounded border border-grey-100 bg-white-50 p-2 text-grey-800 shadow outline-none focus:ring-2 focus:ring-yellow-400"
                         defaultValue={selectedAuthorEmail || ''}

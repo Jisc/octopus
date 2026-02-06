@@ -53,15 +53,26 @@ const RelatedPublicationsSuggestModal: React.FC<Props> = (props): React.ReactEle
         ? getAuthorNames(selectedPublicationVersion)
         : '';
 
-    const handleSearchTermChange = Helpers.debounce(
-        () => {
-            setSearchTerm(searchInputRef.current?.value || '');
-        },
-        500,
-        { maxWait: 1500 }
+    const debouncedSetSearchTerm = React.useMemo(
+        () =>
+            Helpers.debounce(
+                (value: string) => {
+                    setSearchTerm(value);
+                },
+                500,
+                { maxWait: 1500 }
+            ),
+        []
     );
 
-    const handleSelectedPublicationVersionChange = (value: Interfaces.PublicationVersion) => {
+    const handleSearchTermChange = React.useCallback(
+        (value: string) => {
+            debouncedSetSearchTerm(value);
+        },
+        [debouncedSetSearchTerm]
+    );
+
+    const handleSelectedPublicationVersionChange = (value: Interfaces.PublicationVersion | null) => {
         setCreateCrosslinkError('');
         setSelectedPublicationVersion(value);
     };
@@ -135,7 +146,7 @@ const RelatedPublicationsSuggestModal: React.FC<Props> = (props): React.ReactEle
                         <span className="block mb-2 text-xxs font-bold uppercase tracking-widest text-grey-600 transition-colors duration-500 dark:text-grey-300 text-left">
                             Browse publications
                         </span>
-                        <HeadlessUI.Combobox.Input
+                        <HeadlessUI.ComboboxInput
                             ref={searchInputRef}
                             id={searchInputId}
                             className="w-full rounded border border-grey-100 bg-white-50 p-2 text-grey-800 shadow focus:ring-2 focus:ring-yellow-400 sm:mr-0"
@@ -143,7 +154,7 @@ const RelatedPublicationsSuggestModal: React.FC<Props> = (props): React.ReactEle
                             displayValue={(publicationVersion: Interfaces.PublicationVersion) => {
                                 return publicationVersion?.title || '';
                             }}
-                            onChange={() => handleSearchTermChange()}
+                            onChange={(event) => handleSearchTermChange(event.target.value)}
                             placeholder="Search for publications"
                         />
                     </label>
@@ -154,12 +165,12 @@ const RelatedPublicationsSuggestModal: React.FC<Props> = (props): React.ReactEle
                         leaveTo="opacity-0"
                         afterLeave={() => setSearchTerm('')}
                     >
-                        <HeadlessUI.Combobox.Options className="absolute z-10 mt-2 max-h-128 overflow-scroll rounded bg-white-50 shadow-xl">
+                        <HeadlessUI.ComboboxOptions className="absolute z-10 mt-2 max-h-128 overflow-scroll rounded bg-white-50 shadow-xl">
                             {!isValidating &&
                                 results.data.map((publicationVersion: Interfaces.PublicationVersion, index: number) => {
                                     const authorNames = getAuthorNames(publicationVersion);
                                     return (
-                                        <HeadlessUI.Combobox.Option
+                                        <HeadlessUI.ComboboxOption
                                             key={publicationVersion.id}
                                             className={({ active }) =>
                                                 `relative cursor-default select-none p-2 text-teal-900 ${
@@ -190,10 +201,10 @@ const RelatedPublicationsSuggestModal: React.FC<Props> = (props): React.ReactEle
                                                     {Helpers.formatDate(publicationVersion.publishedDate || '')}
                                                 </span>
                                             </div>
-                                        </HeadlessUI.Combobox.Option>
+                                        </HeadlessUI.ComboboxOption>
                                     );
                                 })}
-                        </HeadlessUI.Combobox.Options>
+                        </HeadlessUI.ComboboxOptions>
                     </HeadlessUI.Transition>
                 </HeadlessUI.Combobox>
                 {selectedPublicationVersion && (

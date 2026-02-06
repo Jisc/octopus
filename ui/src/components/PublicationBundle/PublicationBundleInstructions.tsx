@@ -1,4 +1,4 @@
-const PublicationBundleInstructions = (): JSX.Element => {
+const PublicationBundleInstructions = (): React.ReactElement => {
     return (
         <p className="xl:w-2/3 2xl:w-1/2 text-sm text-grey-700 transition-colors duration-500 dark:text-grey-100 mb-8">
             The publication bundles feature allows multiple publications to be collated into a single entity. Once

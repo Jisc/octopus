@@ -45,7 +45,21 @@ const securityHeaders = [
 ];
 
 const nextConfig = {
+    reactCompiler: true,
     reactStrictMode: true,
+    outputFileTracingRoot: __dirname,
+
+    images: {
+        // Wildcard pattern to allow images from any https source (editor remote images)
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: '**',
+                port: '',
+                pathname: '**'
+            }
+        ],
+    },
 
     async redirects() {
         return [

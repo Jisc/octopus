@@ -47,34 +47,31 @@ const CoAuthoringActions: React.FC<Props> = (props) => {
 
     const isApproved = React.useMemo(() => author?.confirmedCoAuthor || false, [author?.confirmedCoAuthor]);
 
-    const updateApprovalRetention = React.useCallback(
-        async (retainApproval: boolean) => {
-            props.setServerError('');
-            setIsLoading(true);
-            try {
-                await api.patch(
-                    `/publication-versions/${props.publicationVersion?.id}/coauthors/${author?.id}`,
-                    {
-                        retainApproval
-                    },
-                    user?.token
-                );
-                setToast({
-                    visible: true,
-                    title: 'Retain approval status saved successfully',
-                    message: '',
-                    icon: <OutlineIcons.CheckCircleIcon className="h-6 w-6 text-teal-600" />,
-                    dismiss: true
-                });
-                setRetainApproval(retainApproval);
-                setApprovalRetentionChangeFeedback('Your approval retention preference has been submitted.');
-            } catch (err) {
-                props.setServerError(axios.isAxiosError(err) ? err.response?.data?.message : (err as Error).message);
-            }
-            setIsLoading(false);
-        },
-        [props.publicationVersion?.id, user?.token]
-    );
+    const updateApprovalRetention = async (retainApproval: boolean) => {
+        props.setServerError('');
+        setIsLoading(true);
+        try {
+            await api.patch(
+                `/publication-versions/${props.publicationVersion?.id}/coauthors/${author?.id}`,
+                {
+                    retainApproval
+                },
+                user?.token
+            );
+            setToast({
+                visible: true,
+                title: 'Retain approval status saved successfully',
+                message: '',
+                icon: <OutlineIcons.CheckCircleIcon className="h-6 w-6 text-teal-600" />,
+                dismiss: true
+            });
+            setRetainApproval(retainApproval);
+            setApprovalRetentionChangeFeedback('Your approval retention preference has been submitted.');
+        } catch (err) {
+            props.setServerError(axios.isAxiosError(err) ? err.response?.data?.message : (err as Error).message);
+        }
+        setIsLoading(false);
+    };
 
     return (
         <div className="mb-4 flex flex-col gap-12 rounded-lg bg-grey-50 p-6 text-grey-900 shadow ring-1 ring-black ring-opacity-5 transition-colors duration-500 dark:bg-grey-700 dark:text-white-50 dark:ring-transparent xl:flex-row xl:gap-6">

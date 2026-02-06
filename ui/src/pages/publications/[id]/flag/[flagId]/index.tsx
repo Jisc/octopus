@@ -79,7 +79,7 @@ type Props = {
     };
 };
 
-const FlagThread: Next.NextPage<Props> = (props): JSX.Element => {
+const FlagThread: Next.NextPage<Props> = (props): React.ReactElement => {
     const router = Router.useRouter();
     const { data, isValidating, error, mutate } = useSWR<Interfaces.FlagWithComments>(props.flagUrl, {
         fallback: props.fallback

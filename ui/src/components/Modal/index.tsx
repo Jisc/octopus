@@ -26,14 +26,14 @@ const Modal: React.FC<Props> = (props) => {
     const cancelButtonText = props.cancelButtonText ?? 'Close';
 
     return (
-        <HeadlessUI.Transition.Root show={props.open} as={React.Fragment}>
+        <HeadlessUI.Transition show={props.open} as={React.Fragment}>
             <HeadlessUI.Dialog
                 as="div"
                 className="fixed inset-0 z-50 overflow-y-auto"
                 onClose={loading ? () => {} : props.onClose}
             >
                 <div className="flex min-h-full items-center justify-center text-center">
-                    <HeadlessUI.Transition.Child
+                    <HeadlessUI.TransitionChild
                         as={React.Fragment}
                         enter="ease-out duration-300"
                         enterFrom="opacity-0"
@@ -42,13 +42,13 @@ const Modal: React.FC<Props> = (props) => {
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <HeadlessUI.Dialog.Overlay className="fixed inset-0 bg-grey-800 bg-opacity-75 transition-opacity dark:bg-grey-900" />
-                    </HeadlessUI.Transition.Child>
+                        <HeadlessUI.DialogBackdrop className="fixed inset-0 bg-grey-800 bg-opacity-75 transition-opacity dark:bg-grey-900" />
+                    </HeadlessUI.TransitionChild>
 
                     <span className="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">
                         &#8203;
                     </span>
-                    <HeadlessUI.Transition.Child
+                    <HeadlessUI.TransitionChild
                         as={React.Fragment}
                         enter="ease-out duration-300"
                         enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -69,12 +69,12 @@ const Modal: React.FC<Props> = (props) => {
                                         </div>
                                     )}
                                     <div className="mt-3 text-center sm:mt-5">
-                                        <HeadlessUI.Dialog.Title
+                                        <HeadlessUI.DialogTitle
                                             as="h3"
                                             className={`font-montserrat text-lg font-medium leading-6 text-grey-900${props.titleClasses ? ' ' + props.titleClasses : ''}`}
                                         >
                                             {props.title}
-                                        </HeadlessUI.Dialog.Title>
+                                        </HeadlessUI.DialogTitle>
                                         {props.subtitle && (
                                             <h4 className="mt-6 font-montserrat text-base font-semibold leading-6 text-grey-900">
                                                 {props.subtitle}
@@ -110,10 +110,10 @@ const Modal: React.FC<Props> = (props) => {
                                 </div>
                             </div>
                         </div>
-                    </HeadlessUI.Transition.Child>
+                    </HeadlessUI.TransitionChild>
                 </div>
             </HeadlessUI.Dialog>
-        </HeadlessUI.Transition.Root>
+        </HeadlessUI.Transition>
     );
 };
 

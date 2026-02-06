@@ -4,6 +4,7 @@ import * as HeadlessUi from '@headlessui/react';
 import * as Components from '@/components';
 import * as Outline from '@heroicons/react/24/outline';
 import { fetchEmbedData, OEmbed } from './utils';
+import Image from 'next/image';
 
 const VideoModal = (props: { visible: boolean; setVisible: (visible: boolean) => void; editor: tiptap.Editor }) => {
     const { visible, setVisible, editor } = props;
@@ -43,7 +44,7 @@ const VideoModal = (props: { visible: boolean; setVisible: (visible: boolean) =>
             .finally(() => {
                 setLoading(false);
             });
-    }, [videoURL]);
+    }, [videoURL, videoURLError]);
 
     function clear() {
         setVideoURL('');
@@ -69,11 +70,11 @@ const VideoModal = (props: { visible: boolean; setVisible: (visible: boolean) =>
             onClose={close}
             className="fixed inset-0 z-10 grid place-items-center overflow-y-auto py-20"
         >
-            <HeadlessUi.Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
+            <HeadlessUi.DialogBackdrop className="fixed inset-0 bg-black opacity-30" />
 
             <div className="relative w-11/12 rounded bg-white-50 p-4 shadow-sm md:w-9/12 lg:w-160">
-                <HeadlessUi.Dialog.Title className="sr-only">Insert Vimeo video</HeadlessUi.Dialog.Title>
-                <HeadlessUi.Dialog.Description>
+                <HeadlessUi.DialogTitle className="sr-only">Insert Vimeo video</HeadlessUi.DialogTitle>
+                <HeadlessUi.Description>
                     <label htmlFor="vimeo-url" className="block text-sm font-medium text-grey-700">
                         Enter Vimeo video URL
                     </label>
@@ -106,10 +107,12 @@ const VideoModal = (props: { visible: boolean; setVisible: (visible: boolean) =>
 
                     {videoOEmbed ? (
                         <div className="mt-4 flex items-center space-x-4">
-                            <img
+                            <Image
                                 src={videoOEmbed.thumbnail_url}
                                 alt="Vimeo video thumbnail"
-                                className="rounded border-grey-300 shadow-sm w-32 h-auto"
+                                className="rounded border-grey-300 shadow-sm h-auto"
+                                width={128}
+                                height={72}
                             />
                             <div>
                                 <p className="text-sm font-medium text-grey-700">{videoOEmbed.title}</p>
@@ -137,7 +140,7 @@ const VideoModal = (props: { visible: boolean; setVisible: (visible: boolean) =>
                             actionType="NEGATIVE"
                         />
                     </div>
-                </HeadlessUi.Dialog.Description>
+                </HeadlessUi.Description>
             </div>
         </HeadlessUi.Dialog>
     );

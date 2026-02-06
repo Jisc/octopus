@@ -77,7 +77,7 @@ type Props = {
     protectedPage: boolean;
 };
 
-const ViewBundle: NextPage<Props> = (props): JSX.Element => {
+const ViewBundle: NextPage<Props> = (props): React.ReactElement => {
     const { bundle, editMode, token } = props;
     const [savingBundle, setSavingBundle] = React.useState(false);
     const [linkCopied, setLinkCopied] = React.useState(false);

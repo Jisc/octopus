@@ -18,9 +18,6 @@ const useMediaQuery = (query: string): boolean => {
     useEffect(() => {
         const matchMedia = window.matchMedia(query);
 
-        // Triggered at the first client-side load and if query changes
-        handleChange();
-
         // Listen matchMedia
         if (matchMedia.addListener) {
             matchMedia.addListener(handleChange);

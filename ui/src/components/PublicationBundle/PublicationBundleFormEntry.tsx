@@ -16,7 +16,7 @@ type Props = {
     deleting?: boolean;
 };
 
-const PublicationBundleFormEntry = (props: Props): JSX.Element => {
+const PublicationBundleFormEntry = (props: Props): React.ReactElement => {
     const { entry, editable, onDelete, deleting } = props;
 
     const { attributes, isDragging, listeners, setNodeRef, transform, transition } = useSortable({

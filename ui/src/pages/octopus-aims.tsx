@@ -255,7 +255,7 @@ const AimsData: JumpTo[] = [
     }
 ];
 
-const CategorySidebar: React.FC<SidebarProps> = (props): JSX.Element => (
+const CategorySidebar: React.FC<SidebarProps> = (props): React.ReactElement => (
     <div className="sticky top-16 space-y-2 border-l border-l-teal-200 pl-4">
         {props.jumpToList.map((jumpTo: JumpTo) => (
             <a

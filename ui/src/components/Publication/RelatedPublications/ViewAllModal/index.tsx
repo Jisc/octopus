@@ -38,12 +38,23 @@ const RelatedPublicationsViewAllModal: React.FC<Props> = (props): React.ReactEle
 
     const resultCount = getCrosslinksResponse?.data?.length;
 
-    const handleSearchTermChange = Helpers.debounce(
-        () => {
-            setSearchTerm(searchInputRef.current?.value || '');
+    const debouncedSetSearchTerm = React.useMemo(
+        () =>
+            Helpers.debounce(
+                (value: string) => {
+                    setSearchTerm(value);
+                },
+                500,
+                { maxWait: 1500 }
+            ),
+        []
+    );
+
+    const handleSearchTermChange = React.useCallback(
+        (value: string) => {
+            debouncedSetSearchTerm(value);
         },
-        500,
-        { maxWait: 1500 }
+        [debouncedSetSearchTerm]
     );
 
     const upperPageBound = getCrosslinksResponse
@@ -70,7 +81,7 @@ const RelatedPublicationsViewAllModal: React.FC<Props> = (props): React.ReactEle
                     id={searchInputId}
                     name="filter"
                     className="w-full rounded border border-grey-100 text-grey-700 shadow focus:ring-2 focus:ring-yellow-400"
-                    onChange={() => handleSearchTermChange()}
+                    onChange={(e) => handleSearchTermChange(e.target.value)}
                     type="search"
                 />
             </label>

@@ -24,7 +24,7 @@ describe('Basic modal', () => {
         render(
             <Components.Modal title={title} open={true} onClose={handleOnClose}>
                 <p>{childText}</p>
-                <input name="firstname" aria-label={inputLabelText} />
+                <input name="firstname" aria-label={inputLabelText} autoFocus />
             </Components.Modal>
         );
     });

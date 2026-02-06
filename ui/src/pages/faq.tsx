@@ -206,7 +206,7 @@ const faqContents = [
     }
 ];
 
-const Faq: NextPage = (): JSX.Element => (
+const Faq: NextPage = (): React.ReactElement => (
     <>
         <Head>
             <title>{Config.urls.faq.title}</title>

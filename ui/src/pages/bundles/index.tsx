@@ -49,7 +49,7 @@ type Props = {
     token: string;
 };
 
-const ViewBundles: Types.NextPage<Props> = (props): JSX.Element => {
+const ViewBundles: Types.NextPage<Props> = (props): React.ReactElement => {
     const { fallback, token } = props;
 
     const [offset, setOffset] = React.useState(fallback.metadata.offset ? fallback.metadata.offset : 0);
@@ -189,7 +189,7 @@ function ViewBundlesResults(props: {
     bundles: Interfaces.PublicationBundle[];
     isDeletingId: string;
     onDelete: (id: string) => void;
-}): JSX.Element | null {
+}): React.ReactElement | null {
     const { bundles, onDelete, isDeletingId } = props;
 
     const iconClasses = 'size-5 md:size-6 text-teal-600 transition-colors duration-500 dark:text-teal-400 ';

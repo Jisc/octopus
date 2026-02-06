@@ -13,7 +13,7 @@ import * as Types from '@/types';
 import * as Assets from '@/assets';
 import * as Helpers from '@/helpers';
 
-const Blog: NextPage = (): JSX.Element => {
+const Blog: NextPage = (): React.ReactElement => {
     const router = useRouter();
     const skip = Number(router.query.skip) || 0;
     const { data, error, isLoading } = useSWR(

@@ -2,7 +2,7 @@ import React from 'react';
 
 type Props = {
     className?: string;
-    children: React.ReactElement | React.ReactText;
+    children: React.ReactElement;
 };
 
 const Pill: React.FC<Props> = (props): React.ReactElement => {

@@ -10,7 +10,7 @@ type Props = {
     linkClassNames?: string;
 };
 
-const PageContentsSidebar: React.FC<Props> = (props): JSX.Element => (
+const PageContentsSidebar: React.FC<Props> = (props): React.ReactElement => (
     <ul className="sticky top-16 border-l border-l-teal-200 pl-4">
         {props.jumpToList.map((jumpTo: JumpTo) => (
             <li

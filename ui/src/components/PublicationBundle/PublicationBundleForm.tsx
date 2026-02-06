@@ -33,7 +33,7 @@ type Props = {
     onSave: (bundle: Omit<Interfaces.ClientPublicationBundle, 'id'>) => void;
 };
 
-const PublicationBundleForm = (props: Props): JSX.Element => {
+const PublicationBundleForm = (props: Props): React.ReactElement => {
     const { bundle, isSaving: isLoading, onSave, editable } = props;
     const { setError } = Stores.usePublicationCreationStore((state) => ({ setError: state.setError }));
 

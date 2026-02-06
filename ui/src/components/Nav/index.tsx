@@ -174,12 +174,12 @@ const Nav: React.FC = (): React.ReactElement => {
                                         <li key={item.value} className="my-4">
                                             {item.subItems?.length ? (
                                                 <HeadlessUI.Menu as="div" className="relative inline-block text-left">
-                                                    <HeadlessUI.Menu.Button className="rounded border-transparent p-2 font-medium text-grey-800 outline-0 transition-colors duration-500 focus:ring-2 focus:ring-yellow-400 dark:text-white-50">
+                                                    <HeadlessUI.MenuButton className="rounded border-transparent p-2 font-medium text-grey-800 outline-0 transition-colors duration-500 focus:ring-2 focus:ring-yellow-400 dark:text-white-50">
                                                         <span className="flex items-center">
                                                             {item.label}
                                                             <OutlineIcons.ChevronDownIcon className="ml-2 h-4 w-4 text-grey-500 transition-colors duration-500 dark:text-teal-500" />
                                                         </span>
-                                                    </HeadlessUI.Menu.Button>
+                                                    </HeadlessUI.MenuButton>
                                                     <HeadlessUI.Transition
                                                         as="div"
                                                         enter="transition ease-out duration-100"
@@ -189,7 +189,7 @@ const Nav: React.FC = (): React.ReactElement => {
                                                         leaveFrom="transform opacity-100 scale-100"
                                                         leaveTo="transform opacity-0 scale-95"
                                                     >
-                                                        <HeadlessUI.Menu.Items
+                                                        <HeadlessUI.MenuItems
                                                             as="ul"
                                                             className="mt-1 focus:outline-none dark:divide-teal-600 dark:border-teal-500 dark:bg-grey-800"
                                                         >
@@ -198,7 +198,7 @@ const Nav: React.FC = (): React.ReactElement => {
                                                                     key={index}
                                                                     className="py-2 pl-4 text-teal-600 transition-colors duration-500 dark:text-white-50"
                                                                 >
-                                                                    <HeadlessUI.Menu.Item>
+                                                                    <HeadlessUI.MenuItem>
                                                                         {({ active }) => (
                                                                             <FlickerLessLink
                                                                                 active={active}
@@ -215,10 +215,10 @@ const Nav: React.FC = (): React.ReactElement => {
                                                                                 }}
                                                                             />
                                                                         )}
-                                                                    </HeadlessUI.Menu.Item>
+                                                                    </HeadlessUI.MenuItem>
                                                                 </li>
                                                             ))}
-                                                        </HeadlessUI.Menu.Items>
+                                                        </HeadlessUI.MenuItems>
                                                     </HeadlessUI.Transition>
                                                 </HeadlessUI.Menu>
                                             ) : (
@@ -256,7 +256,7 @@ const Nav: React.FC = (): React.ReactElement => {
                         <li key={item.value} className="first:ml-0 last:mr-0 md:mx-1 lg:mx-2">
                             {item.subItems?.length ? (
                                 <HeadlessUI.Menu as="div" className="relative z-50 inline-block text-left">
-                                    <HeadlessUI.Menu.Button
+                                    <HeadlessUI.MenuButton
                                         data-testid={item.dataTestId}
                                         className="rounded border-transparent p-2 font-medium text-grey-800 outline-0 transition-colors duration-500 focus:ring-2 focus:ring-yellow-400 dark:text-white-50"
                                     >
@@ -264,7 +264,7 @@ const Nav: React.FC = (): React.ReactElement => {
                                             {item.label}
                                             <OutlineIcons.ChevronDownIcon className="ml-2 h-4 w-4 text-grey-500 transition-colors duration-500 dark:text-teal-500" />
                                         </span>
-                                    </HeadlessUI.Menu.Button>
+                                    </HeadlessUI.MenuButton>
                                     <HeadlessUI.Transition
                                         as="div"
                                         enter="transition ease-out duration-100"
@@ -274,7 +274,7 @@ const Nav: React.FC = (): React.ReactElement => {
                                         leaveFrom="transform opacity-100 scale-100"
                                         leaveTo="transform opacity-0 scale-95"
                                     >
-                                        <HeadlessUI.Menu.Items
+                                        <HeadlessUI.MenuItems
                                             as="ul"
                                             className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-grey-200 divide-opacity-40 rounded-md border-2 border-transparent bg-white-50 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:divide-teal-600 dark:border-teal-500 dark:bg-grey-800"
                                         >
@@ -283,14 +283,14 @@ const Nav: React.FC = (): React.ReactElement => {
                                                     key={index}
                                                     className="p-2 text-teal-600 transition-colors duration-500 dark:text-white-50"
                                                 >
-                                                    <HeadlessUI.Menu.Item>
+                                                    <HeadlessUI.MenuItem>
                                                         {({ active }) => (
                                                             <FlickerLessLink subItem={subItem} active={active} />
                                                         )}
-                                                    </HeadlessUI.Menu.Item>
+                                                    </HeadlessUI.MenuItem>
                                                 </li>
                                             ))}
-                                        </HeadlessUI.Menu.Items>
+                                        </HeadlessUI.MenuItems>
                                     </HeadlessUI.Transition>
                                 </HeadlessUI.Menu>
                             ) : (

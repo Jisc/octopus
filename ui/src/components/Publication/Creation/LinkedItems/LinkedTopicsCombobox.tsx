@@ -75,7 +75,7 @@ const LinkedTopicsCombobox: React.FC<LinkedTopicsComboboxProps> = (props): React
     return (
         <HeadlessUI.Combobox value={selectedTopic} onChange={setSelectedTopic}>
             <div className="flex items-center gap-4">
-                <HeadlessUI.Combobox.Input
+                <HeadlessUI.ComboboxInput
                     className="w-full rounded border border-grey-100 bg-white-50 p-2 text-grey-800 shadow focus:ring-2 focus:ring-yellow-400 sm:mr-0"
                     autoComplete="off"
                     displayValue={(topic: Interfaces.BaseTopic) => {
@@ -105,10 +105,10 @@ const LinkedTopicsCombobox: React.FC<LinkedTopicsComboboxProps> = (props): React
                 leaveTo="opacity-0"
                 afterLeave={() => setSearch('')}
             >
-                <HeadlessUI.Combobox.Options className="absolute z-10 mt-2 max-h-96 w-2/3 overflow-scroll rounded bg-white-50 shadow-xl">
+                <HeadlessUI.ComboboxOptions className="absolute z-10 mt-2 max-h-96 w-2/3 overflow-scroll rounded bg-white-50 shadow-xl">
                     {!isValidating &&
                         data.results.map((topic: Interfaces.BaseTopic, index: number) => (
-                            <HeadlessUI.Combobox.Option
+                            <HeadlessUI.ComboboxOption
                                 key={topic.id}
                                 className={({ active }) =>
                                     `relative cursor-default select-none p-2 text-teal-900 ${
@@ -120,9 +120,9 @@ const LinkedTopicsCombobox: React.FC<LinkedTopicsComboboxProps> = (props): React
                                 <div className="space-y-2">
                                     <p className="text-grey-800">{topic.title}</p>
                                 </div>
-                            </HeadlessUI.Combobox.Option>
+                            </HeadlessUI.ComboboxOption>
                         ))}
-                </HeadlessUI.Combobox.Options>
+                </HeadlessUI.ComboboxOptions>
             </HeadlessUI.Transition>
         </HeadlessUI.Combobox>
     );

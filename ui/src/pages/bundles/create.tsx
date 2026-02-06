@@ -18,7 +18,7 @@ export const getStaticProps: Types.GetStaticProps = async () => ({
     }
 });
 
-const CreateBundle: NextPage = (): JSX.Element => {
+const CreateBundle: NextPage = (): React.ReactElement => {
     const [savingBundle, setSavingBundle] = React.useState(false);
 
     const router = Router.useRouter();

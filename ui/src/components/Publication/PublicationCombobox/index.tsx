@@ -146,9 +146,9 @@ const PublicationCombobox: React.FC<PublicationComboboxProps> = (props): React.R
                 leaveTo="opacity-0"
                 afterLeave={() => setSearch('')}
             >
-                <HeadlessUI.Combobox.Options className="absolute z-10 mt-2 max-h-96 overflow-scroll rounded bg-white-50 shadow-xl">
+                <HeadlessUI.ComboboxOptions className="absolute z-10 mt-2 max-h-96 overflow-scroll rounded bg-white-50 shadow-xl">
                     {options}
-                </HeadlessUI.Combobox.Options>
+                </HeadlessUI.ComboboxOptions>
             </HeadlessUI.Transition>
         </HeadlessUI.Combobox>
     );

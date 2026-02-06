@@ -94,6 +94,10 @@ const SearchInterface = React.forwardRef(
             </div>
         );
 
+        const scrollFunction = React.useCallback(() => {
+            scrollTargetRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, []);
+
         return (
             <div className="mx-auto grid grid-cols-1 gap-x-6 lg:grid-cols-12 lg:gap-y-8 2xl:gap-x-10">
                 <div
@@ -220,11 +224,7 @@ const SearchInterface = React.forwardRef(
                     noResultsMessage={props.noResultsMessage}
                     offset={props.offset}
                     results={results}
-                    scrollFunction={
-                        scrollTargetRef.current
-                            ? () => scrollTargetRef.current?.scrollIntoView({ behavior: 'smooth' })
-                            : undefined
-                    }
+                    scrollFunction={scrollFunction}
                     setOffset={props.setOffset}
                     total={props.total}
                 />

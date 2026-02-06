@@ -131,7 +131,7 @@ const CoAuthor: React.FC = (): React.ReactElement => {
         updateCoAuthors(coAuthors.filter((item) => item.id !== coAuthorId));
     };
 
-    const refreshCoAuthors = React.useCallback(async () => {
+    const refreshCoAuthors = async () => {
         setLoading(true);
 
         try {
@@ -144,7 +144,7 @@ const CoAuthor: React.FC = (): React.ReactElement => {
         } catch {
             setLoading(false);
         }
-    }, [updateCoAuthors, user?.token, versionId]);
+    };
 
     return (
         <div className="space-y-12 2xl:space-y-16">

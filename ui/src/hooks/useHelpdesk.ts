@@ -27,7 +27,7 @@ const useHelpdesk = (checkStatus = false) => {
         if (checkStatus) {
             fetchStatus();
         }
-    }, [auth.user?.token]);
+    }, [auth.user, checkStatus]);
 
     function reset() {
         store.stopHelpdesk();

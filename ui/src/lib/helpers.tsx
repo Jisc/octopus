@@ -558,7 +558,7 @@ export const withServerSession = (
 export const laggy: Middleware = (useSWRNext) => {
     return (key, fetcher, config) => {
         // Use a ref to store previous returned data.
-        const laggyDataRef = React.useRef<{} | null>();
+        const laggyDataRef = React.useRef<{} | null>(null);
 
         // Actual SWR hook.
         const swr = useSWRNext(key, fetcher, config);

@@ -25,6 +25,7 @@ const EditReferenceModal: React.FC<Props> = ({ title, reference, onSave, onClose
     const [referenceLink, setReferenceLink] = useState<string | null | undefined>(null);
 
     const textEditor = tiptap.useEditor({
+        immediatelyRender: false,
         content: reference?.text,
         extensions: [
             StarterKit,
@@ -82,14 +83,14 @@ const EditReferenceModal: React.FC<Props> = ({ title, reference, onSave, onClose
     }, [onSave, reference, referenceLink, textEditor]);
 
     return (
-        <HeadlessUI.Transition.Root show={Boolean(reference)} as={React.Fragment}>
+        <HeadlessUI.Transition show={Boolean(reference)} as={React.Fragment}>
             <HeadlessUI.Dialog
                 as="div"
                 open={true}
                 onClose={onClose}
                 className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto py-20"
             >
-                <HeadlessUI.Transition.Child
+                <HeadlessUI.TransitionChild
                     as={React.Fragment}
                     enter="ease-out duration-300"
                     enterFrom="opacity-0"
@@ -98,10 +99,10 @@ const EditReferenceModal: React.FC<Props> = ({ title, reference, onSave, onClose
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <HeadlessUI.Dialog.Overlay className="fixed inset-0 bg-grey-800 bg-opacity-75 transition-opacity dark:bg-grey-900" />
-                </HeadlessUI.Transition.Child>
+                    <HeadlessUI.DialogBackdrop className="fixed inset-0 bg-grey-800 bg-opacity-75 transition-opacity dark:bg-grey-900" />
+                </HeadlessUI.TransitionChild>
 
-                <HeadlessUI.Transition.Child
+                <HeadlessUI.TransitionChild
                     as={React.Fragment}
                     enter="ease-out duration-300"
                     enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -111,12 +112,12 @@ const EditReferenceModal: React.FC<Props> = ({ title, reference, onSave, onClose
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                     <div className="transition-alls relative w-11/12 transform overflow-hidden rounded-lg bg-white-50 px-4 pb-4 pt-5 shadow-xl sm:px-8 sm:py-6 sm:align-middle lg:max-w-3xl">
-                        <HeadlessUI.Dialog.Title
+                        <HeadlessUI.DialogTitle
                             as="h3"
                             className="pb-4 text-center font-montserrat text-lg font-medium leading-6 text-grey-900"
                         >
                             {title}
-                        </HeadlessUI.Dialog.Title>
+                        </HeadlessUI.DialogTitle>
                         <h4 className="flex space-x-1 pb-1 font-montserrat text-base font-medium text-grey-800 transition-colors duration-500 dark:text-white-100">
                             Reference text
                         </h4>
@@ -156,9 +157,9 @@ const EditReferenceModal: React.FC<Props> = ({ title, reference, onSave, onClose
                             />
                         </div>
                     </div>
-                </HeadlessUI.Transition.Child>
+                </HeadlessUI.TransitionChild>
             </HeadlessUI.Dialog>
-        </HeadlessUI.Transition.Root>
+        </HeadlessUI.Transition>
     );
 };
 

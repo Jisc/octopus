@@ -9,14 +9,18 @@ type Props = {
 };
 
 const Carousel: React.FC<Props> = (props): React.ReactElement => {
-    const container = React.useRef<HTMLDivElement | any>();
+    const container = React.useRef<HTMLDivElement | null>(null);
 
     return (
         <div className="relative">
             {/** Left arrow */}
             <button
                 type="button"
-                onClick={(e) => (container.current.scrollLeft += -280)}
+                onClick={(e) => {
+                    if (container.current) {
+                        container.current.scrollLeft += -280;
+                    }
+                }}
                 className="absolute -left-16 top-1/2 hidden -translate-y-full rounded outline-0 focus:ring-2 focus:ring-yellow-400 2xl:block"
             >
                 <OutlineIcons.ChevronLeftIcon className="h-10 w-10 text-teal-500" />
@@ -38,7 +42,11 @@ const Carousel: React.FC<Props> = (props): React.ReactElement => {
             {/** Left arrow */}
             <button
                 type="button"
-                onClick={(e) => (container.current.scrollLeft += 280)}
+                onClick={(e) => {
+                    if (container.current) {
+                        container.current.scrollLeft += 280;
+                    }
+                }}
                 className="absolute -right-8 top-1/2 z-20 hidden -translate-y-full rounded outline-0 focus:ring-2 focus:ring-yellow-400 2xl:block 3xl:-right-16 "
             >
                 <OutlineIcons.ChevronRightIcon className="h-10 w-10 text-teal-500" />

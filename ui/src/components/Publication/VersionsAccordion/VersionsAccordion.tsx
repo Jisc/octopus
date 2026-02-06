@@ -27,12 +27,13 @@ const VersionsAccordion: React.FC<Props> = (props) => {
         if (controlRequestError) {
             props.onServerError(controlRequestError);
         }
-    }, [controlRequestError]);
+    }, [props, controlRequestError]);
+
     useEffect(() => {
         if (newVersionError) {
             props.onServerError(newVersionError);
         }
-    }, [newVersionError]);
+    }, [props, newVersionError]);
 
     const isAuthorOnLatestLiveVersion = props.versions.some(
         (version) => version.isLatestLiveVersion && version.coAuthors.some((author) => author.linkedUser === user?.id)

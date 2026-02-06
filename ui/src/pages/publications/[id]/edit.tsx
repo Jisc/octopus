@@ -204,7 +204,7 @@ const Edit: Types.NextPage<Props> = (props): React.ReactElement => {
             undefined,
             { shallow: true }
         );
-    }, [currentStepIdx]);
+    }, [currentStepIdx, router]);
 
     const currentStep = stepsToUse.find((step, index) => index === currentStepIdx);
 

@@ -1,6 +1,6 @@
 type TooltipProps = {
     message: string | React.ReactElement;
-    children: React.ReactElement;
+    children: React.ReactElement<{ disabled?: boolean }>;
 };
 
 const Tooltip: React.FC<TooltipProps> = ({ message, children }) => {
