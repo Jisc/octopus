@@ -133,8 +133,6 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
         error = message;
     }
 
-    console.log('Fallback data:', fallbackData);
-
     return {
         props: {
             searchType,
