@@ -75,7 +75,7 @@ const General: React.FC<Props> = (props): React.ReactElement => {
                     href={Config.values.octopusInformation.licences[props.publicationVersion.licence].link}
                     aria-label="Licence"
                     title="Licence"
-                    openNew={true}
+                    rel="noreferrer noopener license"
                     className=" text-sm font-medium text-teal-600 transition-colors duration-500 hover:underline dark:text-teal-400"
                 >
                     <div className="flex items-center">
