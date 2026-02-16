@@ -51,7 +51,7 @@
         "@paralleldrive/cuid2": "^2.2.2",
         "@prisma/client": "^5.11.0",
         "@sparticuz/chromium": "^132.0.0",
-        "ajv": "^8.12.0",
+        "ajv": "^8.18.0",
         "ajv-formats": "^2.1.1",
         "aws-lambda": "^1.0.7",
         "axios": "^1.12.0",
