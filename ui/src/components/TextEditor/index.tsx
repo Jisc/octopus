@@ -11,7 +11,7 @@ import * as Interfaces from '@/interfaces';
 import * as Stores from '@/stores';
 
 import Mammoth from 'mammoth';
-import TipTapImage from '@tiptap/extension-image';
+import TextEditorImage from './extensions/image/NodeView';
 import Link from '@tiptap/extension-link';
 import Mathematics from '@tiptap-pro/extension-mathematics';
 import Table from '@tiptap/extension-table';
@@ -146,12 +146,12 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
 
         const uploadErrors: string[] = [];
 
-        syncFiles.forEach((file) => {
+        syncFiles.forEach((file, index) => {
             // check status, only do it for fulfilled
             if (file.status === 'fulfilled') {
                 props.editor.commands.setImage({
                     src: `${Config.urls.mediaBucket}/${file.value.data.id}`,
-                    alt: 'Coming soon',
+                    alt: files[index]?.alt ?? '',
                     title: file.value.data.name
                 });
             }
@@ -171,10 +171,10 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
     };
 
     // For URL source upload
-    const handleURLSourceUpload = (url: string) => {
+    const handleURLSourceUpload = (url: string, altText: string | null) => {
         props.editor.commands.setImage({
             src: url,
-            alt: image.alt,
+            alt: altText || '',
             title: image.name
         });
 
@@ -753,7 +753,7 @@ const TextEditor: React.FC<TextEditorProps> = (props) => {
             TableRow,
             TableHeader,
             TableCell,
-            TipTapImage.configure({
+            TextEditorImage.configure({
                 inline: true
             }),
             Placeholder.configure({

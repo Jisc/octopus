@@ -109,7 +109,7 @@ const PublicationCombobox: React.FC<PublicationComboboxProps> = (props): React.R
             disabled={props.disabled || loading}
         >
             <div className="flex items-center gap-4">
-                <HeadlessUI.Combobox.Input
+                <HeadlessUI.ComboboxInput
                     aria-label={'Search for publications'}
                     className="w-full rounded border border-grey-100 bg-white-50 p-2 text-grey-800 shadow focus:ring-2 focus:ring-yellow-400 sm:mr-0"
                     autoComplete="off"

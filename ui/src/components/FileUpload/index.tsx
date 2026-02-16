@@ -20,29 +20,44 @@ const FileUpload: React.FC<Props> = (props): React.ReactElement => {
         if (acceptedFiles.length) {
             for (const file of Array.from(acceptedFiles)) {
                 const base64 = await Helpers.getBase64FromFile(file);
-                setPreviewBase64((prevState) => [...prevState, { name: file.name, base64 }]);
+                setPreviewBase64((prevState) => [...prevState, { name: file.name, base64, alt: null }]);
             }
         }
     }, []);
 
     const { getRootProps, getInputProps, isDragActive } = DropZone.useDropzone({ noClick: true, onDrop });
 
+    const validAltText = previewBase64.every((file) => file.alt !== null);
+
     return (
         <section className="relative">
             {!!previewBase64.length && (
-                <div className="mb-8 grid max-h-72 grid-cols-4 gap-4 overflow-y-auto overflow-x-hidden rounded p-4">
+                <div className="mb-4 max-h-80 overflow-y-auto overflow-x-hidden">
                     {previewBase64.map((file, index) => (
-                        <Components.ImagePreview
-                            key={index}
-                            id={file.name}
-                            source={file.base64}
-                            showClose
-                            close={() =>
-                                setPreviewBase64((prevState) => [
-                                    ...prevState.filter((item) => item.base64 !== file.base64)
-                                ])
-                            }
-                        />
+                        <div key={file.base64} className="grid sm:grid-cols-2 gap-4">
+                            {index ? <div className="sm:col-span-2 border-t border-grey-100 my-2" /> : null}
+                            <Components.ImagePreview
+                                id={file.name}
+                                source={file.base64}
+                                showClose
+                                close={() =>
+                                    setPreviewBase64((prevState) => [
+                                        ...prevState.filter((item) => item.base64 !== file.base64)
+                                    ])
+                                }
+                            />
+                            <Components.ImageAltText
+                                altText={file.alt}
+                                onChange={(newAltText: string | null) => {
+                                    console.log('new alt text', newAltText, index);
+                                    setPreviewBase64((prevState) =>
+                                        prevState.map((item, i) => (i === index ? { ...item, alt: newAltText } : item))
+                                    );
+                                    console.log('updated previewBase64', previewBase64);
+                                }}
+                                className="mt-1 pr-2"
+                            />
+                        </div>
                     ))}
                 </div>
             )}
@@ -84,12 +99,18 @@ const FileUpload: React.FC<Props> = (props): React.ReactElement => {
                 />
             )}
 
+            {!validAltText && previewBase64.length ? (
+                <p className="mt-4 text-sm text-red-600" role="alert">
+                    Please provide alternative text for all uploaded images or mark them as decorative
+                </p>
+            ) : null}
+
             <div className="mt-6 flex justify-between space-x-4">
                 <Components.ModalButton
                     text="Upload image"
                     title="Upload image"
                     onClick={() => props.positiveCallback(previewBase64)}
-                    disabled={props.loading || !previewBase64.length}
+                    disabled={props.loading || !previewBase64.length || !validAltText}
                     loading={props.loading}
                     actionType="POSITIVE"
                 />

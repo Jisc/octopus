@@ -16,6 +16,7 @@ type AddReferencesProps = {
 const AddReferences: React.FC<AddReferencesProps> = ({ addReferences }) => {
     const [loading, setLoading] = useState(true);
     const textEditor = tiptap.useEditor({
+        immediatelyRender: false,
         extensions: [StarterKit, Underline],
         onSelectionUpdate: () => setLoading(true),
         editorProps: {

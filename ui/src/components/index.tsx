@@ -36,6 +36,7 @@ export { default as HelpdeskController } from './Helpdesk/HelpdeskController';
 export { default as HTMLVideo } from './Video/HTML';
 export { default as IconButton } from './IconButton';
 export { default as ImagePreview } from './ImagePreview';
+export { default as ImageAltText } from './ImageAltText';
 export { default as JumpToContent } from './JumpToContent';
 export { default as LatestPublications } from './LatestPublications';
 export { default as LearnAboutOctopus } from './LearnAboutOctopus';

@@ -109,7 +109,7 @@ const MainText: React.FC = (): React.ReactElement | null => {
             referencesArray.push(newReference);
         }
 
-        updateReferences(referencesArray);
+        updateReferences([...referencesArray]);
     };
 
     const destroyReference = (id: string) => {

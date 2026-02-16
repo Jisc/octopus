@@ -359,6 +359,7 @@ export interface TextEditorImage {
 export interface ImagePreview {
     name: string;
     base64: string;
+    alt: string | null;
 }
 
 export interface Funder {
