@@ -146,7 +146,7 @@ export const randomWholeNumberInRange = (min: number, max: number): number => {
  */
 export const setAndReturnJWT = (token: string) => {
     const expireTime = 8 / 24;
-    Cookies.set(Config.keys.cookieStorage.token, token, { expires: expireTime, secure: true });
+    Cookies.set(Config.keys.cookieStorage.token, token, { expires: expireTime, secure: true, sameSite: 'lax' });
     return JWT.decode(token);
 };
 
