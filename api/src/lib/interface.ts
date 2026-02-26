@@ -15,7 +15,7 @@ import {
     PearlCreatorType,
     PearlSourceIdentifierType
 } from '@prisma/client';
-import {
+import type {
     APIGatewayProxyEventPathParameters,
     APIGatewayProxyEventQueryStringParameters,
     APIGatewayProxyEventV2
@@ -43,7 +43,7 @@ export {
     PearlSource
 } from '@prisma/client';
 export { JSONSchemaType, Schema } from 'ajv';
-export {
+export type {
     APIGatewayProxyEventV2,
     APIGatewayProxyHandlerV2,
     APIGatewayProxyResultV2,
