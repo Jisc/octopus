@@ -1230,13 +1230,14 @@ export interface StartHelpdeskSessionBody {
 
 export interface PearlCreatorInput {
     name: string;
-    type: PearlCreatorType;
-    creatorId: string;
-    creatorTypeId: string;
+    type?: PearlCreatorType;
+    creatorId?: string;
+    creatorTypeId?: string;
 }
 
 export interface PearlSourceInput {
     name: string;
+    slug: PublicationImportSource;
     identifier: string;
     identifierType: PearlSourceIdentifierType;
     language?: Languages;
@@ -1246,10 +1247,15 @@ export interface PearlSourceInput {
 
 export interface SubPearlInput {
     doi: string;
+    title: string;
+    content: string;
+    type: PublicationType;
 }
 
 export interface CreatePearlRequestBody {
     title: string;
+    externalId?: string;
+    doi?: string;
     creators: [PearlCreatorInput, ...PearlCreatorInput[]];
     language?: Languages;
     licenceType?: LicenceType;
@@ -1282,3 +1288,25 @@ export interface GetOAIRequestQueryParams {
 }
 
 export type CreatePearlSourceRequestBody = PearlSourceInput;
+export type HarvestPearlsRequestBody = {
+    sourceId: string;
+    resourceIds: string[];
+};
+
+export type HarvestPearlsResponse = {
+    message: string;
+    success: boolean;
+    data?: {
+        pearlsCreated: {
+            count: number;
+            items: { id: string }[];
+        };
+        pearlsSkipped: {
+            count: number;
+            items: { id: string; reason: string }[];
+        };
+    };
+    metadata?: {
+        performanceTimings: { op: string; ms: number }[];
+    };
+};

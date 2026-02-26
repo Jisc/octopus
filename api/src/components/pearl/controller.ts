@@ -71,3 +71,54 @@ export const createSource = async (
 
     return response.json(201, { message: 'Pearl source created successfully.' });
 };
+
+export const harvest = async (
+    event: I.AuthenticatedAPIRequest<I.HarvestPearlsRequestBody>
+): Promise<I.JSONResponse> => {
+    const { sourceId, resourceIds } = event.body;
+
+    let source: I.PearlSource | null = null;
+    let responseData: I.HarvestPearlsResponse = { message: '', success: false };
+
+    try {
+        source = await pearlService.getSource(sourceId);
+
+        if (!source) {
+            responseData.message = 'Source not found.';
+
+            return response.json(404, responseData);
+        }
+    } catch (error) {
+        console.error(error);
+        responseData.message = 'Unknown server error.';
+
+        return response.json(500, responseData);
+    }
+
+    try {
+        switch (source.slug) {
+            case 'UKDS':
+                try {
+                    responseData = await pearlService.harvestFromUKDS(source, resourceIds);
+                    break;
+                } catch (error) {
+                    console.error(error);
+                    responseData.message = 'Error harvesting from UKDS.';
+
+                    return response.json(500, responseData);
+                }
+
+            default:
+                responseData.message = `Harvesting from source "${source.name}" is not supported.`;
+
+                return response.json(400, responseData);
+        }
+    } catch (error) {
+        console.error(error);
+        responseData.message = 'Unknown server error.';
+
+        return response.json(500, responseData);
+    }
+
+    return response.json(200, responseData);
+};

@@ -57,6 +57,7 @@ provider:
         PRIVATE_SUBNET_IDS: ${ssm:/${self:provider.stage}_octopus_private_subnet_az1},${ssm:/${self:provider.stage}_octopus_private_subnet_az2},${ssm:/${self:provider.stage}_octopus_private_subnet_az3}
         PUBROUTER_API_KEYS: ${ssm:/pubrouter_api_keys_${self:provider.stage}_octopus}
         PUBROUTER_FAILURE_CHANNEL: ${ssm:/pubrouter_failure_channel_${self:provider.stage}_octopus}
+        UKDS_API_KEY: ${ssm:/ukds_api_key_${self:provider.stage}_octopus}
     deploymentBucket:
         tags:
             Project: Octopus

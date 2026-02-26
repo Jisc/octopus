@@ -233,6 +233,8 @@ export const publicationTypes: I.PublicationType[] = [
     'PEER_REVIEW'
 ];
 
+export const publicationImportSource = ['UKDS', 'ARI'];
+
 export const sourceIdentifierTypes = ['ROR', 'GRID', 'RINGGOLD', 'ISNI', 'CROSSREF_FUNDER', 'WIKIDATA', 'CUSTOM'];
 
 export const authorTypes = ['individual', 'organisational'];

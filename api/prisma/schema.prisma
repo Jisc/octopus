@@ -376,6 +376,8 @@ model PublicationBundleEntry {
 
 model Pearl {
     id          String         @id @default(cuid())
+    doi         String?
+    externalId  String?
     title       String
     creators    PearlCreator[]
     language    Languages      @default(en)
@@ -391,6 +393,7 @@ model Pearl {
 model PearlSource {
     id             String                    @id @default(cuid())
     name           String
+    slug           PublicationImportSource
     language       Languages                 @default(en)
     licenceType    LicenceType?
     defaultTopic   Topic?                    @relation(fields: [defaultTopicId], references: [id])
@@ -407,7 +410,7 @@ model PearlCreator {
     pearlId       String
     name          String
     pearl         Pearl            @relation(fields: [pearlId], references: [id], onDelete: Cascade)
-    type          PearlCreatorType
+    type          PearlCreatorType @default(INDIVIDUAL)
     creatorId     String?
     creatorTypeId String?
     createdAt     DateTime         @default(now())
@@ -423,11 +426,13 @@ enum PearlSourceIdentifierType {
     WIKIDATA
 }
 
-// We use a separate model for now. However this will likely become an actual publication with a "PEARL" type in future.
 model SubPearl {
-    id      String  @id @default(cuid())
+    id      String          @id @default(cuid())
     doi     String
-    Pearl   Pearl?  @relation(fields: [pearlId], references: [id], onDelete: Cascade)
+    title   String
+    content String
+    type    PublicationType
+    Pearl   Pearl?          @relation(fields: [pearlId], references: [id], onDelete: Cascade)
     pearlId String?
 }
 

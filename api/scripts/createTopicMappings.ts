@@ -87,7 +87,7 @@ const validateData = async (
         }
 
         if (item.isMapped) {
-            if (!(item.intExistingTopicId && item.prodExistingTopicId)) {
+            if (!item[`${environment}ExistingTopicId`]) {
                 valid = false;
                 messages.push(
                     `Topic mapping "${item.title}" does not have existing IDs provided for both environments.`
@@ -129,6 +129,7 @@ const validateData = async (
 type CreatedTopicMapping = {
     isMapped: boolean;
     title: string;
+    source: string;
     topic?: {
         id: string;
         title: string;
@@ -180,6 +181,7 @@ const createTopicMappings = async (
             // Push mocked new topic mapping.
             created.push({
                 isMapped: mapping.isMapped,
+                source: mapping.source,
                 title: mapping.title.toLowerCase(), // prisma client extension lower cases title on save
                 ...(mapping.isMapped && {
                     topic: {

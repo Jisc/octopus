@@ -5,12 +5,13 @@ const createPearlSourceSchema: I.Schema = {
     type: 'object',
     properties: {
         name: { type: 'string' },
+        slug: { enum: Enum.publicationImportSource },
         identifier: { type: 'string' },
         identifierType: { enum: Enum.sourceIdentifierTypes },
         language: { enum: Enum.languageCodes },
         licenceType: { enum: Object.values(Enum.licences).map((l) => l.value) }
     },
-    required: ['name', 'identifier', 'identifierType'],
+    required: ['name', 'slug', 'identifier', 'identifierType'],
     additionalProperties: false
 };
 
