@@ -1268,6 +1268,11 @@ export interface DeletePearlPathParams {
     pearlId: string;
 }
 
+export interface GetSubPearlPathParams {
+    pearlId: string;
+    subPearlId: string;
+}
+
 export type OAIPublicationVersion = Prisma.PromiseReturnType<typeof publicationVersionService.getOAIPublicationVersion>;
 
 export type OAIPublicationVersionHeader = Pick<

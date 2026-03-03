@@ -14,6 +14,33 @@ export const getAll = async (): Promise<I.Pearl[]> => {
     });
 };
 
+export const getSubPearl = async (pearlId: string, subPearlId: string) => {
+    const pearl = await client.prisma.pearl.findUnique({
+        where: {
+            id: pearlId
+        },
+        include: {
+            creators: true,
+            source: true,
+            topics: true,
+            subPearls: {
+                where: {
+                    id: subPearlId
+                }
+            }
+        }
+    });
+
+    if (!pearl || pearl.subPearls.length === 0) {
+        return null;
+    }
+
+    return {
+        pearl,
+        subPearl: pearl.subPearls[0]
+    };
+};
+
 export const create = async (data: I.CreatePearlRequestBody) => {
     const topics: { id: string }[] = [];
 

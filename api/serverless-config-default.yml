@@ -609,6 +609,13 @@ functions:
             - http:
                 path: ${self:custom.versions.v1}/pearls
                 method: GET
+    getSubPearl:
+        handler: dist/src/components/pearl/routes.getSubPearl
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/pearls/{pearlId}/sub-pearls/{subPearlId}
+                method: GET
+                cors: true
     createPearl:
         handler: dist/src/components/pearl/routes.create
         events:

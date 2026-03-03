@@ -20,6 +20,7 @@ const endpoints = {
     decodeUserToken: `${baseURL}/decode-user-token`,
     flags: `${baseURL}/flags`,
     links: `${baseURL}/links`,
+    pearls: `${baseURL}/pearls`,
     publications: `${baseURL}/publications`,
     publicationBundles: `${baseURL}/publication-bundles`,
     publicationVersions: `${baseURL}/publication-versions`,
