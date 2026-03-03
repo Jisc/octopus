@@ -15,22 +15,44 @@ export const getAll = async (): Promise<I.Pearl[]> => {
 };
 
 export const create = async (data: I.CreatePearlRequestBody) => {
-    return await client.prisma.pearl.create({
-        data: {
-            doi: data.doi,
-            title: data.title,
-            creators: {
-                create: data.creators
+    const topics: { id: string }[] = [];
+
+    // Remove duplicate topic IDs
+    for (const topicId of data.topicIds) {
+        if (!topics.find((t) => t.id === topicId)) {
+            topics.push({ id: topicId });
+        }
+    }
+
+    try {
+        return await client.prisma.pearl.create({
+            data: {
+                doi: data.doi,
+                title: data.title,
+                creators: {
+                    create: data.creators
+                },
+                language: data.language,
+                externalId: data.externalId,
+                licenceType: data.licenceType,
+                topics: { connect: topics },
+                source: { connect: { id: data.sourceId } },
+                subPearls: { create: data.subPearls }
             },
-            language: data.language,
-            externalId: data.externalId,
-            licenceType: data.licenceType,
-            topics: { connect: data.topicIds.map((id) => ({ id })) },
-            source: { connect: { id: data.sourceId } },
-            subPearls: { create: data.subPearls }
-        },
-        select: {
-            id: true
+            select: {
+                id: true
+            }
+        });
+    } catch (error) {
+        console.error('Error creating pearl:', error);
+        throw error;
+    }
+};
+
+export const deletePearl = async (pearlId: string) => {
+    await client.prisma.pearl.delete({
+        where: {
+            id: pearlId
         }
     });
 };
@@ -116,6 +138,10 @@ const fetchStudyItem = async (resourceId: string): Promise<StudyItemResponse['da
     return null;
 };
 
+function formatHTML(htmlString: string): string {
+    return htmlString.replace(/\n/g, '<br/>');
+}
+
 export const harvestFromUKDS = async (
     source: I.PearlSource,
     resourceIds: string[]
@@ -184,7 +210,12 @@ export const harvestFromUKDS = async (
             const subPearls: I.SubPearlInput[] = [];
 
             if (record.Abstract) {
-                const hypothesis = { title, doi, content: record.Abstract, type: I.PublicationType.HYPOTHESIS };
+                const hypothesis = {
+                    title,
+                    doi,
+                    content: formatHTML(record.Abstract),
+                    type: I.PublicationType.HYPOTHESIS
+                };
                 subPearls.push(hypothesis);
             }
 
@@ -225,18 +256,25 @@ export const harvestFromUKDS = async (
             }
 
             if (methodology) {
-                const methodSection = { title, doi, content: methodology, type: I.PublicationType.PROTOCOL };
+                const methodSection = {
+                    title,
+                    doi,
+                    content: formatHTML(methodology),
+                    type: I.PublicationType.PROTOCOL
+                };
                 subPearls.push(methodSection);
             }
 
+            let results = '';
+
             if (record.Resources && record.Resources.RelatedStudy) {
-                let resultsContent = '';
-
                 for (const relatedStudy of record.Resources.RelatedStudy) {
-                    resultsContent += `<a href="${relatedStudy.Uri}" target="_blank" rel="noopener noreferrer">${relatedStudy.Name}</a><br/>`;
+                    results += `<a href="${relatedStudy.Uri}" target="_blank" rel="noopener noreferrer">${relatedStudy.Name}</a><br/>`;
                 }
+            }
 
-                const resultsSection = { title, doi, content: resultsContent, type: I.PublicationType.DATA };
+            if (results) {
+                const resultsSection = { title, doi, content: formatHTML(results), type: I.PublicationType.DATA };
                 subPearls.push(resultsSection);
             }
 

@@ -616,6 +616,13 @@ functions:
                 path: ${self:custom.versions.v1}/pearls
                 method: POST
                 cors: true
+    deletePearl:
+        handler: dist/src/components/pearl/routes.deletePearl
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/pearls/{pearlId}
+                method: DELETE
+                cors: true
     getPearlSources:
         handler: dist/src/components/pearl/routes.getSources
         events:

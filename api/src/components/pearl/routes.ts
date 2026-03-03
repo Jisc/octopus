@@ -6,13 +6,19 @@ import * as pearlSchema from 'pearl/schema';
 
 export const getAll = middy(pearlController.getAll)
     .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
-    .use(middleware.httpJsonBodyParser());
+    .use(middleware.httpJsonBodyParser())
+    .use(middleware.authentication());
 
 export const create = middy(pearlController.create)
     .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
     .use(middleware.httpJsonBodyParser())
-    // .use(middleware.authentication())
+    .use(middleware.authentication())
     .use(middleware.validator(pearlSchema.create, 'body'));
+
+export const deletePearl = middy(pearlController.deletePearl)
+    .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
+    .use(middleware.httpJsonBodyParser())
+    .use(middleware.authentication());
 
 export const getSources = middy(pearlController.getAllSources)
     .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
@@ -21,11 +27,11 @@ export const getSources = middy(pearlController.getAllSources)
 export const createSource = middy(pearlController.createSource)
     .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
     .use(middleware.httpJsonBodyParser())
-    // .use(middleware.authentication())
+    .use(middleware.authentication())
     .use(middleware.validator(pearlSchema.createSource, 'body'));
 
 export const harvest = middy(pearlController.harvest)
     .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
     .use(middleware.httpJsonBodyParser())
-    // .use(middleware.authentication())
+    .use(middleware.authentication())
     .use(middleware.validator(pearlSchema.harvest, 'body'));

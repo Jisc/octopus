@@ -47,6 +47,22 @@ export const create = async (event: I.AuthenticatedAPIRequest<I.CreatePearlReque
     return response.json(201, { message: 'Pearl created successfully.' });
 };
 
+export const deletePearl = async (
+    event: I.AuthenticatedAPIRequest<undefined, undefined, I.DeletePearlPathParams>
+): Promise<I.JSONResponse> => {
+    const { pearlId } = event.pathParameters;
+
+    try {
+        await pearlService.deletePearl(pearlId);
+    } catch (error) {
+        console.error(error);
+
+        return response.json(500, { message: 'Unknown server error.' });
+    }
+
+    return response.json(200, { message: 'Pearl deleted successfully.' });
+};
+
 export const getAllSources = async (): Promise<I.JSONResponse> => {
     try {
         const sources = await pearlService.getAllSources();

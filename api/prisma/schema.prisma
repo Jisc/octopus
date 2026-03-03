@@ -240,8 +240,7 @@ model Topic {
     organisationalAccounts User[]
     mappings               TopicMapping[]
     PearlSource            PearlSource[]
-    Pearl                  Pearl?               @relation(fields: [pearlId], references: [id])
-    pearlId                String?
+    pearls                 Pearl[]
 }
 
 model TopicTranslation {

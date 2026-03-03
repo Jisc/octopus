@@ -1264,6 +1264,10 @@ export interface CreatePearlRequestBody {
     subPearls: [SubPearlInput, ...SubPearlInput[]];
 }
 
+export interface DeletePearlPathParams {
+    pearlId: string;
+}
+
 export type OAIPublicationVersion = Prisma.PromiseReturnType<typeof publicationVersionService.getOAIPublicationVersion>;
 
 export type OAIPublicationVersionHeader = Pick<
