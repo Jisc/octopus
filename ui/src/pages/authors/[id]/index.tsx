@@ -22,10 +22,11 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
     const token = Helpers.getJWT(context);
     let user: Interfaces.User | null = null;
     let publications: Interfaces.SearchResults<Interfaces.Publication> | null = null;
+    let helpdesk: Interfaces.HelpdeskStatus | null = null;
     let flags: Interfaces.FlagByUser[] | null = null;
     let getUserError: string | null = null;
 
-    [user, publications, flags] = await Promise.all([
+    [user, publications, flags, helpdesk] = await Promise.all([
         api
             .get(`${Config.endpoints.users}/${userId}`, token)
             .then((res) => res.data)
@@ -47,6 +48,13 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
             .catch((error) => {
                 console.log(error);
                 return null;
+            }),
+        api
+            .get(`${Config.endpoints.helpdesk}/status`, token)
+            .then((res) => res.data)
+            .catch((error) => {
+                console.log(error);
+                return null;
             })
     ]);
 
@@ -61,7 +69,8 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
             query,
             user,
             publications,
-            flags
+            flags,
+            helpdesk
         }
     };
 };
@@ -71,6 +80,7 @@ type Props = {
     user: Interfaces.User;
     publications: Interfaces.SearchResults<Interfaces.Publication> | null;
     flags: Interfaces.SearchResults<Interfaces.FlagByUser> | null;
+    helpdesk: Interfaces.HelpdeskStatus | null;
 };
 
 const Author: Types.NextPage<Props> = (props): React.ReactElement => {
@@ -243,7 +253,7 @@ const Author: Types.NextPage<Props> = (props): React.ReactElement => {
                         </div>
                     )}
 
-                    <Components.HelpdeskController userId={props.user.id} />
+                    {props.helpdesk?.enabled ? <Components.HelpdeskController userId={props.user.id} /> : null}
                 </header>
 
                 {!isOrganisationalAccount && (

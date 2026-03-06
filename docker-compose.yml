@@ -24,7 +24,7 @@ services:
       - "4510-4559:4510-4559"
       - "4566:4566"
     environment:
-      - SERVICES=s3,sqs
+      - SERVICES=s3,sqs,ssm
       - DEBUG=1
       - DATA_DIR=/tmp/localstack/data
     volumes:

@@ -25,7 +25,7 @@ const HelpdeskBanner: React.FC = () => {
                 className="!bg-red-900"
                 onClick={() => helpdesk.stopHelpdeskSession()}
                 startIcon={
-                    helpdesk.status.loading ? (
+                    helpdesk.loading ? (
                         <Assets.Spinner width={16} height={16} className="stroke-white-50" />
                     ) : (
                         <SolidIcons.StopCircleIcon className="size-4" />

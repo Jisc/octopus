@@ -1,20 +1,28 @@
 import * as I from 'interface';
 import * as response from 'lib/response';
 import * as userService from 'user/service';
+import { getParameter } from 'lib/ssm';
 import * as authorizationService from 'authorization/service';
+import * as Helpers from 'lib/helpers';
 
-const helpdeskEnabled = (user?: I.User): boolean => {
+const helpdeskEnabled = async (user?: I.User): Promise<boolean> => {
     if (!user) {
         return false;
     }
 
-    const helpdeskUserIds = process.env.HELPDESK_ENABLED_USER_IDS;
-
-    if (!helpdeskUserIds) {
-        return false;
-    }
-
     try {
+        const featureFlagEnabled = await getParameter('helpdesk_enabled', true);
+
+        if (featureFlagEnabled !== 'true') {
+            return false;
+        }
+
+        const helpdeskUserIds = Helpers.checkEnvVariable('HELPDESK_ENABLED_USER_IDS');
+
+        if (!helpdeskUserIds) {
+            return false;
+        }
+
         console.log('Helpdesk enabled user IDs:', helpdeskUserIds);
         console.log('Current user ID:', user.id);
 
@@ -25,13 +33,16 @@ const helpdeskEnabled = (user?: I.User): boolean => {
 };
 
 export const getStatus = async (event: I.APIRequest): Promise<I.JSONResponse> => {
-    const status: I.HelpdeskStatus = { enabled: helpdeskEnabled(event.user) };
+    const enabled = await helpdeskEnabled(event.user);
+    const status: I.HelpdeskStatus = { enabled };
 
     return response.json(200, status);
 };
 
 export const startSession = async (event: I.APIRequest<I.StartHelpdeskSessionBody>): Promise<I.JSONResponse> => {
-    if (!helpdeskEnabled(event.user)) {
+    const enabled = await helpdeskEnabled(event.user);
+
+    if (!enabled) {
         return response.json(403, { message: 'Helpdesk feature is not enabled for this user' });
     }
 
@@ -59,7 +70,9 @@ export const startSession = async (event: I.APIRequest<I.StartHelpdeskSessionBod
 };
 
 export const stopSession = async (event: I.APIRequest): Promise<I.JSONResponse> => {
-    if (!helpdeskEnabled(event.user)) {
+    const enabled = await helpdeskEnabled(event.user);
+
+    if (!enabled) {
         return response.json(403, { message: 'Helpdesk feature is not enabled for this user' });
     }
 

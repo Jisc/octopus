@@ -9,23 +9,19 @@ type Props = {
 };
 
 const HelpdeskController: React.FC<Props> = (props) => {
-    const helpdesk = Hooks.useHelpdesk(true);
-
-    if (!helpdesk.status.enabled) {
-        return null;
-    }
+    const helpdesk = Hooks.useHelpdesk();
 
     return (
         <div className="mt-8">
             {helpdesk.store.target ? (
                 <Components.Button
-                    disabled={helpdesk.status.loading}
+                    disabled={helpdesk.loading}
                     onClick={() => helpdesk.stopHelpdeskSession()}
                     textSize="xs"
                     title="Stop Helpdesk session"
                     variant="block"
                     startIcon={
-                        helpdesk.status.loading ? (
+                        helpdesk.loading ? (
                             <Assets.Spinner width={16} height={16} className="stroke-white-50" />
                         ) : (
                             <SolidIcons.StopCircleIcon className="size-4" />
@@ -34,13 +30,13 @@ const HelpdeskController: React.FC<Props> = (props) => {
                 />
             ) : (
                 <Components.Button
-                    disabled={helpdesk.status.loading}
+                    disabled={helpdesk.loading}
                     onClick={() => helpdesk.startHelpdeskSession(props.userId)}
                     textSize="xs"
                     title="Start Helpdesk session"
                     variant="block-alt"
                     startIcon={
-                        helpdesk.status.loading ? (
+                        helpdesk.loading ? (
                             <Assets.Spinner width={16} height={16} className="stroke-white-50" />
                         ) : (
                             <SolidIcons.PlayCircleIcon className="size-4" />

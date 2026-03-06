@@ -44,6 +44,7 @@
     },
     "dependencies": {
         "@aws-sdk/client-sesv2": "^3.914.0",
+        "@aws-sdk/client-ssm": "^3.974.0",
         "@middy/core": "^4.7.0",
         "@middy/do-not-wait-for-empty-event-loop": "^4.7.0",
         "@middy/http-json-body-parser": "^4.7.0",

@@ -252,6 +252,10 @@ export interface SearchResults<T extends FlagByUser | Publication | PublicationV
     metadata: SearchResultMeta;
 }
 
+export interface HelpdeskStatus {
+    enabled: boolean;
+}
+
 export interface SearchResultMeta {
     total: number;
     limit: number;
