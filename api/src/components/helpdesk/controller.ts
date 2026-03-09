@@ -14,12 +14,16 @@ const helpdeskEnabled = async (user?: I.User): Promise<boolean> => {
         const featureFlagEnabled = await getParameter('helpdesk_enabled', true);
 
         if (featureFlagEnabled !== 'true') {
+            console.log('Helpdesk feature flag is disabled');
+
             return false;
         }
 
         const helpdeskUserIds = Helpers.checkEnvVariable('HELPDESK_ENABLED_USER_IDS');
 
         if (!helpdeskUserIds) {
+            console.log('HELPDESK_ENABLED_USER_IDS environment variable is not set');
+
             return false;
         }
 
@@ -27,7 +31,9 @@ const helpdeskEnabled = async (user?: I.User): Promise<boolean> => {
         console.log('Current user ID:', user.id);
 
         return helpdeskUserIds.split(',').some((id) => id.trim() === user.id);
-    } catch {
+    } catch (error) {
+        console.error('Error checking helpdesk enabled status:', error);
+
         return false;
     }
 };
