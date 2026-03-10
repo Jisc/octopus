@@ -20,8 +20,10 @@ const faqContents = [
             <p className='mb-2'>Octopus sets out to be the new "primary research record": a place where researchers from all disciplines can freely record all of their research work without pressures such as the need for &apos;high impact&apos; or word counts affecting what they write (or do).</p>
             <p className='mb-2'>Publishing your work on Octopus establishes your priority immediately, and allows you to document your work in full detail, a bit like a patent office. This record can sit alongside a traditional academic paper or monograph: journals continue to be a good place to disseminate research summaries, particularly &apos;findings&apos;, to a wider audience.</p>
             <p className='mb-2'>If you want to publish your work in a journal, you can publish on Octopus before you submit (like a preprint), or after you have had a paper accepted (to provide fuller details, like a well-organised supplementary information).</p>
-            <p className='mb-2'>Octopus publications are different from other publications. They are smaller units linked together, reflecting different stages of the research process. They can be published individually (e.g. just publishing data), without needing to fit it into the structure of a traditional journal article. To read more about Octopus' publication types, click <a className='underline' href='#pub_type_octopus' target='_blank'>here</a>.</p>
-            <p>You can find out more about our aims <a className='underline' target='_blank' href='octopus-aims'>here</a>.</p>
+            <p className='mb-2'>Octopus publications are different from other publications. They are smaller units linked together, reflecting different stages of the research process. They can be published individually (e.g. just publishing data), without needing to fit it into the structure of a traditional journal article.</p>
+            <a className='underline' href='#pub_type_octopus' target='_blank'>Read more about Octopus' publication types</a>
+            <br/>
+            <a className='underline' target='_blank' href='octopus-aims'>Read more about our aims</a>
         `
     },
     {
