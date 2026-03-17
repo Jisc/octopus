@@ -3,7 +3,7 @@ import * as tiptap from '@tiptap/react';
 import * as HeadlessUi from '@headlessui/react';
 import * as Components from '@/components';
 import * as Outline from '@heroicons/react/24/outline';
-import { fetchEmbedData, OEmbed } from './utils';
+import { fetchEmbedData, isValidVimeoUrl, OEmbed } from './utils';
 import Image from 'next/image';
 
 const VideoModal = (props: { visible: boolean; setVisible: (visible: boolean) => void; editor: tiptap.Editor }) => {
@@ -17,7 +17,7 @@ const VideoModal = (props: { visible: boolean; setVisible: (visible: boolean) =>
     let videoURLError = '';
 
     if (videoURL) {
-        const validVimeoUrl = /^(https?:\/\/)?(www\.)?(vimeo\.com\/)([0-9]+)(\/)?(#.*)?$/.test(videoURL);
+        const validVimeoUrl = Boolean(isValidVimeoUrl(videoURL));
         if (!validVimeoUrl) {
             videoURLError = 'Please enter a valid, public Vimeo URL.';
         } else {

@@ -1,8 +1,96 @@
-export const VIMEO_REGEX = /^(https?:\/\/)?(www\.)?(vimeo\.com\/\d+|player\.vimeo\.com\/video\/\d+)(\/?.*)?$/;
-export const VIMEO_REGEX_GLOBAL = /^(https?:\/\/)?(www\.)?(vimeo\.com\/\d+|player\.vimeo\.com\/video\/\d+)(\/?.*)?$/g;
+export const VIMEO_REGEX =
+    /^(https?:\/\/)?(www\.)?(vimeo\.com\/\d+(?:\/[a-zA-Z0-9_-]+)?|player\.vimeo\.com\/video\/\d+)(\/?.*)?$/;
+export const VIMEO_REGEX_GLOBAL =
+    /^(https?:\/\/)?(www\.)?(vimeo\.com\/\d+(?:\/[a-zA-Z0-9_-]+)?|player\.vimeo\.com\/video\/\d+)(\/?.*)?$/g;
 
 export const isValidVimeoUrl = (url: string) => {
     return url.match(VIMEO_REGEX);
+};
+
+// https://help.vimeo.com/hc/en-us/articles/12425821012497-Start-playback-at-a-specific-timecode
+const getTimestampHash = (parsedUrl: URL): string | undefined => {
+    const toSecondTimecode = (value: number): string | undefined => {
+        if (!Number.isFinite(value) || value < 0) {
+            return undefined;
+        }
+
+        const totalSeconds = Math.floor(value);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        if (hours > 0) {
+            return `t=${hours}h${minutes}m${seconds}s`;
+        }
+
+        if (minutes > 0) {
+            return `t=${minutes}m${seconds}s`;
+        }
+
+        return `t=${seconds}s`;
+    };
+
+    if (parsedUrl.hash.startsWith('#t=')) {
+        const hashValue = parsedUrl.hash.slice(3);
+        if (!hashValue) {
+            return undefined;
+        }
+
+        if (/^\d+(?:\.\d+)?$/.test(hashValue)) {
+            return toSecondTimecode(Number(hashValue));
+        }
+
+        if (/^\d+h\d+m\d+s$/i.test(hashValue) || /^\d+m\d+s$/i.test(hashValue) || /^\d+s$/i.test(hashValue)) {
+            return `t=${hashValue.toLowerCase()}`;
+        }
+
+        return undefined;
+    }
+
+    const ts = parsedUrl.searchParams.get('ts');
+    if (!ts || !/^\d+(?:\.\d+)?$/.test(ts)) {
+        return undefined;
+    }
+
+    const tsNumber = Number(ts);
+    return toSecondTimecode(tsNumber / 1000);
+};
+
+const parseVimeoUrl = (url: string): { videoId: string; unlistedHash?: string; timestampHash?: string } | null => {
+    if (!isValidVimeoUrl(url)) {
+        return null;
+    }
+
+    const parsedUrl = new URL(url.startsWith('http') ? url : `https://${url}`);
+    const hostname = parsedUrl.hostname.replace(/^www\./, '');
+    const timestampHash = getTimestampHash(parsedUrl);
+
+    if (hostname === 'vimeo.com') {
+        const [videoId, unlistedHash] = parsedUrl.pathname.split('/').filter(Boolean);
+        if (!videoId || !/^\d+$/.test(videoId)) {
+            return null;
+        }
+
+        return {
+            videoId,
+            unlistedHash,
+            timestampHash
+        };
+    }
+
+    if (hostname === 'player.vimeo.com') {
+        const [videoSegment, videoId] = parsedUrl.pathname.split('/').filter(Boolean);
+        if (videoSegment !== 'video' || !videoId || !/^\d+$/.test(videoId)) {
+            return null;
+        }
+
+        return {
+            videoId,
+            timestampHash
+        };
+    }
+
+    return null;
 };
 
 export interface GetEmbedUrlOptions {
@@ -84,18 +172,12 @@ export const getEmbedUrlFromVimeoUrl = (options: GetEmbedUrlOptions) => {
         transparent,
         transcript
     } = options;
-
-    if (!isValidVimeoUrl(url)) {
-        return null;
-    }
-    const videoIdRegex = /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/;
-    const matches = videoIdRegex.exec(url);
-
-    if (!matches || !matches[1]) {
+    const parsedVimeoUrl = parseVimeoUrl(url);
+    if (!parsedVimeoUrl) {
         return null;
     }
 
-    let outputUrl = `https://player.vimeo.com/video/${matches[1]}`;
+    let outputUrl = `https://player.vimeo.com/video/${parsedVimeoUrl.videoId}`;
 
     const params: string[] = [];
 
@@ -104,7 +186,11 @@ export const getEmbedUrlFromVimeoUrl = (options: GetEmbedUrlOptions) => {
     }
 
     if (autoplay !== undefined) {
-        params.push(`autoplay=${autopause ? 1 : 0}`);
+        params.push(`autoplay=${autoplay ? 1 : 0}`);
+    }
+
+    if (parsedVimeoUrl.unlistedHash) {
+        params.push(`h=${parsedVimeoUrl.unlistedHash}`);
     }
 
     if (background !== undefined) {
@@ -181,6 +267,10 @@ export const getEmbedUrlFromVimeoUrl = (options: GetEmbedUrlOptions) => {
 
     if (params.length) {
         outputUrl += `?${params.join('&')}`;
+    }
+
+    if (parsedVimeoUrl.timestampHash) {
+        outputUrl += `#${parsedVimeoUrl.timestampHash}`;
     }
 
     return outputUrl;
