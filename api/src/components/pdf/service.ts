@@ -62,8 +62,8 @@ async function processVideos(htmlTemplate: string): Promise<string> {
             thumbnail_url_with_play_button: tURL
         } = oEmbedData;
 
-        const imgTag = `<img src="${tURL}" alt="${title}" width="${tWdith}" height="${tHeight}" style="display: block;"/>`;
-        htmlTemplate = htmlTemplate.replace(match[0], imgTag);
+        const linkedThumbnail = `<a href="${src}" aria-label="Watch video: ${title}" target="_blank" rel="noopener noreferrer"><img src="${tURL}" alt="${title}" width="${tWdith}" height="${tHeight}" style="display: block;"/></a>`;
+        htmlTemplate = htmlTemplate.replace(match[0], linkedThumbnail);
     }
 
     return htmlTemplate;
