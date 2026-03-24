@@ -492,13 +492,6 @@ export const requestControl = async (
             });
         }
 
-        // check that versionNumber is at least 2
-        if (publicationVersion.versionNumber < 2) {
-            return response.json(403, {
-                message: 'You are not allowed to request control over this publication version.'
-            });
-        }
-
         // check version status
         if (publicationVersion.currentStatus === 'LIVE') {
             return response.json(400, {
@@ -510,29 +503,6 @@ export const requestControl = async (
         if (event.user.id === publicationVersion.createdBy) {
             return response.json(403, {
                 message: 'You cannot request control over your own publication version.'
-            });
-        }
-
-        const previousPublicationVersion = await publicationVersionService.get(
-            publicationVersion.versionOf,
-            (publicationVersion.versionNumber - 1).toString()
-        );
-
-        if (!previousPublicationVersion) {
-            return response.json(403, {
-                message: 'Your authorship on the previous version cannot be verified.'
-            });
-        }
-
-        // check if user is a co-author on the previous version
-        if (
-            !(
-                previousPublicationVersion.user.id === event.user.id ||
-                previousPublicationVersion.coAuthors.some((author) => author.linkedUser === event.user.id)
-            )
-        ) {
-            return response.json(403, {
-                message: 'You do not have permission to request control over this publication version.'
             });
         }
 
