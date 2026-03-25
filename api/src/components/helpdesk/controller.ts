@@ -11,19 +11,15 @@ const helpdeskEnabled = async (user?: I.User): Promise<boolean> => {
     }
 
     try {
-        const featureFlagEnabled = await getParameter('helpdesk_enabled', true);
-
-        if (featureFlagEnabled !== 'true') {
-            console.log('Helpdesk feature flag is disabled');
-
-            return false;
-        }
-
         const helpdeskUserIds = Helpers.checkEnvVariable('HELPDESK_ENABLED_USER_IDS');
 
         if (!helpdeskUserIds) {
-            console.log('HELPDESK_ENABLED_USER_IDS environment variable is not set');
+            return false;
+        }
 
+        const featureFlagEnabled = await getParameter('helpdesk_enabled');
+
+        if (featureFlagEnabled !== 'true') {
             return false;
         }
 
@@ -76,12 +72,6 @@ export const startSession = async (event: I.APIRequest<I.StartHelpdeskSessionBod
 };
 
 export const stopSession = async (event: I.APIRequest): Promise<I.JSONResponse> => {
-    const enabled = await helpdeskEnabled(event.user);
-
-    if (!enabled) {
-        return response.json(403, { message: 'Helpdesk feature is not enabled for this user' });
-    }
-
     console.log(`Helpdesk session stopped by user ${event.user?.id} at ${new Date().toISOString()}`);
 
     return response.json(200, { token: null });

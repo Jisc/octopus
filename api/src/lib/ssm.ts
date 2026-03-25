@@ -18,30 +18,13 @@ const config: SSMClientConfig = {
 
 const client = new SSMClient(config);
 
-type CacheEntry = { value: string; timestamp: number };
-const memoryCache = new Map<string, CacheEntry>();
-const memoryCacheTTL = 0.5 * 60 * 1000;
-
-export async function getParameter(ssmParameterName: string, useCache = false): Promise<string> {
-    const now = Date.now();
+export async function getParameter(ssmParameterName: string): Promise<string> {
     const key = `${ssmParameterName}_${stage}_octopus`;
-
-    if (useCache && memoryCache.has(key)) {
-        const cached = memoryCache.get(key) as CacheEntry;
-
-        if (now - cached.timestamp < memoryCacheTTL) {
-            return cached.value;
-        }
-    }
 
     const input = { Name: key, WithDecryption: true };
     const command = new GetParameterCommand(input);
     const result = await client.send(command);
     const value = result.Parameter?.Value || '';
-
-    if (useCache) {
-        memoryCache.set(key, { value, timestamp: now });
-    }
 
     return value;
 }
