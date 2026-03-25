@@ -15,6 +15,9 @@ export interface NavMenuItem {
     dataTestId?: string;
     onClick?: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement>;
     subItems?: NavMenuItem[];
+    highlighted?: boolean;
+    hiddenOnMobile?: boolean;
+    hiddenOnDesktop?: boolean;
 }
 
 export interface PublicationStatus {

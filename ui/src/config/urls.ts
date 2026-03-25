@@ -293,6 +293,22 @@ const urls = {
         ],
         canonical: `${base.host}/octopus-aims`
     },
+    octopusBenefits: {
+        path: '/octopus-benefits',
+        title: "What's in it for me?",
+        description:
+            'Discover how Octopus benefits researchers, institutions, funders, and publishers with free open access publishing, instant DOIs, and transparent peer review.',
+        keywords: [
+            'free publishing',
+            'open peer review',
+            'instant DOIs',
+            'researcher benefits',
+            'institutional benefits',
+            'funder benefits',
+            'publisher benefits'
+        ],
+        canonical: `${base.host}/octopus-benefits`
+    },
     404: {
         title: `404 Not Found - ${base.title}`
     },

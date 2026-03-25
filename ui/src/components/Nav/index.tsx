@@ -60,6 +60,16 @@ const Nav: React.FC = (): React.ReactElement => {
     const items = useMemo(() => {
         const menuItems: Interfaces.NavMenuItem[] = [
             {
+                label: 'What’s in it for me?',
+                value: Config.urls.octopusBenefits.path,
+                highlighted: true
+            },
+            {
+                label: 'Search',
+                value: Config.urls.searchPublications.path,
+                hiddenOnMobile: true
+            },
+            {
                 label: 'Browse',
                 value: Config.urls.browsePublications.path
             },
@@ -170,79 +180,86 @@ const Nav: React.FC = (): React.ReactElement => {
                                 className="absolute right-0 top-10 z-50 w-max rounded bg-white-50 px-4 shadow-md dark:border-2 dark:border-teal-300 dark:bg-grey-800"
                             >
                                 <ul>
-                                    {items.map((item) => (
-                                        <li key={item.value} className="my-4">
-                                            {item.subItems?.length ? (
-                                                <HeadlessUI.Menu as="div" className="relative inline-block text-left">
-                                                    <HeadlessUI.MenuButton className="rounded border-transparent p-2 font-medium text-grey-800 outline-0 transition-colors duration-500 focus:ring-2 focus:ring-yellow-400 dark:text-white-50">
-                                                        <span className="flex items-center">
-                                                            {item.label}
-                                                            <OutlineIcons.ChevronDownIcon className="ml-2 h-4 w-4 text-grey-500 transition-colors duration-500 dark:text-teal-500" />
-                                                        </span>
-                                                    </HeadlessUI.MenuButton>
-                                                    <HeadlessUI.Transition
+                                    {items
+                                        .filter((item) => !item.hiddenOnMobile)
+                                        .map((item) => (
+                                            <li key={item.value} className="my-4">
+                                                {item.subItems?.length ? (
+                                                    <HeadlessUI.Menu
                                                         as="div"
-                                                        enter="transition ease-out duration-100"
-                                                        enterFrom="transform opacity-0 scale-95"
-                                                        enterTo="transform opacity-100 scale-100"
-                                                        leave="transition ease-in duration-75"
-                                                        leaveFrom="transform opacity-100 scale-100"
-                                                        leaveTo="transform opacity-0 scale-95"
+                                                        className="relative inline-block text-left"
                                                     >
-                                                        <HeadlessUI.MenuItems
-                                                            as="ul"
-                                                            className="mt-1 focus:outline-none dark:divide-teal-600 dark:border-teal-500 dark:bg-grey-800"
+                                                        <HeadlessUI.MenuButton className="rounded border-transparent p-2 font-medium text-grey-800 outline-0 transition-colors duration-500 focus:ring-2 focus:ring-yellow-400 dark:text-white-50">
+                                                            <span className="flex items-center">
+                                                                {item.label}
+                                                                <OutlineIcons.ChevronDownIcon className="ml-2 h-4 w-4 text-grey-500 transition-colors duration-500 dark:text-teal-500" />
+                                                            </span>
+                                                        </HeadlessUI.MenuButton>
+                                                        <HeadlessUI.Transition
+                                                            as="div"
+                                                            enter="transition ease-out duration-100"
+                                                            enterFrom="transform opacity-0 scale-95"
+                                                            enterTo="transform opacity-100 scale-100"
+                                                            leave="transition ease-in duration-75"
+                                                            leaveFrom="transform opacity-100 scale-100"
+                                                            leaveTo="transform opacity-0 scale-95"
                                                         >
-                                                            {item.subItems.map((subItem, index) => (
-                                                                <li
-                                                                    key={index}
-                                                                    className="py-2 pl-4 text-teal-600 transition-colors duration-500 dark:text-white-50"
-                                                                >
-                                                                    <HeadlessUI.MenuItem>
-                                                                        {({ active }) => (
-                                                                            <FlickerLessLink
-                                                                                active={active}
-                                                                                subItem={subItem}
-                                                                                onClick={(e) => {
-                                                                                    if (
-                                                                                        typeof subItem.onClick ===
-                                                                                        'function'
-                                                                                    ) {
-                                                                                        subItem.onClick(e);
-                                                                                    }
+                                                            <HeadlessUI.MenuItems
+                                                                as="ul"
+                                                                className="mt-1 focus:outline-none dark:divide-teal-600 dark:border-teal-500 dark:bg-grey-800"
+                                                            >
+                                                                {item.subItems.map((subItem, index) => (
+                                                                    <li
+                                                                        key={index}
+                                                                        className="py-2 pl-4 text-teal-600 transition-colors duration-500 dark:text-white-50"
+                                                                    >
+                                                                        <HeadlessUI.MenuItem>
+                                                                            {({ active }) => (
+                                                                                <FlickerLessLink
+                                                                                    active={active}
+                                                                                    subItem={subItem}
+                                                                                    onClick={(e) => {
+                                                                                        if (
+                                                                                            typeof subItem.onClick ===
+                                                                                            'function'
+                                                                                        ) {
+                                                                                            subItem.onClick(e);
+                                                                                        }
 
-                                                                                    handleClose();
-                                                                                }}
-                                                                            />
-                                                                        )}
-                                                                    </HeadlessUI.MenuItem>
-                                                                </li>
-                                                            ))}
-                                                        </HeadlessUI.MenuItems>
-                                                    </HeadlessUI.Transition>
-                                                </HeadlessUI.Menu>
-                                            ) : (
-                                                <Components.Link
-                                                    href={item.value}
-                                                    onKeyDown={(e) => {
-                                                        const key = e.code;
+                                                                                        handleClose();
+                                                                                    }}
+                                                                                />
+                                                                            )}
+                                                                        </HeadlessUI.MenuItem>
+                                                                    </li>
+                                                                ))}
+                                                            </HeadlessUI.MenuItems>
+                                                        </HeadlessUI.Transition>
+                                                    </HeadlessUI.Menu>
+                                                ) : (
+                                                    <Components.Link
+                                                        href={item.value}
+                                                        onKeyDown={(e) => {
+                                                            const key = e.code;
 
-                                                        if (key === 'Space') {
-                                                            // prevent scroll and fire click event
-                                                            e.preventDefault();
-                                                            e.currentTarget.click();
-                                                        }
-                                                    }}
-                                                    className="p-2"
-                                                    onClick={handleClose}
-                                                >
-                                                    <span className="font-medium text-grey-800 transition-colors duration-500 dark:text-white-50">
-                                                        {item.label}
-                                                    </span>
-                                                </Components.Link>
-                                            )}
-                                        </li>
-                                    ))}
+                                                            if (key === 'Space') {
+                                                                // prevent scroll and fire click event
+                                                                e.preventDefault();
+                                                                e.currentTarget.click();
+                                                            }
+                                                        }}
+                                                        className="p-2"
+                                                        onClick={handleClose}
+                                                    >
+                                                        <span
+                                                            className={`font-medium transition-colors duration-500 ${item.highlighted ? 'text-teal-600 dark:text-teal-300' : 'text-grey-800 dark:text-white-50'}`}
+                                                        >
+                                                            {item.label}
+                                                        </span>
+                                                    </Components.Link>
+                                                )}
+                                            </li>
+                                        ))}
                                 </ul>
                             </Framer.motion.nav>
                         </ClickAwayListener>
@@ -250,10 +267,10 @@ const Nav: React.FC = (): React.ReactElement => {
                 </Framer.AnimatePresence>
             </div>
 
-            <nav className="hidden lg:block">
+            <nav className="hidden lg:block text-sm xl:text-base">
                 <ul className="flex items-center">
                     {items.map((item) => (
-                        <li key={item.value} className="first:ml-0 last:mr-0 md:mx-1 lg:mx-2">
+                        <li key={item.value} className="first:ml-0 last:mr-0 xl:mx-2">
                             {item.subItems?.length ? (
                                 <HeadlessUI.Menu as="div" className="relative z-50 inline-block text-left">
                                     <HeadlessUI.MenuButton
@@ -262,7 +279,7 @@ const Nav: React.FC = (): React.ReactElement => {
                                     >
                                         <span className="flex items-center">
                                             {item.label}
-                                            <OutlineIcons.ChevronDownIcon className="ml-2 h-4 w-4 text-grey-500 transition-colors duration-500 dark:text-teal-500" />
+                                            <OutlineIcons.ChevronDownIcon className="ml-1 xl:ml-2 h-4 w-4 text-grey-500 transition-colors duration-500 dark:text-teal-500" />
                                         </span>
                                     </HeadlessUI.MenuButton>
                                     <HeadlessUI.Transition
@@ -295,7 +312,9 @@ const Nav: React.FC = (): React.ReactElement => {
                                 </HeadlessUI.Menu>
                             ) : (
                                 <Components.Link href={item.value} className="p-2">
-                                    <span className="font-medium text-grey-800 transition-colors duration-500 dark:text-white-50">
+                                    <span
+                                        className={`font-medium  transition-colors duration-500 ${item.highlighted ? 'text-teal-600 dark:text-teal-300' : 'text-grey-800 dark:text-white-50'}`}
+                                    >
                                         {item.label}
                                     </span>
                                 </Components.Link>

@@ -78,7 +78,7 @@ const Header: React.FC<Props> = (props): React.ReactElement => {
                     >
                         <Components.Link
                             href={Config.urls.home.path}
-                            className="flex max-h-[42px] items-center border-transparent"
+                            className="flex max-h-[42px] items-center border-transparent xl:flex-1"
                         >
                             {isDarkMode ? (
                                 <Assets.LogoDark height={150} width={150} />
@@ -86,9 +86,11 @@ const Header: React.FC<Props> = (props): React.ReactElement => {
                                 <Assets.LogoLight height={150} width={150} />
                             )}
                         </Components.Link>
-                        <div className="flex items-center space-x-3 lg:space-x-4">
-                            <Components.Search />
+                        <div className="flex items-center ml-auto mr-3 lg:mx-0 space-x-1">
+                            <Components.SearchToggleMobile />
                             <Components.Nav />
+                        </div>
+                        <div className="flex xl:flex-1 items-center justify-end space-x-3 lg:space-x-4">
                             {!user && <Components.ORCIDLogInButton currentPath={router.asPath} />}
                             <Components.EnableDarkMode />
                         </div>

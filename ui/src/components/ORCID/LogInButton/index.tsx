@@ -20,11 +20,11 @@ const LogInButton: React.FC<Props> = (props): React.ReactElement => {
         <Components.Link
             href={oauthUrl}
             ariaLabel="Sign in with ORCID"
-            className="flex items-center rounded-md bg-orcid p-1 lg:mr-4 lg:p-2"
+            className="flex items-center rounded-md bg-orcid p-1 lg:p-2"
             role="button"
         >
             <Assets.ORCID width={20} height={20} className="fill-white-50" />
-            <span className="ml-2 hidden text-xs text-white-50 lg:block">Sign in with ORCID</span>
+            <span className="ml-2 hidden text-xs text-white-50 lg:block whitespace-nowrap">Sign in with ORCID</span>
         </Components.Link>
     );
 };
