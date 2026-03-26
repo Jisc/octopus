@@ -4,12 +4,12 @@ provider "aws" {
   # Jisc tagging policy - tags must be in PascalCase.
   default_tags {
     tags = {
-      Application = "Octopus"
-      Compliance  = "CE"
-      CostCentre  = "P10031"
+      Product     = "Octopus"
       Environment = title(terraform.workspace)
       Owner       = "OctopusTeam"
-      Product     = "Octopus"
+      "Cost Centre"  = "P10031"
+      Application = "Octopus"
+      Compliance  = "CE"
     }
   }
 }
