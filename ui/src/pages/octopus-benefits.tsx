@@ -172,7 +172,7 @@ const Benefits: NextPage = (): React.ReactElement => {
                                 <AccordionSection title="You can publish for free, and it’s quick and easy with no barriers: empty your file drawer!">
                                     <p>
                                         There are no gatekeepers and no fees at Octopus. It is designed, and funded, to
-                                        make it easy for researchers to share all their work (and get citable DoIs for
+                                        make it easy for researchers to share all their work (and get citable DOIs for
                                         it).
                                     </p>
                                     <br />
@@ -207,7 +207,7 @@ const Benefits: NextPage = (): React.ReactElement => {
                                     </p>
                                     <br />
                                     <p>
-                                        BUT – publishing on Octopus gives you a DoI and an instant time stamp so that
+                                        BUT – publishing on Octopus gives you a DOI and an instant time stamp so that
                                         you can prove you published an idea at a certain time. It’s like a patent
                                         office. So if you really want to establish your priority on an idea, it gives
                                         you far more protection than nervously waiting for months (years?) and hoping no
@@ -275,7 +275,7 @@ const Benefits: NextPage = (): React.ReactElement => {
                                     <br />
                                     <p>
                                         This means you can include any digital artifacts as your research outputs,
-                                        getting a DoI and being able to describe them, and easily share them or submit
+                                        getting a DOI and being able to describe them, and easily share them or submit
                                         them for research assessment.
                                     </p>
                                     <br />
@@ -380,7 +380,7 @@ const Benefits: NextPage = (): React.ReactElement => {
                                         Many of the best outputs of research work are not text-based narratives as are
                                         usually published in the traditional journal- and book-dominated publishing
                                         system. Creative works, code, digital objects, data – all can be linked into
-                                        Octopus publications and easily submitted to assessment via their DoI. We are
+                                        Octopus publications and easily submitted to assessment via their DOI. We are
                                         currently building integrations to allow easy ‘packaging’ of Octopus
                                         publications for various submission platforms and expect to have one for the
                                         next{' '}
@@ -495,7 +495,7 @@ const Benefits: NextPage = (): React.ReactElement => {
                                         </Components.Link>{' '}
                                         are. This allows researchers to find them easily, and also submit their
                                         proposals openly by linking them to these research problems. This protects
-                                        applicants by ensuring that their ideas gain a DoI and are time-stamped to prove
+                                        applicants by ensuring that their ideas gain a DOI and are time-stamped to prove
                                         their priority over their ideas (acting a little like a patent office). We know
                                         that applicants are often nervous of their ideas being scooped by grant panel
                                         members – this system will ensure they are protected.
@@ -654,7 +654,7 @@ const Benefits: NextPage = (): React.ReactElement => {
                                     title="Explore how Octopus can work with your journals or platform"
                                     description="Let's discuss how linking, peer review and new research formats could fit your workflows and help your authors share more of their work."
                                 >
-                                    <ContactCTA text="Talk to us about partnering Octopus" />
+                                    <ContactCTA text="Talk to us about partnering with Octopus" />
                                 </AccordionCTA>
                             </TabPanel>
                         </TabPanels>

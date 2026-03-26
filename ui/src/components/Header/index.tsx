@@ -86,12 +86,12 @@ const Header: React.FC<Props> = (props): React.ReactElement => {
                                 <Assets.LogoLight height={150} width={150} />
                             )}
                         </Components.Link>
-                        <div className="flex items-center ml-auto mr-3 lg:mx-0 space-x-1">
+                        <div className="flex items-center xl:flex-2 justify-center space-x-1 ml-auto mr-3 lg:mx-0">
                             <Components.SearchToggleMobile />
                             <Components.Nav />
                         </div>
-                        <div className="flex xl:flex-1 items-center justify-end space-x-3 lg:space-x-4">
-                            {!user && <Components.ORCIDLogInButton currentPath={router.asPath} />}
+                        <div className="flex items-center xl:flex-1 justify-end space-x-3 lg:space-x-4">
+                            <Components.NavUserAside />
                             <Components.EnableDarkMode />
                         </div>
                     </div>

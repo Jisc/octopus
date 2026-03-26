@@ -56,6 +56,8 @@ export { default as Modal } from './Modal';
 export { default as ModalBarLoader } from './ModalBarLoader';
 export { default as ModalButton } from './Modal/Button';
 export { default as Nav } from './Nav';
+export { default as NavFlickerLessLink } from './Nav/NavFlickerLessLink';
+export { default as NavUserAside } from './Nav/NavUserAside';
 export { default as ORCIDLogInButton } from './ORCID/LogInButton';
 export { default as Overlay } from './Overlay';
 export { default as PageContentsSidebar } from './PageContentsSidebar';

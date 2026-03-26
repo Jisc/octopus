@@ -120,6 +120,7 @@ const Nav: React.FC = (): React.ReactElement => {
                 label: user.firstName || user.lastName ? `${user?.firstName} ${user?.lastName}` : 'Anonymous User',
                 value: `${Config.urls.viewUser.path}/${user.id}`,
                 dataTestId: 'username-button',
+                hiddenOnDesktop: true,
                 subItems: [
                     {
                         label: 'My Account',
@@ -269,58 +270,60 @@ const Nav: React.FC = (): React.ReactElement => {
 
             <nav className="hidden lg:block text-sm xl:text-base">
                 <ul className="flex items-center">
-                    {items.map((item) => (
-                        <li key={item.value} className="first:ml-0 last:mr-0 xl:mx-2">
-                            {item.subItems?.length ? (
-                                <HeadlessUI.Menu as="div" className="relative z-50 inline-block text-left">
-                                    <HeadlessUI.MenuButton
-                                        data-testid={item.dataTestId}
-                                        className="rounded border-transparent p-2 font-medium text-grey-800 outline-0 transition-colors duration-500 focus:ring-2 focus:ring-yellow-400 dark:text-white-50"
-                                    >
-                                        <span className="flex items-center">
-                                            {item.label}
-                                            <OutlineIcons.ChevronDownIcon className="ml-1 xl:ml-2 h-4 w-4 text-grey-500 transition-colors duration-500 dark:text-teal-500" />
-                                        </span>
-                                    </HeadlessUI.MenuButton>
-                                    <HeadlessUI.Transition
-                                        as="div"
-                                        enter="transition ease-out duration-100"
-                                        enterFrom="transform opacity-0 scale-95"
-                                        enterTo="transform opacity-100 scale-100"
-                                        leave="transition ease-in duration-75"
-                                        leaveFrom="transform opacity-100 scale-100"
-                                        leaveTo="transform opacity-0 scale-95"
-                                    >
-                                        <HeadlessUI.MenuItems
-                                            as="ul"
-                                            className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-grey-200 divide-opacity-40 rounded-md border-2 border-transparent bg-white-50 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:divide-teal-600 dark:border-teal-500 dark:bg-grey-800"
+                    {items
+                        .filter((item) => !item.hiddenOnDesktop)
+                        .map((item) => (
+                            <li key={item.value} className="first:ml-0 last:mr-0 xl:mx-2">
+                                {item.subItems?.length ? (
+                                    <HeadlessUI.Menu as="div" className="relative z-50 inline-block text-left">
+                                        <HeadlessUI.MenuButton
+                                            data-testid={item.dataTestId}
+                                            className="rounded border-transparent p-2 font-medium text-grey-800 outline-0 transition-colors duration-500 focus:ring-2 focus:ring-yellow-400 dark:text-white-50"
                                         >
-                                            {item.subItems.map((subItem, index) => (
-                                                <li
-                                                    key={index}
-                                                    className="p-2 text-teal-600 transition-colors duration-500 dark:text-white-50"
-                                                >
-                                                    <HeadlessUI.MenuItem>
-                                                        {({ active }) => (
-                                                            <FlickerLessLink subItem={subItem} active={active} />
-                                                        )}
-                                                    </HeadlessUI.MenuItem>
-                                                </li>
-                                            ))}
-                                        </HeadlessUI.MenuItems>
-                                    </HeadlessUI.Transition>
-                                </HeadlessUI.Menu>
-                            ) : (
-                                <Components.Link href={item.value} className="p-2">
-                                    <span
-                                        className={`font-medium  transition-colors duration-500 ${item.highlighted ? 'text-teal-600 dark:text-teal-300' : 'text-grey-800 dark:text-white-50'}`}
-                                    >
-                                        {item.label}
-                                    </span>
-                                </Components.Link>
-                            )}
-                        </li>
-                    ))}
+                                            <span className="flex items-center">
+                                                {item.label}
+                                                <OutlineIcons.ChevronDownIcon className="ml-1 xl:ml-2 h-4 w-4 text-grey-500 transition-colors duration-500 dark:text-teal-500" />
+                                            </span>
+                                        </HeadlessUI.MenuButton>
+                                        <HeadlessUI.Transition
+                                            as="div"
+                                            enter="transition ease-out duration-100"
+                                            enterFrom="transform opacity-0 scale-95"
+                                            enterTo="transform opacity-100 scale-100"
+                                            leave="transition ease-in duration-75"
+                                            leaveFrom="transform opacity-100 scale-100"
+                                            leaveTo="transform opacity-0 scale-95"
+                                        >
+                                            <HeadlessUI.MenuItems
+                                                as="ul"
+                                                className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-grey-200 divide-opacity-40 rounded-md border-2 border-transparent bg-white-50 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:divide-teal-600 dark:border-teal-500 dark:bg-grey-800"
+                                            >
+                                                {item.subItems.map((subItem, index) => (
+                                                    <li
+                                                        key={index}
+                                                        className="p-2 text-teal-600 transition-colors duration-500 dark:text-white-50"
+                                                    >
+                                                        <HeadlessUI.MenuItem>
+                                                            {({ active }) => (
+                                                                <FlickerLessLink subItem={subItem} active={active} />
+                                                            )}
+                                                        </HeadlessUI.MenuItem>
+                                                    </li>
+                                                ))}
+                                            </HeadlessUI.MenuItems>
+                                        </HeadlessUI.Transition>
+                                    </HeadlessUI.Menu>
+                                ) : (
+                                    <Components.Link href={item.value} className="p-2">
+                                        <span
+                                            className={`font-medium  transition-colors duration-500 ${item.highlighted ? 'text-teal-600 dark:text-teal-300' : 'text-grey-800 dark:text-white-50'}`}
+                                        >
+                                            {item.label}
+                                        </span>
+                                    </Components.Link>
+                                )}
+                            </li>
+                        ))}
                 </ul>
             </nav>
         </>
