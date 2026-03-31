@@ -121,4 +121,4 @@ jobs:
 
       - name: Run tsc to check for typescript errors
         working-directory: ./ui
-        run: tsc
+        run: npx tsc
