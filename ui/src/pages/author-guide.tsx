@@ -186,16 +186,16 @@ const authorGuideSections: AuthorGuideSection[] = [
         )
     },
     {
-        title: 'Main text',
+        title: 'Main content',
         id: 'main-text',
         content: (
             <p>
-                To add your main text you have the option of uploading a .docx file, or pasting your work directly into
-                a text editor. There are no formatting requirements in Octopus – you can choose how best to present your
-                work. You should use the same reporting guidelines that you would when writing a paper, with the caveat
-                that not all requirements will apply to each of Octopus&apos; smaller publication types. At the end of
-                the publishing process, you will be able to preview your publication to make sure all styling, tables
-                and figures etc. are displaying correctly.
+                To add your main content you have the option of uploading a .docx file, or pasting your work directly
+                into a text editor. There are no formatting requirements in Octopus – you can choose how best to present
+                your work. You should use the same reporting guidelines that you would when writing a paper, with the
+                caveat that not all requirements will apply to each of Octopus&apos; smaller publication types. At the
+                end of the publishing process, you will be able to preview your publication to make sure all styling,
+                tables and figures etc. are displaying correctly.
             </p>
         )
     },
@@ -205,10 +205,10 @@ const authorGuideSections: AuthorGuideSection[] = [
         content: (
             <p>
                 You can use your preferred reference style, but references must be line-separated. Where appropriate,
-                all references should include a DOI or URL. You’ll need to separate your references from the main text
-                and instead add them to the dedicated ‘References’ field. Octopus will review your references and
-                identify any links – we recommend checking that these are displaying correctly, and making any edits as
-                required.
+                all references should include a DOI or URL. You’ll need to separate your references from the main
+                content and instead add them to the dedicated ‘References’ field. Octopus will review your references
+                and identify any links – we recommend checking that these are displaying correctly, and making any edits
+                as required.
             </p>
         )
     },

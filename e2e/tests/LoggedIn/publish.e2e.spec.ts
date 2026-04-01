@@ -1856,10 +1856,10 @@ test.describe('Publication Flow + File import', () => {
         await expect(page.getByText('File Import – Playwright')).toBeVisible();
     });
 
-    test('Upload images to "Main text" only allows specific formats: png, jpg, jpeg, apng, avif, gif, webp', async () => {
+    test('Upload images to "Main content" only allows specific formats: png, jpg, jpeg, apng, avif, gif, webp', async () => {
         await Helpers.publicationCreation.createPublication(page, 'test publication - image upload', 'PROBLEM');
-        await page.waitForSelector('button:has-text("Main text")');
-        await page.click('button:has-text("Main text")');
+        await page.waitForSelector('button:has-text("Main content")');
+        await page.click('button:has-text("Main content")');
 
         const uploadImageButton = page.locator('button[title="Image"]');
         await expect(uploadImageButton).toBeVisible();
@@ -1894,7 +1894,7 @@ test.describe('Publication Flow + File import', () => {
         // upload images
         await page.click('button[title="Upload image"]');
 
-        // verify images appear in the 'Main text'
+        // verify images appear in the 'Main content'
         await expect(page.locator('button[title="Upload image"]')).not.toBeVisible();
         for (const image of validImageFiles) {
             await expect(
@@ -1927,8 +1927,8 @@ test.describe('Text Editor', () => {
 
     test('Add formula button adds placeholder KaTeX formula', async () => {
         await Helpers.publicationCreation.createPublication(page, 'test insert formula button', 'PROBLEM');
-        await page.waitForSelector('button:has-text("Main text")');
-        await page.click('button:has-text("Main text")');
+        await page.waitForSelector('button:has-text("Main content")');
+        await page.click('button:has-text("Main content")');
 
         const addFormulaButton = page.locator('button[title="Add formula"]');
         await expect(addFormulaButton).toBeVisible();

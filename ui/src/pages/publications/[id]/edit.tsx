@@ -37,8 +37,8 @@ const steps: Types.CreationSteps = {
     },
     MAIN_TEXT: {
         id: 'MAIN_TEXT',
-        title: 'Main text',
-        subTitle: 'Main text',
+        title: 'Main content',
+        subTitle: 'Main content',
         component: <Components.PublicationCreationMainText />,
         icon: <OutlineIcons.PencilIcon className="h-5 w-5 text-teal-300" />
     },

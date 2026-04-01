@@ -385,7 +385,7 @@ const createPublicationHTMLTemplate = (
                 ${
                     additionalInformation.length
                         ? `<div class="section">
-                        <h2 class="section-title">Additional parts of this work hosted elsewhere</h2>
+                        <h2 class="section-title">Links to supplementary resources hosted elsewhere</h2>
                         <ul>
                         ${additionalInformation
                             .map(

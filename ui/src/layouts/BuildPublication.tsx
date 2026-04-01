@@ -70,7 +70,7 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
             let ready = { ready: true, message: '' };
 
             if (!publicationVersion.title) ready = { ready: false, message: 'You must provide a title' };
-            if (!publicationVersion.content) ready = { ready: false, message: 'You must provide main text' };
+            if (!publicationVersion.content) ready = { ready: false, message: 'You must provide main content' };
             const hasLiveLinks =
                 linkedTo.length && linkedTo.every((linkedPublication) => linkedPublication.currentStatus === 'LIVE');
             const hasLinkNotPendingDeletion = linkedTo.some((link) => link.pendingDeletion === false);
@@ -133,7 +133,7 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
             let ready = { ready: true, message: '' };
 
             if (!publicationVersion.title) ready = { ready: false, message: 'You must provide a title' };
-            if (!publicationVersion.content) ready = { ready: false, message: 'You must provide main text' };
+            if (!publicationVersion.content) ready = { ready: false, message: 'You must provide main content' };
             if (!linkedTo.length && !publicationVersion.topics.length)
                 ready = { ready: false, message: 'You must link this publication to at least one other item' };
 
@@ -719,7 +719,7 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
                                     title={
                                         isReadyToPreview
                                             ? 'Preview'
-                                            : 'Publication must contain a title and main text before previewing'
+                                            : 'Publication must contain a title and main content before previewing'
                                     }
                                     onClick={handlePreview}
                                     disabled={!isReadyToPreview}
@@ -787,7 +787,7 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
                                     title={
                                         isReadyToPreview
                                             ? 'Preview'
-                                            : 'Publication must contain a title and main text before previewing'
+                                            : 'Publication must contain a title and main content before previewing'
                                     }
                                     onClick={handlePreview}
                                 />
@@ -867,7 +867,7 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
                                         title={
                                             isReadyToPreview
                                                 ? 'Preview'
-                                                : 'Publication must contain a title and main text before previewing'
+                                                : 'Publication must contain a title and main content before previewing'
                                         }
                                         disabled={!isReadyToPreview}
                                         endIcon={<OutlineIcons.EyeIcon className="text-white-500 h-5 w-5" />}
@@ -924,7 +924,7 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
                                         title={
                                             isReadyToPreview
                                                 ? 'Preview'
-                                                : 'Publication must contain a title and main text before previewing'
+                                                : 'Publication must contain a title and main content before previewing'
                                         }
                                         onClick={handlePreview}
                                     />

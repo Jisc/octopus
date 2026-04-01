@@ -147,7 +147,7 @@ const Accessibility: Types.NextPage = (): React.ReactElement => {
                 <p>Certain fields are not marked up with their semantic purpose.</p>
                 <p>Several lists on publication pages do not convey details about the list&apos;s structure.</p>
                 <p>
-                    The &quot;Main Text&quot; and &quot;References&quot; fields on the draft edit page do not convey
+                    The &quot;Main Content&quot; and &quot;References&quot; fields on the draft edit page do not convey
                     their purpose to screen readers. Some modals, such as the “Red flag publication” modal do not
                     announce their name to screen readers.
                 </p>

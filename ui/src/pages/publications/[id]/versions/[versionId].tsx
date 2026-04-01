@@ -276,7 +276,7 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
     if (showRedFlags) list.push({ title: 'Red flags', href: 'red-flags' });
 
     const sectionList = [
-        { title: 'Main text', href: 'main-text' },
+        { title: 'Main content', href: 'main-text' },
         ...list,
         { title: 'Funders', href: 'funders' },
         { title: 'Conflict of interest', href: 'coi' }
@@ -892,7 +892,7 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
                         {showAdditionalInformation && (
                             <Components.ContentSection
                                 id="additional-information"
-                                title="Additional parts of this work hosted elsewhere"
+                                title="Please add links to any supplementary resources you have for this publication, such as large datasets, software repositories and so on."
                                 hasBreak
                             >
                                 <div className="flex flex-col space-y-8">

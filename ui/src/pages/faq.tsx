@@ -86,9 +86,9 @@ const faqContents = [
         heading: 'How do I format my publications?',
         content: `
             <p className='mb-2'>Each publication on Octopus is smaller than a traditional paper. They are linked together, meaning you do not need to include all the information from your &apos;research problem&apos; in your &apos;rationale/hypothesis&apos;, for example. You can format each publication how you like, and there are no minimum or maximum word counts on Octopus.</p>
-            <p className='mb-2'>There is no &apos;abstract&apos; or formal sections within an Octopus publication. Acknowledgements should be given at the end of the main text.</p>
-            <p className='mb-2'>You will be asked to enter the title and author information separately from the main text.</p>
-            <p className='mb-2'>You will need to add references for each publication, including direct embedded permanent URLs (such as a DOI) where possible. You will add these in a separate box from your main text using any reference format you like. DOIs will be automatically recognised and made into links.</p>
+            <p className='mb-2'>There is no &apos;abstract&apos; or formal sections within an Octopus publication. Acknowledgements should be given at the end of the main content.</p>
+            <p className='mb-2'>You will be asked to enter the title and author information separately from the main content.</p>
+            <p className='mb-2'>You will need to add references for each publication, including direct embedded permanent URLs (such as a DOI) where possible. You will add these in a separate box from your main content using any reference format you like. DOIs will be automatically recognised and made into links.</p>
             <p className='mb-2'>You will be asked for your institutional affiliations, in order to help institutions report on the work of their staff. You will also be asked for a funding statement and you&apos;ll be encouraged to look up your funder&apos;s ROR identifier to help funders track research outputs.</p>
             <p>Researchers working in fields with existing reporting guidelines (such as the EQUATOR guidelines for the biomedical sciences) should follow these to help them ensure readers have all the information they need.</p>
         `
