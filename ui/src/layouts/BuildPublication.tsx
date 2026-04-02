@@ -251,13 +251,13 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
                 )
             ];
 
-            await Promise.all(promises).catch((error) =>
+            await Promise.all(promises).catch((error) => {
                 store.setError(
                     axios.isAxiosError(error) && typeof error.response?.data?.message === 'string'
                         ? error.response.data.message
                         : message
-                )
-            );
+                );
+            });
 
             if (message) {
                 setToast({

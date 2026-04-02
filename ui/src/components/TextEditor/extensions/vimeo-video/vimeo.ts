@@ -32,7 +32,7 @@ export interface VimeoOptions {
     height: number;
 }
 
-type SetVimeoVideoOptions = { src: string; width?: number; height?: number };
+type SetVimeoVideoOptions = { src: string; width?: number; height?: number; transcript?: string };
 
 declare module '@tiptap/core' {
     interface Commands<ReturnType> {
@@ -95,6 +95,9 @@ export const Vimeo = Node.create<VimeoOptions>({
             },
             height: {
                 default: this.options.height
+            },
+            transcript: {
+                default: null
             }
         };
     },
@@ -103,6 +106,42 @@ export const Vimeo = Node.create<VimeoOptions>({
         return [
             {
                 tag: 'div[data-vimeo-video] iframe'
+            },
+            {
+                tag: 'div',
+                getAttrs: (node) => {
+                    if (typeof node === 'string') {
+                        return false;
+                    }
+
+                    const element = node as HTMLElement;
+                    const vimeoDiv = element.querySelector('div[data-vimeo-video]');
+                    const iframe = element.querySelector('iframe[src*="player.vimeo.com"]');
+
+                    if (!vimeoDiv || !iframe) {
+                        return false;
+                    }
+
+                    const src = iframe.getAttribute('src');
+                    if (!src) {
+                        return false;
+                    }
+
+                    const details = element.querySelector('details.video-transcription');
+                    let transcript = null;
+                    if (details) {
+                        const transcriptDiv = details.querySelector('.content');
+                        if (transcriptDiv) {
+                            transcript = transcriptDiv.textContent;
+                        }
+                    }
+
+                    return {
+                        src,
+                        transcript
+                    };
+                },
+                priority: 100
             }
         ];
     },
@@ -171,27 +210,43 @@ export const Vimeo = Node.create<VimeoOptions>({
 
         HTMLAttributes.src = embedUrl;
 
-        return [
-            'div',
-            {
-                'data-vimeo-video': '',
-                style: 'padding:56.25% 0 0 0; position:relative;'
-            },
+        const content: any[] = [
             [
-                'iframe',
+                'div',
                 mergeAttributes(
-                    this.options.HTMLAttributes,
                     {
-                        src: embedUrl,
-                        frameborder: '0',
-                        width: this.options.width,
-                        height: this.options.height,
-                        allow: 'autoplay; fullscreen; picture-in-picture; clipboard-write',
-                        style: 'position:absolute; top:0; left:0; width:100%; height:100%;'
+                        'data-vimeo-video': '',
+                        style: 'padding:56.25% 0 0 0; position:relative;'
                     },
                     HTMLAttributes
-                )
+                ),
+                [
+                    'iframe',
+                    mergeAttributes(
+                        this.options.HTMLAttributes,
+                        {
+                            src: embedUrl,
+                            frameborder: '0',
+                            width: this.options.width,
+                            height: this.options.height,
+                            allow: 'autoplay; fullscreen; picture-in-picture; clipboard-write',
+                            style: 'position:absolute; top:0; left:0; width:100%; height:100%;'
+                        },
+                        HTMLAttributes
+                    )
+                ]
             ]
         ];
+
+        if (HTMLAttributes.transcript) {
+            content.push([
+                'details',
+                { class: 'video-transcription' },
+                ['summary', { 'data-transcript-summary': 'true' }],
+                ['div', { class: 'content' }, HTMLAttributes.transcript]
+            ]);
+        }
+
+        return ['div', {}, ...content];
     }
 });

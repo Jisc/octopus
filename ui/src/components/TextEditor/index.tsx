@@ -780,7 +780,7 @@ const TextEditor: React.FC<TextEditorProps> = (props) => {
     return textEditor ? (
         <>
             <span className="mb-2 block text-sm leading-snug text-grey-700 transition-colors duration-500 dark:text-white-50">
-                Your publication can be added via the main text editor, or imported via a Word document (.docx). Once
+                Your publication can be added via the main content editor, or imported via a Word document (.docx). Once
                 imported, your publication can be further edited in the text field.
             </span>
             <span className="flex flex-col space-y-4 space-x-0 sm:flex-row sm:space-y-0 sm:space-x-8 my-4">

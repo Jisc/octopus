@@ -21,7 +21,7 @@ services:
 
     localstack:
         container_name: api-test-localstack
-        image: localstack/localstack:latest
+        image: localstack/localstack:4.4.0
         ports:
             - '4510-4559:4510-4559'
             - '4567:4566'

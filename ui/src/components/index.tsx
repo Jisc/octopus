@@ -121,5 +121,6 @@ export { default as UserHistoryTable } from './Users/HistoryTable';
 export { default as UserSearchResult } from './Users/SearchResult';
 export { default as UserWorksTable } from './Users/WorksTable';
 export { default as VersionsAccordion } from './Publication/VersionsAccordion/VersionsAccordion';
+export { default as VideoTranscriptions } from './VideoTranscriptions';
 export { default as VisualPublicationFlow } from './VisualPublicationFlow';
 export { default as YouTubeVideo } from './Video/YouTube';

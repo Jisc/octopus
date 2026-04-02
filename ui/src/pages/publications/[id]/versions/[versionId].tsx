@@ -2,7 +2,7 @@ import axios from 'axios';
 import parse from 'html-react-parser';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo, useLayoutEffect, useEffect, useRef } from 'react';
 import useSWR from 'swr';
 import * as Framer from 'framer-motion';
 import * as OutlineIcons from '@heroicons/react/24/outline';
@@ -177,6 +177,7 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
     const [serverError, setServerError] = React.useState('');
     const [isEditingAffiliations, setIsEditingAffiliations] = React.useState(false);
     const [isUnlocking, setIsUnlocking] = React.useState(false);
+    const mainTextRef = useRef<HTMLDivElement>(null);
 
     const isVerifiedWithName = user?.email && (user.firstName || user.lastName);
 
@@ -883,9 +884,10 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
 
                         {/** Full text */}
                         <Components.ContentSection id="main-text" hasBreak isMainText>
-                            <div lang={languageIfNotEnglish}>
+                            <div lang={languageIfNotEnglish} ref={mainTextRef}>
                                 <Components.ParseHTML content={processedContent} />
                             </div>
+                            <Components.VideoTranscriptions mainTextRef={mainTextRef} />
                         </Components.ContentSection>
 
                         {/** Additional information */}

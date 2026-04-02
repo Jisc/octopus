@@ -684,3 +684,70 @@ export const renderLatexInHTMLString = (htmlString: string): string => {
 export const languageIfNotEnglish = (language: Types.Languages): Types.Languages | undefined => {
     return language !== 'en' ? language : undefined;
 };
+
+export const observeForElement = (
+    ref: React.RefObject<HTMLElement | null>,
+    selector: string,
+    callback: (elements: NodeListOf<Element>) => void
+): (() => void) => {
+    const observer = new MutationObserver(() => {
+        const targetElements = document.querySelectorAll(selector);
+        if (targetElements.length > 0) {
+            callback(targetElements);
+            observer.disconnect();
+        }
+    });
+
+    if (ref.current) {
+        observer.observe(ref.current, {
+            childList: true,
+            subtree: true,
+            characterData: true
+        });
+    }
+
+    const targetElements = document.querySelectorAll(selector);
+    if (targetElements.length > 0) {
+        callback(targetElements);
+    }
+
+    return () => {
+        observer.disconnect();
+    };
+};
+
+export const addVideoTranscriptDownloadButtons = (title: string, fileNamePrefix: string = 'transcript'): void => {
+    if (typeof window === 'undefined') {
+        console.warn('addVideoTranscriptDownloadButtons should only be called in a browser environment');
+        return;
+    }
+
+    const videoTranscriptionElements = document.querySelectorAll(
+        '.video-transcription'
+    ) as NodeListOf<HTMLDetailsElement>;
+
+    videoTranscriptionElements.forEach((element) => {
+        if (element.querySelector('.download-btn')) {
+            return;
+        }
+
+        const downloadLink = document.createElement('a');
+        downloadLink.className = 'download-btn';
+        downloadLink.textContent = title;
+
+        const parentElement = element.closest('.video-transcription');
+        const transcript = parentElement?.textContent || '';
+
+        const blob = new Blob([transcript], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+
+        downloadLink.href = url;
+        downloadLink.download = `${fileNamePrefix}-${Date.now()}.txt`;
+
+        downloadLink.addEventListener('click', () => {
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+        });
+
+        element.appendChild(downloadLink);
+    });
+};

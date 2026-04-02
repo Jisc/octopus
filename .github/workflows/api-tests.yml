@@ -50,7 +50,12 @@ jobs:
 
       - name: docker logs
         if: failure()
-        run: docker logs api-test
+        working-directory: ./api
+        run: |
+          docker compose ps
+          docker logs api-test 
+          docker logs api-test-localstack
+          docker logs api-test-opensearch-node1
 
       - name: Run test suite
         working-directory: ./api
