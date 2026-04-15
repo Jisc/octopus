@@ -75,9 +75,7 @@ export const deletePearl = async (
     try {
         await pearlService.deletePearl(pearlId);
     } catch (error) {
-        console.error(error);
-
-        return response.json(500, { message: 'Unknown server error.' });
+        return response.json(404, { message: 'Pearl not found.' });
     }
 
     return response.json(200, { message: 'Pearl deleted successfully.' });

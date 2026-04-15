@@ -123,17 +123,23 @@ const fetchStudyItem = async (resourceId: string): Promise<StudyItemResponse['da
       getStudyItem(FriendlyId: $FriendlyId, Id: $Id, QueryPath: $QueryPath) {
         Abstract
         AlternativeTitle
+        Country
         Creator { Organisations Individuals }
-        DOI
         DataCollectionMethodology { Id Value }
         DataFormat { Id Value Comment }
+        Datasets { Id Title }
+        Documents { Description Uri }
+        DOI
         Keyword { Id Value }
         KindOfData
         NumberOfVariables
         ObservationUnit
-        Resources { RelatedStudy { Name FriendlyID Uri } }
+        ObservationUnitLocation
         SamplingProcedure
+        SpatialUnit
+        TimePeriod
         Title
+        Universe
         WeightingMethodology
     }}`;
 
@@ -166,7 +172,253 @@ const fetchStudyItem = async (resourceId: string): Promise<StudyItemResponse['da
 };
 
 function formatHTML(htmlString: string): string {
-    return htmlString.replace(/\n/g, '<br/>');
+    return htmlString.replace(/\n/g, '<br/>').replace(/style="[^"]*"/g, '');
+}
+
+function buildTitledSection(title: string, content: string | number | (string | number)[]): string {
+    const values = Array.isArray(content) ? content : [content];
+    const filteredValues = values.filter((value) => value !== null && value !== undefined && value !== '');
+
+    if (filteredValues.length === 0) {
+        return '';
+    }
+
+    return `<strong>${title}:</strong><br/>${filteredValues.join('<br/>')}<br/><br/>`;
+}
+
+function getTitle(record: StudyItemResponse['data']['getStudyItem']): string {
+    return record.Title || record.AlternativeTitle || 'Untitled';
+}
+
+function buildCreators(record: StudyItemResponse['data']['getStudyItem']): I.PearlCreatorInput[] {
+    const creators: I.PearlCreatorInput[] = [];
+
+    for (const individual of record.Creator.Individuals || []) {
+        creators.push({ name: individual, type: 'INDIVIDUAL' });
+    }
+
+    for (const organisation of record.Creator.Organisations || []) {
+        creators.push({ name: organisation, type: 'ORGANISATION' });
+    }
+
+    return creators;
+}
+
+function buildHypothesis(record: StudyItemResponse['data']['getStudyItem']): I.SubPearlInput | null {
+    if (!record.Abstract || !record.DOI) {
+        return null;
+    }
+
+    const hypothesis = {
+        doi: record.DOI,
+        title: getTitle(record),
+        content: formatHTML(record.Abstract),
+        type: I.PublicationType.HYPOTHESIS
+    };
+
+    return hypothesis;
+}
+
+function buildMethodology(record: StudyItemResponse['data']['getStudyItem']): I.SubPearlInput | null {
+    if (!record.DOI) {
+        return null;
+    }
+
+    let methodology = '';
+
+    if (record.DataCollectionMethodology) {
+        methodology += buildTitledSection(
+            'Method of data collection',
+            record.DataCollectionMethodology.map((m) => m.Value)
+        );
+    }
+
+    if (record.DataFormat) {
+        methodology += buildTitledSection(
+            'Data format',
+            record.DataFormat.map((d) => d.Value)
+        );
+    }
+
+    if (record.KindOfData && record.KindOfData.length > 0) {
+        methodology += buildTitledSection('Kind of data', record.KindOfData);
+    }
+
+    if (record.NumberOfVariables) {
+        methodology += buildTitledSection('Number of variables', record.NumberOfVariables);
+    }
+
+    if (record.SamplingProcedure) {
+        methodology += buildTitledSection('Sampling procedure', record.SamplingProcedure);
+    }
+
+    if (record.WeightingMethodology) {
+        methodology += buildTitledSection('Weighting methodology', record.WeightingMethodology);
+    }
+
+    if (record.Documents) {
+        let documentation = '';
+
+        for (const doc of record.Documents) {
+            documentation += `<li><a href="${doc.Uri}" target="_blank" rel="noopener noreferrer">${doc.Description}</a></li>`;
+        }
+
+        if (documentation !== '') {
+            const content = `<ul>${documentation}</ul>`;
+            methodology += buildTitledSection('Documentation', content);
+        }
+    }
+
+    if (methodology === '') {
+        return null;
+    }
+
+    return {
+        doi: record.DOI,
+        title: getTitle(record),
+        content: formatHTML(methodology),
+        type: I.PublicationType.PROTOCOL
+    };
+}
+
+function buildResults(record: StudyItemResponse['data']['getStudyItem']): I.SubPearlInput | null {
+    if (!record.DOI) {
+        return null;
+    }
+
+    let results = '';
+
+    if (record.TimePeriod) {
+        results += buildTitledSection('Time period', record.TimePeriod);
+    }
+
+    if (record.Country && record.Country.length > 0) {
+        results += buildTitledSection('Country', record.Country);
+    }
+
+    if (record.SpatialUnit && record.SpatialUnit.length > 0) {
+        results += buildTitledSection('Spatial unit', record.SpatialUnit);
+    }
+
+    if (record.ObservationUnit && record.ObservationUnit.length > 0) {
+        results += buildTitledSection('Observation unit', record.ObservationUnit);
+    }
+
+    if (record.ObservationUnitLocation && record.ObservationUnitLocation.length > 0) {
+        results += buildTitledSection('Observation unit location', record.ObservationUnitLocation);
+    }
+
+    if (record.Universe) {
+        results += buildTitledSection('Population', record.Universe);
+    }
+
+    if (record.Datasets) {
+        let datasetSection = '';
+
+        for (const dataset of record.Datasets) {
+            const uri = `https://datacatalogue.ukdataservice.ac.uk/datasets/dataset/${dataset.Id}`;
+            datasetSection += `<li><a href="${uri}" target="_blank" rel="noopener noreferrer">${dataset.Title}</a></li>`;
+        }
+
+        if (datasetSection !== '') {
+            const content = `<ul>${datasetSection}</ul>`;
+            results += buildTitledSection('Datasets', content);
+        }
+    }
+
+    if (results === '') {
+        return null;
+    }
+
+    return {
+        doi: record.DOI,
+        title: getTitle(record),
+        content: formatHTML(results),
+        type: I.PublicationType.DATA
+    };
+}
+
+async function buildTopicIds(
+    record: StudyItemResponse['data']['getStudyItem'],
+    source: I.PearlSource
+): Promise<{ topicIds: string[]; unmappedTopicTitles: Set<string> }> {
+    const topicIds: string[] = [];
+
+    if (source.defaultTopicId) {
+        topicIds.push(source.defaultTopicId);
+    }
+
+    const unmappedTopicTitles: Set<string> = new Set();
+
+    for (const keyword of record.Keyword) {
+        // Topics with IDs are ELSST topics
+        if (!keyword.Id) continue;
+        unmappedTopicTitles.add(keyword.Value);
+    }
+
+    const topics = await client.prisma.topic.findMany({
+        where: { title: { in: Array.from(unmappedTopicTitles) } }
+    });
+
+    for (const topic of topics) {
+        topicIds.push(topic.id);
+        unmappedTopicTitles.delete(topic.title);
+    }
+
+    // We still have unmapped topics, try to find mappings for them
+    if (unmappedTopicTitles.size > 0) {
+        // Map lower level topics to their highest level topics
+        const topicsToSearch: Set<string> = new Set();
+        const lowerToTopMap: Record<string, string> = lowerToTopTopicMapping as Record<string, string>;
+        const topicToOriginalMap = new Map<string, Set<string>>();
+
+        for (const topicTitle of unmappedTopicTitles) {
+            // Check if this is a lower level topic that needs to be mapped to a higher level one
+            const highestLevelTopic = lowerToTopMap[topicTitle];
+            const searchTopic = (highestLevelTopic || topicTitle).toLowerCase();
+
+            topicsToSearch.add(searchTopic);
+
+            // Track which original topics this search topic represents
+            if (!topicToOriginalMap.has(searchTopic)) {
+                topicToOriginalMap.set(searchTopic, new Set());
+            }
+
+            const originalTopics = topicToOriginalMap.get(searchTopic);
+
+            if (originalTopics) {
+                originalTopics.add(topicTitle);
+            }
+        }
+
+        const topicMapping = await client.prisma.topicMapping.findMany({
+            where: { title: { in: Array.from(topicsToSearch) }, source: source.slug }
+        });
+
+        for (const mapping of topicMapping) {
+            if (mapping.topicId) {
+                if (!topicIds.includes(mapping.topicId)) {
+                    topicIds.push(mapping.topicId);
+                }
+
+                // Always remove the original topics when we find a valid mapping
+                // (even if the topicId was already in the array from another source)
+                const originalTopics = topicToOriginalMap.get(mapping.title);
+
+                if (originalTopics) {
+                    for (const originalTopic of originalTopics) {
+                        unmappedTopicTitles.delete(originalTopic);
+                    }
+                } else {
+                    console.warn(
+                        `No original topics found for mapping title "${mapping.title}". This should not happen.`
+                    );
+                }
+            }
+        }
+    }
+
+    return { topicIds, unmappedTopicTitles };
 }
 
 export const harvestFromUKDS = async (
@@ -222,161 +474,31 @@ export const harvestFromUKDS = async (
                 continue;
             }
 
-            const creators: I.PearlCreatorInput[] = [];
-
-            for (const individual of record.Creator.Individuals || []) {
-                creators.push({ name: individual, type: 'INDIVIDUAL' });
-            }
-
-            for (const organisation of record.Creator.Organisations || []) {
-                creators.push({ name: organisation, type: 'ORGANISATION' });
-            }
-
-            const title = record.Title || record.AlternativeTitle || 'Untitled';
+            const creators = buildCreators(record);
 
             const subPearls: I.SubPearlInput[] = [];
 
-            if (record.Abstract) {
-                const hypothesis = {
-                    title,
-                    doi,
-                    content: formatHTML(record.Abstract),
-                    type: I.PublicationType.HYPOTHESIS
-                };
-                subPearls.push(hypothesis);
+            const hypothesisSubPearl = buildHypothesis(record);
+
+            if (hypothesisSubPearl) {
+                subPearls.push(hypothesisSubPearl);
             }
 
-            let methodology = '';
+            const methodologySubPearl = buildMethodology(record);
 
-            if (record.DataCollectionMethodology) {
-                methodology += `<strong>Method of data collection:</strong><br/>${record.DataCollectionMethodology.map(
-                    (m) => m.Value
-                ).join('<br/>')}<br/><br/>`;
+            if (methodologySubPearl) {
+                subPearls.push(methodologySubPearl);
             }
 
-            if (record.DataFormat) {
-                methodology += `<strong>Data format:</strong><br/>${record.DataFormat.map((d) => d.Value).join(
-                    '<br/>'
-                )}<br/><br/>`;
-            }
+            const resultsSubPearl = buildResults(record);
 
-            if (record.KindOfData && record.KindOfData.length > 0) {
-                methodology += `<strong>Kind of data:</strong><br/>${record.KindOfData.join('<br/>')}<br/><br/>`;
-            }
-
-            if (record.NumberOfVariables) {
-                methodology += `<strong>Number of variables:</strong><br/>${record.NumberOfVariables}<br/><br/>`;
-            }
-
-            if (record.ObservationUnit) {
-                methodology += `<strong>Observation unit:</strong><br/>${record.ObservationUnit.join(
-                    '<br/>'
-                )}<br/><br/>`;
-            }
-
-            if (record.SamplingProcedure) {
-                methodology += `<strong>Sampling procedure:</strong><br/>${record.SamplingProcedure}<br/><br/>`;
-            }
-
-            if (record.WeightingMethodology) {
-                methodology += `<strong>Weighting methodology:</strong><br/>${record.WeightingMethodology}<br/><br/>`;
-            }
-
-            if (methodology) {
-                const methodSection = {
-                    title,
-                    doi,
-                    content: formatHTML(methodology),
-                    type: I.PublicationType.PROTOCOL
-                };
-                subPearls.push(methodSection);
-            }
-
-            let results = '';
-
-            if (record.Resources && record.Resources.RelatedStudy) {
-                for (const relatedStudy of record.Resources.RelatedStudy) {
-                    results += `<a href="${relatedStudy.Uri}" target="_blank" rel="noopener noreferrer">${relatedStudy.Name}</a><br/>`;
-                }
-            }
-
-            if (results) {
-                const resultsSection = { title, doi, content: formatHTML(results), type: I.PublicationType.DATA };
-                subPearls.push(resultsSection);
+            if (resultsSubPearl) {
+                subPearls.push(resultsSubPearl);
             }
 
             t = Date.now();
-            const topicIds: string[] = [];
 
-            if (source.defaultTopicId) {
-                topicIds.push(source.defaultTopicId);
-            }
-
-            const unmappedTopicTitles: Set<string> = new Set();
-
-            for (const keyword of record.Keyword) {
-                // Topics with IDs are ELSST topics
-                if (!keyword.Id) continue;
-                unmappedTopicTitles.add(keyword.Value);
-            }
-
-            const topics = await client.prisma.topic.findMany({
-                where: { title: { in: Array.from(unmappedTopicTitles) } }
-            });
-
-            for (const topic of topics) {
-                topicIds.push(topic.id);
-                unmappedTopicTitles.delete(topic.title);
-            }
-
-            // We still have unmapped topics, try to find mappings for them
-            if (unmappedTopicTitles.size > 0) {
-                // Map lower level topics to their highest level topics
-                const topicsToSearch: Set<string> = new Set();
-                const lowerToTopMap: Record<string, string> = lowerToTopTopicMapping as Record<string, string>;
-                const topicToOriginalMap = new Map<string, Set<string>>();
-
-                for (const topicTitle of unmappedTopicTitles) {
-                    // Check if this is a lower level topic that needs to be mapped to a higher level one
-                    const highestLevelTopic = lowerToTopMap[topicTitle];
-                    const searchTopic = (highestLevelTopic || topicTitle).toLowerCase();
-
-                    topicsToSearch.add(searchTopic);
-
-                    // Track which original topics this search topic represents
-                    if (!topicToOriginalMap.has(searchTopic)) {
-                        topicToOriginalMap.set(searchTopic, new Set());
-                    }
-
-                    topicToOriginalMap.get(searchTopic)!.add(topicTitle);
-                }
-
-                const topicMapping = await client.prisma.topicMapping.findMany({
-                    where: { title: { in: Array.from(topicsToSearch) }, source: source.slug }
-                });
-
-                for (const mapping of topicMapping) {
-                    if (mapping.topicId) {
-                        if (!topicIds.includes(mapping.topicId)) {
-                            topicIds.push(mapping.topicId);
-                        }
-
-                        // Always remove the original topics when we find a valid mapping
-                        // (even if the topicId was already in the array from another source)
-                        const originalTopics = topicToOriginalMap.get(mapping.title);
-
-                        if (originalTopics) {
-                            for (const originalTopic of originalTopics) {
-                                unmappedTopicTitles.delete(originalTopic);
-                            }
-                        } else {
-                            console.warn(
-                                `No original topics found for mapping title "${mapping.title}". This should not happen.`
-                            );
-                        }
-                    }
-                }
-            }
+            const { topicIds, unmappedTopicTitles } = await buildTopicIds(record, source);
 
             responseData.metadata.performanceTimings.push({ op: 'topicMapping', ms: Date.now() - t });
 
@@ -389,13 +511,13 @@ export const harvestFromUKDS = async (
 
             t = Date.now();
             const newPearl = await create({
-                title,
                 doi: doi,
                 externalId: id,
+                sourceId: source.id,
+                title: getTitle(record),
                 creators: creators as [I.PearlCreatorInput, ...I.PearlCreatorInput[]],
                 topicIds: topicIds as [string, ...string[]],
-                subPearls: subPearls as [I.SubPearlInput, ...I.SubPearlInput[]],
-                sourceId: source.id
+                subPearls: subPearls as [I.SubPearlInput, ...I.SubPearlInput[]]
             });
 
             responseData.data.pearlsCreated.count += 1;
