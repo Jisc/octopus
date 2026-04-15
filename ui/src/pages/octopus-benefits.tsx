@@ -40,7 +40,7 @@ const PageSection: React.FC<PageSectionProps> = (props): React.ReactElement => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ type: 'spring' }}
-            className="container mx-auto px-8 pt-8 lg:pt-24"
+            className="container mx-auto px-8 pt-8 lg:pt-20"
         >
             <div className="mx-auto block lg:w-9/12 xl:w-10/12 2xl:max-w-5xl transition-colors duration-500 text-grey-800 dark:text-white-50 text-center">
                 {props.children}

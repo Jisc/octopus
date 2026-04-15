@@ -18,7 +18,7 @@ const Home: Types.NextPage = (props): React.ReactElement => {
                 <link rel="canonical" href={Config.urls.home.canonical} />
             </Head>
             <Layouts.Standard fixedHeader={false}>
-                <section className="container mx-auto px-8 pt-8 lg:pt-24">
+                <section className="container mx-auto px-8 pt-8 lg:pt-20">
                     <div className="mx-auto block lg:w-9/12 xl:w-10/12 2xl:max-w-5xl">
                         <h1 className="mb-8 block text-center font-montserrat text-2xl font-black !leading-tight tracking-tight text-grey-700 transition-colors duration-500 dark:text-white-50 lg:text-5xl ">
                             Free, fast and fair: the global primary research record where researchers publish their work
@@ -55,24 +55,51 @@ const Home: Types.NextPage = (props): React.ReactElement => {
                         </div>
                     </div>
                 </section>
-                <section className="container mx-auto px-8 py-20 text-center">
-                    <h2 className="mb-8 font-montserrat text-xl font-semibold text-grey-800 transition-colors duration-500 dark:text-white-100 lg:text-3xl">
-                        UK Government Areas of Research Interest
-                    </h2>
-                    <p className="mx-auto mb-6 text-center font-montserrat text-base font-medium leading-relaxed text-grey-700 transition-colors duration-500 dark:text-grey-100 lg:w-8/12 lg:text-lg">
-                        Octopus is now populated with research problems derived from Areas of Research Interest
-                        published by UK Government departments. To view these, click on the button below. Publishing a
-                        Rationale/Hypothesis linked to one of these Research Problems will give the option of passing
-                        your details to the relevant government department. We hope this helps collaboration between
-                        government and researchers.
-                    </p>
 
-                    <Components.Button
-                        className={buttonClasses}
-                        href={Config.urls.searchOrganisations.path}
-                        title="Browse by department"
-                        variant="block"
-                    />
+                <section className="container mx-auto px-8 pt-20 text-center">
+                    <div className="mx-auto block lg:w-9/12 xl:w-10/12 2xl:max-w-5xl px-8 py-10 rounded-md bg-white-50 shadow-lg transition-colors duration-500 dark:bg-grey-700 border border-grey-100 dark:border-grey-600">
+                        <h2 className="mb-8 font-montserrat text-xl font-semibold text-grey-800 transition-colors duration-500 dark:text-white-100 lg:text-3xl">
+                            How Octopus can help you
+                        </h2>
+                        <p className="mx-auto mb-6 text-center font-montserrat text-base font-medium leading-relaxed text-grey-700 transition-colors duration-500 dark:text-grey-100 lg:w-8/12 lg:text-lg">
+                            Share every part of your research, as you do it. Get credit for all of it, not just the
+                            findings. On Octopus you can publish free of charge, in full detail, with immediate
+                            recognition for your research problems, hypotheses, methods, data, analysis and peer review.
+                        </p>
+                        <p className="mx-auto mb-6 text-center font-montserrat text-base font-medium leading-relaxed text-grey-700 transition-colors duration-500 dark:text-grey-100 lg:w-8/12 lg:text-lg">
+                            Collaborate with other researchers, make your work openly available to the world, and build
+                            a visible track record of good research practice at every stage of your project.
+                        </p>
+
+                        <Components.Button
+                            variant="block-alt"
+                            className={`${buttonClasses} bg-orcid`}
+                            href={Config.urls.octopusBenefits.path}
+                            title="Explore what Octopus can do for you"
+                        />
+                    </div>
+                </section>
+
+                <section className="container mx-auto px-8 py-20 text-center">
+                    <div className="mx-auto block lg:w-9/12 xl:w-10/12 2xl:max-w-5xl">
+                        <h2 className="mb-8 font-montserrat text-xl font-semibold text-grey-800 transition-colors duration-500 dark:text-white-100 lg:text-3xl">
+                            UK Government Areas of Research Interest
+                        </h2>
+                        <p className="mx-auto mb-6 text-center font-montserrat text-base font-medium leading-relaxed text-grey-700 transition-colors duration-500 dark:text-grey-100 lg:w-8/12 lg:text-lg">
+                            Octopus is now populated with research problems derived from Areas of Research Interest
+                            published by UK Government departments. To view these, click on the button below. Publishing
+                            a Rationale/Hypothesis linked to one of these Research Problems will give the option of
+                            passing your details to the relevant government department. We hope this helps collaboration
+                            between government and researchers.
+                        </p>
+
+                        <Components.Button
+                            className={buttonClasses}
+                            href={Config.urls.searchOrganisations.path}
+                            title="Browse by department"
+                            variant="block"
+                        />
+                    </div>
                 </section>
                 <section className="container mx-auto px-8">
                     <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 2xl:grid-cols-3">
