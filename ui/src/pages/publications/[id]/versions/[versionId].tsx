@@ -1195,7 +1195,7 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
                                 lang={publicationVersion.generativeAIUsageDetails ? languageIfNotEnglish : undefined}
                                 className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100"
                             >
-                                {publicationVersion.generativeAIUsage
+                                {publicationVersion.generativeAIUsageDetails
                                     ? publicationVersion.generativeAIUsageDetails
                                     : `This ${Helpers.formatPublicationType(
                                           publicationVersion.publication.type
