@@ -56,6 +56,11 @@ const getAll: I.JSONSchemaType<I.GetPublicationVersionsQueryParams> = {
         affiliation: {
             type: 'string',
             nullable: true
+        },
+        generativeAI: {
+            type: 'string',
+            enum: ['true', 'false'],
+            nullable: true
         }
     },
     required: [],

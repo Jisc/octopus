@@ -137,6 +137,8 @@ model PublicationVersion {
     topics                             Topic[]
     additionalInformation              AdditionalInformation[]
     linkedFromPublications             Links[]                 @relation("toVersion")
+    generativeAIUsage                  Boolean?
+    generativeAIUsageDetails           String?
 }
 
 model References {

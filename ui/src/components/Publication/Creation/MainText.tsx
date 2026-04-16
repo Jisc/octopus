@@ -160,6 +160,73 @@ const MainText: React.FC = (): React.ReactElement | null => {
                 )}
             </div>
 
+            <div data-testid="generative-ai">
+                <Components.PublicationCreationStepTitle text="Use of generative AI tools" />
+                <span className="mb-2 block text-sm leading-snug text-grey-700 transition-colors duration-500 dark:text-white-50">
+                    Some researchers use generative AI tools during drafting, analysis or editing. Have you used any
+                    generative AI tools as part of preparing this publication?
+                </span>
+                <fieldset className="mb-2 space-x-6">
+                    <label className="inline-flex items-center">
+                        <input
+                            type="radio"
+                            name="ai"
+                            value="true"
+                            id="ai-true"
+                            checked={publicationVersion.generativeAIUsage === true}
+                            onChange={() =>
+                                updatePublicationVersion({ ...publicationVersion, generativeAIUsage: true })
+                            }
+                        />
+                        <span className="ml-2 text-grey-800 transition-colors duration-500 dark:text-white-50">
+                            Yes
+                        </span>
+                    </label>
+                    <label className="inline-flex items-center">
+                        <input
+                            type="radio"
+                            name="ai"
+                            value="false"
+                            id="ai-false"
+                            checked={publicationVersion.generativeAIUsage === false}
+                            onChange={() => {
+                                updatePublicationVersion({
+                                    ...publicationVersion,
+                                    generativeAIUsage: false
+                                });
+                            }}
+                        />
+                        <span className="ml-2 text-grey-800 transition-colors duration-500 dark:text-white-50">No</span>
+                    </label>
+                </fieldset>
+
+                {publicationVersion.generativeAIUsage ? (
+                    <>
+                        <label
+                            htmlFor="generativeAITools"
+                            className="mb-4 block text-sm text-grey-800 transition-colors duration-500 dark:text-white-50"
+                        >
+                            If you&apos;d like, please tell us how you&apos;ve used generative AI tools for this
+                            publication.
+                        </label>
+                        <textarea
+                            id="generativeAITools"
+                            name="generativeAITools"
+                            value={publicationVersion.generativeAIUsageDetails || ''}
+                            rows={6}
+                            onChange={(e) =>
+                                updatePublicationVersion({
+                                    ...publicationVersion,
+                                    generativeAIUsageDetails: e.target.value
+                                })
+                            }
+                            className="w-full rounded-md border border-grey-100 bg-white-50 text-grey-800 outline-0 focus:ring-2 focus:ring-yellow-400 disabled:opacity-50"
+                            required
+                        />
+                    </>
+                ) : null}
+            </div>
+
             <div data-testid="main-text-select">
                 <Components.PublicationCreationStepTitle text="Language" required />
                 <select

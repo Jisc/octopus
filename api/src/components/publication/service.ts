@@ -487,6 +487,14 @@ export const getOpenSearchPublications = (filters: I.OpenSearchPublicationFilter
         }
     }
 
+    if (filters.generativeAI) {
+        must.push({
+            term: {
+                generativeAIUsage: filters.generativeAI === 'true'
+            }
+        });
+    }
+
     // @ts-ignore
     query.body.query.bool.must = must;
 

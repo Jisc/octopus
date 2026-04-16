@@ -70,6 +70,14 @@ const updatePublicationVersionSchema: I.JSONSchemaType<I.UpdatePublicationVersio
             type: 'array',
             items: { type: 'string' },
             nullable: true
+        },
+        generativeAIUsage: {
+            type: 'boolean',
+            nullable: true
+        },
+        generativeAIUsageDetails: {
+            type: 'string',
+            nullable: true
         }
     },
     additionalProperties: false

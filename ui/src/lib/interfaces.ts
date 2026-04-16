@@ -84,6 +84,8 @@ export interface PublicationVersion {
     publication: CorePublication;
     topics: BaseTopic[];
     additionalInformation: AdditionalInformation[];
+    generativeAIUsage?: boolean;
+    generativeAIUsageDetails?: string;
 }
 
 export interface Publication extends CorePublication {

@@ -280,7 +280,9 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
         { title: 'Main content', href: 'main-text' },
         ...list,
         { title: 'Funders', href: 'funders' },
-        { title: 'Conflict of interest', href: 'coi' }
+        { title: 'Conflict of interest', href: 'coi' },
+        { title: 'Additional information', href: 'additional-information' },
+        { title: 'Generative AI usage', href: 'generative-ai' }
     ];
 
     const languageIfNotEnglish = publicationVersion?.language
@@ -1175,7 +1177,7 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
                         </Components.ContentSection>
 
                         {/** Conflict of interest */}
-                        <Components.ContentSection id="coi" title="Conflict of interest">
+                        <Components.ContentSection id="coi" title="Conflict of interest" hasBreak>
                             <p
                                 lang={publicationVersion.conflictOfInterestText ? languageIfNotEnglish : undefined}
                                 className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100"
@@ -1185,6 +1187,19 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
                                     : `This ${Helpers.formatPublicationType(
                                           publicationVersion.publication.type
                                       )} does not have any specified conflicts of interest.`}
+                            </p>
+                        </Components.ContentSection>
+
+                        <Components.ContentSection id="generative-ai" title="Generative AI Usage">
+                            <p
+                                lang={publicationVersion.generativeAIUsageDetails ? languageIfNotEnglish : undefined}
+                                className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100"
+                            >
+                                {publicationVersion.generativeAIUsage
+                                    ? publicationVersion.generativeAIUsageDetails
+                                    : `This ${Helpers.formatPublicationType(
+                                          publicationVersion.publication.type
+                                      )} does not have any specified generative AI usage.`}
                             </p>
                         </Components.ContentSection>
                     </section>

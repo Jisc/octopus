@@ -30,6 +30,7 @@ const reindex = async (): Promise<void> => {
                 select: {
                     title: true,
                     description: true,
+                    generativeAIUsage: true,
                     keywords: true,
                     content: true,
                     publishedDate: true,
@@ -63,6 +64,7 @@ const reindex = async (): Promise<void> => {
                     content: latestLiveVersion.content,
                     publishedDate: latestLiveVersion.publishedDate,
                     cleanContent: convert(latestLiveVersion.content),
+                    generativeAIUsage: latestLiveVersion.generativeAIUsage,
                     affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestLiveVersion.coAuthors) }
             });
         }

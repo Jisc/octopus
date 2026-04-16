@@ -148,6 +148,7 @@ export interface OpenSearchPublication {
     keywords: string[];
     description?: string | null;
     content?: string | null;
+    generativeAIUsage?: boolean | null;
     cleanContent?: string | null;
     publishedDate?: Date | null;
     affiliations?: IndexableAffiliation[];
@@ -211,6 +212,8 @@ export interface UpdatePublicationVersionRequestBody {
     conflictOfInterestStatus?: boolean;
     conflictOfInterestText?: string;
     fundersStatement?: string;
+    generativeAIUsage?: boolean;
+    generativeAIUsageDetails?: string;
 }
 
 export type PublicationOrderBy = 'publishedDate' | '_score';
@@ -229,6 +232,7 @@ export interface OpenSearchPublicationFilters {
     orderBy?: PublicationOrderBy;
     orderDirection?: OrderDirection;
     affiliation?: string;
+    generativeAI?: string;
 }
 
 export type GetPublicationVersionsReportingOptions = Pick<

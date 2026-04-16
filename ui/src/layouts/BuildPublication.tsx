@@ -196,7 +196,9 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
                 language: publicationVersion.language,
                 conflictOfInterestStatus: publicationVersion.conflictOfInterestStatus,
                 conflictOfInterestText: publicationVersion.conflictOfInterestText,
-                fundersStatement: publicationVersion.fundersStatement
+                fundersStatement: publicationVersion.fundersStatement,
+                generativeAIUsage: publicationVersion.generativeAIUsage,
+                generativeAIUsageDetails: publicationVersion.generativeAIUsageDetails
             };
 
             if (publicationVersion.publication.type === 'PROBLEM') {

@@ -32,11 +32,18 @@ const formatDateForAPI = (rawDate: string, type: 'to' | 'from'): string | null =
 };
 
 const constructQueryParams = (params: {
-    [key in 'query' | 'publicationTypes' | 'limit' | 'offset' | 'dateFrom' | 'dateTo' | 'authorTypes' | 'affiliation']:
-        | string
-        | null;
+    [key in
+        | 'query'
+        | 'publicationTypes'
+        | 'limit'
+        | 'offset'
+        | 'dateFrom'
+        | 'dateTo'
+        | 'authorTypes'
+        | 'affiliation'
+        | 'generativeAI']: string | null;
 }): string => {
-    const { query, publicationTypes, limit, offset, dateFrom, dateTo, authorTypes, affiliation } = params;
+    const { query, publicationTypes, limit, offset, dateFrom, dateTo, authorTypes, affiliation, generativeAI } = params;
     const paramString: string[] = [];
 
     if (query) {
@@ -90,6 +97,10 @@ const constructQueryParams = (params: {
         paramString.push('affiliation=' + encodeURIComponent(affiliation));
     }
 
+    if (generativeAI) {
+        paramString.push('generativeAI=' + generativeAI);
+    }
+
     return paramString.join('&');
 };
 
@@ -104,7 +115,7 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
     const dateTo = Helpers.extractNextQueryParam(context.query.dateTo);
     const authorTypes = Helpers.extractNextQueryParam(context.query.authorType);
     const affiliation = Helpers.extractNextQueryParam(context.query.affiliation);
-
+    const generativeAI = Helpers.extractNextQueryParam(context.query.generativeAI);
     const params = constructQueryParams({
         query,
         publicationTypes,
@@ -113,7 +124,8 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
         dateFrom,
         dateTo,
         authorTypes,
-        affiliation
+        affiliation,
+        generativeAI
     });
 
     const swrKey = `/${searchType}?${params}`;
@@ -144,6 +156,7 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
             dateTo,
             authorTypes,
             affiliation,
+            generativeAI,
             fallback: {
                 [swrKey]: fallbackData
             },
@@ -162,6 +175,7 @@ type Props = {
     dateTo: string | null;
     authorTypes: string | null;
     affiliation: string | null;
+    generativeAI: string | null;
     error: string | null;
     fallback: { [key: string]: { data: Interfaces.PublicationVersion[] } & Interfaces.SearchResultMeta };
 };
@@ -175,6 +189,7 @@ const Publications: Types.NextPage<Props> = (props): React.ReactElement => {
     const [publicationTypes, setPublicationTypes] = React.useState(props.publicationTypes || '');
     const [dateFrom, setDateFrom] = React.useState(props.dateFrom ? props.dateFrom : '');
     const [dateTo, setDateTo] = React.useState(props.dateTo ? props.dateTo : '');
+    const [generativeAI, setGenerativeAI] = React.useState(props.generativeAI || '');
     const dateFromRef = React.useRef<HTMLInputElement>(null);
     const dateToRef = React.useRef<HTMLInputElement>(null);
     // param for pagination
@@ -189,7 +204,8 @@ const Publications: Types.NextPage<Props> = (props): React.ReactElement => {
         dateFrom,
         dateTo,
         authorTypes,
-        affiliation: props.affiliation
+        affiliation: props.affiliation,
+        generativeAI: generativeAI
     });
 
     const swrKey = `/${props.searchType}?${params}`;
@@ -236,6 +252,27 @@ const Publications: Types.NextPage<Props> = (props): React.ReactElement => {
         }
         if (dateToRef.current?.value) {
             setDateTo(dateToRef.current.value);
+        }
+    };
+
+    const handleGenerativeAICheckbox = async (value: 'true' | 'false', checked: boolean) => {
+        if (checked) {
+            setGenerativeAI(value);
+            await router.push(
+                {
+                    query: {
+                        ...router.query,
+                        generativeAI: value
+                    }
+                },
+                undefined,
+                { shallow: true }
+            );
+        } else {
+            setGenerativeAI('');
+            const queryWithoutGenerativeAI = { ...router.query };
+            delete queryWithoutGenerativeAI.generativeAI;
+            await router.push({ query: queryWithoutGenerativeAI }, undefined, { shallow: true });
         }
     };
 
@@ -292,6 +329,7 @@ const Publications: Types.NextPage<Props> = (props): React.ReactElement => {
         setDateTo('');
         dateToRef.current && (dateToRef.current.value = '');
         setAuthorTypes('');
+        setGenerativeAI('');
     };
 
     React.useEffect((): void => {
@@ -342,6 +380,33 @@ const Publications: Types.NextPage<Props> = (props): React.ReactElement => {
                         setPublicationTypes(e.target.checked ? Config.values.publicationTypes.join(',') : '')
                     }
                 />
+            </fieldset>
+            <fieldset className="space-y-3">
+                <legend className="pb-2 font-montserrat text-xl font-semibold text-grey-800 transition-colors duration-500 dark:text-white-50">
+                    Generative AI tools used
+                </legend>
+                <div className="flex items-center space-x-6">
+                    <Components.Checkbox
+                        id="ai-true"
+                        name="ai-true"
+                        label="Yes"
+                        checked={generativeAI === 'true'}
+                        disabled={!response}
+                        onChange={(e) => {
+                            handleGenerativeAICheckbox('true', e.target.checked);
+                        }}
+                    />
+                    <Components.Checkbox
+                        id="ai-false"
+                        name="ai-false"
+                        label="No"
+                        checked={generativeAI === 'false'}
+                        disabled={!response}
+                        onChange={(e) => {
+                            handleGenerativeAICheckbox('false', e.target.checked);
+                        }}
+                    />
+                </div>
             </fieldset>
             <fieldset className="col-span-12 lg:col-span-3 xl:col-span-4 space-y-4">
                 <legend className="pb-2 font-montserrat text-xl font-semibold text-grey-800 transition-colors duration-500 dark:text-white-50">

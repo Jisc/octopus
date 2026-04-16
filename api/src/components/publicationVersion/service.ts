@@ -712,6 +712,8 @@ export const create = async (previousVersion: I.PrivatePublicationVersion, user:
             fundersStatement: previousVersion.fundersStatement,
             conflictOfInterestStatus: previousVersion.conflictOfInterestStatus,
             conflictOfInterestText: previousVersion.conflictOfInterestText,
+            generativeAIUsage: previousVersion.generativeAIUsage,
+            generativeAIUsageDetails: previousVersion.generativeAIUsageDetails,
             createdBy: user.id,
             publicationStatus: {
                 create: {
@@ -1012,6 +1014,7 @@ export const postPublishHook = async (publicationVersion: I.PublicationVersion, 
                         description: publicationVersion.description,
                         keywords: publicationVersion.keywords,
                         content: publicationVersion.content,
+                        generativeAIUsage: publicationVersion.generativeAIUsage,
                         publishedDate: publicationVersion.publishedDate,
                         cleanContent: convert(publicationVersion.content),
                         affiliations: Helpers.indexableAffilicationsFromCoAuthors(publicationVersion.coAuthors)
