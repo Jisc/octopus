@@ -959,6 +959,15 @@ export const ariReport = async (html: string, text: string, type: 'ingest' | 'ar
     });
 };
 
+export const ukdsReport = async (html: string, text: string): Promise<void> => {
+    await send({
+        html,
+        text,
+        to: process.env.INGEST_REPORT_RECIPIENTS ? process.env.INGEST_REPORT_RECIPIENTS.split(',') : '',
+        subject: 'UKDS ingest report'
+    });
+};
+
 export const pubRouterFailure = async (publicationId: string, error: string): Promise<void> => {
     const content = `Publication Id: ${publicationId}, Error: ${error}`;
     await send({

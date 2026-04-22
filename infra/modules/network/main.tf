@@ -25,7 +25,13 @@ resource "aws_vpc" "main" {
   assign_generated_ipv6_cidr_block = true
 
   tags = {
-    Name = "${var.environment}_${var.project_name}_vpc"
+    Name          = "${var.environment}_${var.project_name}_vpc"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 
@@ -33,7 +39,13 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "${var.environment}_${var.project_name}_igw"
+    Name          = "${var.environment}_${var.project_name}_igw"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 
@@ -45,7 +57,13 @@ resource "aws_subnet" "public_az1" {
   availability_zone = data.aws_availability_zones.available.names[0]
 
   tags = {
-    Name = "${var.environment}_${var.project_name}_public_subnet_az1"
+    Name          = "${var.environment}_${var.project_name}_public_subnet_az1"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 resource "aws_subnet" "private_az1" {
@@ -54,7 +72,13 @@ resource "aws_subnet" "private_az1" {
   availability_zone = data.aws_availability_zones.available.names[0]
 
   tags = {
-    Name = "${var.environment}_${var.project_name}_private_subnet_az1"
+    Name          = "${var.environment}_${var.project_name}_private_subnet_az1"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 
@@ -65,7 +89,13 @@ resource "aws_subnet" "public_az2" {
   availability_zone = data.aws_availability_zones.available.names[1]
 
   tags = {
-    Name = "${var.environment}_${var.project_name}_public_subnet_az2"
+    Name          = "${var.environment}_${var.project_name}_public_subnet_az2"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 resource "aws_subnet" "private_az2" {
@@ -74,7 +104,13 @@ resource "aws_subnet" "private_az2" {
   availability_zone = data.aws_availability_zones.available.names[1]
 
   tags = {
-    Name = "${var.environment}_${var.project_name}_private_subnet_az2"
+    Name          = "${var.environment}_${var.project_name}_private_subnet_az2"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 
@@ -85,7 +121,13 @@ resource "aws_subnet" "public_az3" {
   availability_zone = data.aws_availability_zones.available.names[2]
 
   tags = {
-    Name = "${var.environment}_${var.project_name}_public_subnet_az3"
+    Name          = "${var.environment}_${var.project_name}_public_subnet_az3"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 resource "aws_subnet" "private_az3" {
@@ -94,7 +136,13 @@ resource "aws_subnet" "private_az3" {
   availability_zone = data.aws_availability_zones.available.names[2]
 
   tags = {
-    Name = "${var.environment}_${var.project_name}_private_subnet_az3"
+    Name          = "${var.environment}_${var.project_name}_private_subnet_az3"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 
@@ -102,7 +150,13 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "${var.environment}_octopus_route_table"
+    Name          = "${var.environment}_octopus_route_table"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 
@@ -131,7 +185,13 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "${var.environment}_${var.project_name}_private_route_table"
+    Name          = "${var.environment}_${var.project_name}_private_route_table"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 
@@ -178,7 +238,13 @@ resource "aws_security_group" "sls_sg" {
   }
 
   tags = {
-    Name = "security_group_for_serverless_api_platform_${var.environment}"
+    Name          = "security_group_for_serverless_api_platform_${var.environment}"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 
@@ -189,7 +255,13 @@ resource "aws_eip" "nat_eip" {
   depends_on = [aws_internet_gateway.igw]
 
   tags = {
-    Name = "${var.environment}_octopus_nat_eip"
+    Name          = "${var.environment}_octopus_nat_eip"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 
@@ -198,7 +270,13 @@ resource "aws_nat_gateway" "nat" {
   subnet_id     = aws_subnet.public_az1.id
   depends_on    = [aws_internet_gateway.igw]
   tags = {
-    Name = "${var.environment}_octopus_nat"
+    Name          = "${var.environment}_octopus_nat"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 

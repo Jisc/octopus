@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import useSWR from 'swr';
 
 import * as OutlineIcons from '@heroicons/react/24/outline';
 import * as api from '@/api';
@@ -10,6 +11,35 @@ import * as Layouts from '@/layouts';
 import * as Types from '@/types';
 
 import * as Helpers from '@/helpers';
+
+const PAGE_SIZE_OPTIONS = [10, 25, 50, 100, 200] as const;
+
+const getPaginationItems = (currentPage: number, totalPages: number): Array<number | 'ellipsis'> => {
+    if (totalPages <= 7) {
+        return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    const items: Array<number | 'ellipsis'> = [1];
+
+    if (currentPage > 3) {
+        items.push('ellipsis');
+    }
+
+    const startPage = Math.max(2, currentPage - 1);
+    const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+    for (let page = startPage; page <= endPage; page += 1) {
+        items.push(page);
+    }
+
+    if (currentPage < totalPages - 2) {
+        items.push('ellipsis');
+    }
+
+    items.push(totalPages);
+
+    return items;
+};
 
 type Pearl = {
     id: string;
@@ -33,18 +63,61 @@ type Pearl = {
 };
 
 type Props = {
-    pearls: Pearl[];
+    fallback: {
+        data: Pearl[];
+        metadata: {
+            total: number;
+            limit: number;
+            offset: number;
+        };
+    };
+};
+
+type PearlsResponse = {
+    data?: Pearl[];
+    pearls?: Pearl[];
+    metadata: {
+        total: number;
+        limit: number;
+        offset: number;
+    };
 };
 
 export const getServerSideProps: Types.GetServerSideProps<Props> = async (context) => {
+    const extractedLimit = Number(Helpers.extractNextQueryParam(context.query.limit, true) || '10');
+    const extractedOffset = Number(Helpers.extractNextQueryParam(context.query.offset, true) || '0');
+    const limit = PAGE_SIZE_OPTIONS.includes(extractedLimit as (typeof PAGE_SIZE_OPTIONS)[number])
+        ? extractedLimit
+        : 10;
+    const offset = Number.isInteger(extractedOffset) && extractedOffset >= 0 ? extractedOffset : 0;
+
+    let fallback: Props['fallback'] = {
+        data: [],
+        metadata: {
+            total: 0,
+            limit,
+            offset
+        }
+    };
+
     try {
         const token = Helpers.getJWT(context);
-        const response = await api.get(`${Config.endpoints.pearls}`, token);
+        const response = await api.get(`${Config.endpoints.pearls}?limit=${limit}&offset=${offset}`, token);
         const pearls = response.data.pearls || [];
+        const metadata = response.data.metadata || fallback.metadata;
+
+        fallback = {
+            data: pearls,
+            metadata: {
+                total: metadata.total || pearls.length,
+                limit: metadata.limit || limit,
+                offset: metadata.offset || offset
+            }
+        };
 
         return {
             props: {
-                pearls
+                fallback
             }
         };
     } catch (error) {
@@ -56,9 +129,51 @@ export const getServerSideProps: Types.GetServerSideProps<Props> = async (contex
 };
 
 const Pearls: Types.NextPage<Props> = (props): React.ReactElement => {
+    const { fallback } = props;
+    const topRef = useRef<HTMLDivElement | null>(null);
+    const [offset, setOffset] = useState(fallback.metadata.offset ? fallback.metadata.offset : 0);
+    const [limit, setLimit] = useState(fallback.metadata.limit || 10);
     const [expandedPearlId, setExpandedPearlId] = useState<string | null>(null);
     const [expandedTopicsPearlIds, setExpandedTopicsPearlIds] = useState<Set<string>>(new Set());
-    const { pearls } = props;
+
+    const swrKey = `${Config.endpoints.pearls}?limit=${limit}&offset=${offset}`;
+
+    const { data: response, isValidating } = useSWR<PearlsResponse>(swrKey, null, {
+        fallback: { [swrKey]: fallback },
+        use: [Helpers.laggy]
+    });
+
+    const pearls = response?.data || response?.pearls || [];
+    const total = response?.metadata.total || 0;
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    const currentPage = Math.floor(offset / limit) + 1;
+    const paginationItems = getPaginationItems(currentPage, totalPages);
+
+    const scrollToTop = () => {
+        if (topRef.current) {
+            topRef.current.scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handlePageChange = (page: number) => {
+        setOffset((page - 1) * limit);
+        setExpandedPearlId(null);
+        setExpandedTopicsPearlIds(new Set());
+        scrollToTop();
+    };
+
+    const handlePageSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const nextLimit = Number(event.target.value);
+
+        setLimit(nextLimit);
+        setOffset(0);
+        setExpandedPearlId(null);
+        setExpandedTopicsPearlIds(new Set());
+        scrollToTop();
+    };
 
     const toggleExpanded = (pearlId: string) => {
         setExpandedPearlId(expandedPearlId === pearlId ? null : pearlId);
@@ -92,11 +207,36 @@ const Pearls: Types.NextPage<Props> = (props): React.ReactElement => {
 
             <Layouts.Standard fixedHeader={false}>
                 <section className="container mx-auto px-8 py-4 lg:pt-16">
-                    <Components.PageTitle text="Pearls" />
+                    <div ref={topRef} />
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <Components.PageTitle text="Pearls" />
+                        <div className="flex items-center gap-3 self-start md:self-auto">
+                            <label
+                                htmlFor="pearls-page-size"
+                                className="text-sm font-medium text-grey-700 dark:text-grey-200"
+                            >
+                                Per page
+                            </label>
+                            <select
+                                id="pearls-page-size"
+                                value={limit}
+                                onChange={handlePageSizeChange}
+                                className="rounded-md border border-grey-300 bg-white px-3 py-2 text-sm font-medium text-grey-800 focus:outline-none focus:ring-2 focus:ring-teal-500 dark:border-grey-600 dark:bg-grey-800 dark:text-white-50"
+                            >
+                                {PAGE_SIZE_OPTIONS.map((option) => (
+                                    <option key={option} value={option}>
+                                        {option}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
                 </section>
 
                 <section className="container mx-auto px-8 pb-16">
-                    {pearls.length === 0 && (
+                    <p className="mb-4 text-sm font-medium text-grey-700 dark:text-grey-200">Total pearls: {total}</p>
+
+                    {pearls.length === 0 && !isValidating && (
                         <div className="text-center text-grey-600 dark:text-grey-300">
                             <p>No pearls available.</p>
                         </div>
@@ -217,6 +357,67 @@ const Pearls: Types.NextPage<Props> = (props): React.ReactElement => {
                             </div>
                         ))}
                     </div>
+
+                    {total > 0 && (
+                        <div className="mt-10 flex flex-col items-center gap-4">
+                            <nav
+                                aria-label="Pearls pagination"
+                                className="flex flex-wrap items-center justify-center gap-2"
+                            >
+                                <button
+                                    type="button"
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    disabled={currentPage <= 1}
+                                    className="rounded-md border border-grey-300 px-3 py-2 text-sm font-medium text-grey-700 transition-colors hover:bg-grey-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-grey-600 dark:text-grey-200 dark:hover:bg-grey-700"
+                                >
+                                    Previous
+                                </button>
+
+                                {paginationItems.map((item, index) => {
+                                    if (item === 'ellipsis') {
+                                        return (
+                                            <span
+                                                key={`ellipsis-${index}`}
+                                                className="px-2 text-grey-500 dark:text-grey-400"
+                                            >
+                                                ...
+                                            </span>
+                                        );
+                                    }
+
+                                    const isActive = item === currentPage;
+
+                                    return (
+                                        <button
+                                            key={item}
+                                            type="button"
+                                            onClick={() => handlePageChange(item)}
+                                            aria-current={isActive ? 'page' : undefined}
+                                            className={`min-w-10 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                                                isActive
+                                                    ? 'bg-teal-600 text-white-50 dark:bg-teal-500'
+                                                    : 'border border-grey-300 text-grey-700 hover:bg-grey-100 dark:border-grey-600 dark:text-grey-200 dark:hover:bg-grey-700'
+                                            }`}
+                                        >
+                                            {item}
+                                        </button>
+                                    );
+                                })}
+
+                                <button
+                                    type="button"
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    disabled={currentPage >= totalPages}
+                                    className="rounded-md border border-grey-300 px-3 py-2 text-sm font-medium text-grey-700 transition-colors hover:bg-grey-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-grey-600 dark:text-grey-200 dark:hover:bg-grey-700"
+                                >
+                                    Next
+                                </button>
+                            </nav>
+                            <p className="text-sm text-grey-600 dark:text-grey-300">
+                                Page {currentPage} of {totalPages}
+                            </p>
+                        </div>
+                    )}
                 </section>
             </Layouts.Standard>
         </>

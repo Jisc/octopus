@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as ariUtils from 'integration/ariUtils';
+import * as ukdsUtils from 'integration/ukdsUtils';
 import * as client from 'lib/client';
 import * as ecs from 'lib/ecs';
 import * as ingestLogService from 'ingestLog/service';
@@ -267,6 +268,127 @@ export const triggerAriIngest = async (dryRun?: boolean): Promise<string> => {
     } else {
         // If local, just run the ingest directly.
         return await incrementalAriIngest(!!dryRun, 'file');
+    }
+};
+
+export const incrementalUKDSIngest = async (dryRun: boolean, reportFormat: I.IngestReportFormat): Promise<string> => {
+    const lastLog = await ingestLogService.getMostRecentLog('UKDS', true);
+
+    if (lastLog && !lastLog.end) {
+        if (dryRun) {
+            console.log(
+                'This run would have been cancelled because another run is currently in progress. However, the run has still been simulated.'
+            );
+        } else {
+            return 'Did not run ingest. Either an import is already in progress or the last import failed.';
+        }
+    }
+
+    const start = new Date();
+    const mostRecentLog = await ingestLogService.getMostRecentLog('UKDS');
+
+    if (!mostRecentLog) {
+        console.log('Unable to get most recent start time.');
+    }
+
+    let logId: string | null = null;
+
+    if (!dryRun) {
+        const log = await ingestLogService.create('UKDS');
+        logId = log.id;
+    }
+
+    let offset = 0;
+    const limit = 100;
+    let totalCount = 0;
+    let skippedCount = 0;
+    let checkedCount = 0;
+    let createdCount = 0;
+    let updatedCount = 0;
+    let subpearlCount = 0;
+
+    const source = await ukdsUtils.getSource('UKDS');
+
+    if (!source) {
+        throw new Error('Unable to find source for UKDS');
+    }
+
+    do {
+        const data = await ukdsUtils.fetchStudyList(offset, limit);
+
+        // Set totalCount on first loop when we get it from the API. We need this to know when to stop.
+        if (!totalCount) {
+            totalCount = data.totalCount || 0;
+        }
+
+        for (const study of data.list) {
+            const handle = await ukdsUtils.handleIncomingStudy(study, source, dryRun);
+            checkedCount++;
+
+            subpearlCount += handle.totalSubpearls || 0;
+
+            if (!handle.success) {
+                console.log(`Error when handling UKDS study with ID ${study.FriendlyId}: ${handle.message}`);
+                continue;
+            }
+
+            switch (handle.actionTaken) {
+                case 'none':
+                    skippedCount++;
+                    break;
+                case 'create':
+                    createdCount++;
+                    break;
+                case 'update':
+                    updatedCount++;
+                    break;
+            }
+        }
+
+        offset += limit; // Next page of {limit} studies
+    } while (offset < totalCount);
+
+    const end = new Date();
+    const durationSeconds = Math.round((end.getTime() - start.getTime()) / 100) / 10;
+
+    if (!dryRun && logId) {
+        await ingestLogService.setEndTime(logId, end);
+    }
+
+    await ukdsUtils.ingestReport(reportFormat, {
+        checkedCount,
+        durationSeconds,
+        createdCount,
+        updatedCount,
+        subpearlCount,
+        skippedCount,
+        dryRun
+    });
+
+    const writeCount = createdCount + updatedCount;
+
+    const preamble = dryRun ? 'Dry run complete. Would have updated' : 'Update complete. Updated';
+
+    return `${preamble} ${writeCount} publication${writeCount !== 1 ? 's' : ''}.`;
+};
+
+export const triggerUKDSIngest = async (dryRun?: boolean): Promise<string> => {
+    if (process.env.STAGE !== 'local') {
+        // If not local, trigger task to run in ECS.
+        const commandParts = [
+            'npm',
+            'run',
+            'ukdsIngest',
+            '--',
+            ...(dryRun ? ['dryRun=true'] : []),
+            'reportFormat=email'
+        ];
+        await triggerScriptECSTask(commandParts);
+
+        return 'Task triggered.';
+    } else {
+        // If local, just run the ingest directly.
+        return await incrementalUKDSIngest(!!dryRun, 'file');
     }
 };
 

@@ -1154,6 +1154,14 @@ export interface HandledARI {
     unrecognisedTopics?: string[];
 }
 
+export interface HandledUKDS {
+    actionTaken: ARIHandlingAction;
+    success: boolean;
+    message?: string;
+    unrecognisedTopics?: Set<string>;
+    totalSubpearls: number;
+}
+
 export type IngestReportFormat = 'email' | 'file';
 
 export interface TriggerAriIngestQueryParams {
@@ -1169,6 +1177,11 @@ export interface TriggerAriArchivedCheckQueryParams {
 export interface TriggerNotificationsQueryParams {
     apiKey: string;
     force?: boolean;
+}
+
+export interface TriggerUKDSIngestQueryParams {
+    apiKey: string;
+    dryRun?: boolean;
 }
 
 export interface LocalNotifyPubRouterPathParams {
@@ -1270,6 +1283,18 @@ export interface CreatePearlRequestBody {
     subPearls: [SubPearlInput, ...SubPearlInput[]];
 }
 
+export interface UpdatePearlRequestBody {
+    title?: string;
+    externalId?: string;
+    doi?: string;
+    creators?: PearlCreatorInput[];
+    language?: Languages;
+    licenceType?: LicenceType;
+    topicIds?: string[];
+    sourceId?: string;
+    subPearls?: SubPearlInput[];
+}
+
 export interface DeletePearlPathParams {
     pearlId: string;
 }
@@ -1277,6 +1302,11 @@ export interface DeletePearlPathParams {
 export interface GetSubPearlPathParams {
     pearlId: string;
     subPearlId: string;
+}
+
+export interface GetPearlsQueryStringParameters {
+    limit?: string;
+    offset?: string;
 }
 
 export type OAIPublicationVersion = Prisma.PromiseReturnType<typeof publicationVersionService.getOAIPublicationVersion>;

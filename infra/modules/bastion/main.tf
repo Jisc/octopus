@@ -10,8 +10,13 @@ resource "aws_security_group" "ec2_sg" {
   }
 
   tags = {
-    Name        = "bastion_sg_${var.environment}"
-    Environment = var.environment
+    Name          = "bastion_sg_${var.environment}"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 
@@ -80,7 +85,12 @@ resource "aws_instance" "bastion" {
     Name                              = "bastion_${var.environment}"
     Environment                       = var.environment
     "GIIT:Schedule:Daily:Enable"      = "TRUE"
-    "GIIT:Schedule:Daily:TheSchedule" = "mon,tue,wed,thu,fri;0830;mon,tue,wed,thu,fri;1800;"
+    "GIIT:Schedule:Daily:TheSchedule" = "mon,tue,wed,thu,fri;0830;mon,tue,wed,thu,fri;1800;",
+    Product                           = "Octopus"
+    Owner                             = "OctopusTeam"
+    "Cost Centre"                     = "P10031"
+    Application                       = "Octopus"
+    Compliance                        = "CE"
   }
 }
 

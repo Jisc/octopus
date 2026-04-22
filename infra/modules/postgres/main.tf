@@ -22,8 +22,13 @@ resource "aws_security_group" "database_security_group" {
   }
 
   tags = {
-    Name        = "${var.project_name}_security_group_${var.environment}"
-    Environment = var.environment
+    Name          = "${var.project_name}_security_group_${var.environment}"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 
@@ -62,8 +67,13 @@ resource "aws_db_instance" "rds" {
 
 
   tags = {
-    Name        = "${var.project_name}_${var.environment}"
-    Environment = var.environment
+    Name          = "${var.project_name}_${var.environment}"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 

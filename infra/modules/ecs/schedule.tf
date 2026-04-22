@@ -133,6 +133,47 @@ resource "aws_scheduler_schedule" "ari_archived_check_cron" {
   }
 }
 
+# resource "aws_scheduler_schedule" "ukds_import_cron" {
+#   name = "ukds-import-schedule-${var.environment}-${var.project_name}"
+
+#   flexible_time_window {
+#     mode = "OFF"
+#   }
+
+#   schedule_expression = "cron(0 5 ? * THU *)" # Run every Thursday at 5AM
+
+#   target {
+#     arn      = aws_ecs_cluster.ecs.arn
+#     role_arn = aws_iam_role.scheduler.arn
+
+#     # On prod, override container command to do a dry run instead of a real one.
+#     # The output will be checked before manually triggering a real run using the API.
+#     input = jsonencode({
+#       containerOverrides = [
+#         {
+#           command = terraform.workspace == "prod" ? ["npm", "run", "ukdsImport", "--", "dryRun=true", "reportFormat=email"] : ["npm", "run", "ukdsImport", "--", "reportFormat=email"]
+#           name    = "script-runner"
+#         }
+#       ]
+#     })
+
+#     dead_letter_config {
+#       arn = aws_sqs_queue.scheduler-dlq.arn
+#     }
+
+#     ecs_parameters {
+#       # Trimming the revision suffix here so that schedule always uses latest revision
+#       task_definition_arn = trimsuffix(aws_ecs_task_definition.script-runner.arn, ":${aws_ecs_task_definition.script-runner.revision}")
+#       launch_type         = "FARGATE"
+
+#       network_configuration {
+#         security_groups = [aws_security_group.script-runner-task-sg.id]
+#         subnets         = var.private_subnet_ids
+#       }
+#     }
+#   }
+# }
+
 resource "aws_sqs_queue" "scheduler-dlq" {
   name = "scheduler-dlq-${var.environment}-${var.project_name}"
 }

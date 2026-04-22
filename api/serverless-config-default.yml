@@ -544,6 +544,13 @@ functions:
                 path: ${self:custom.versions.v1}/integrations/ari/archived-check
                 method: POST
                 cors: true
+    triggerUKDSIngest:
+        handler: dist/src/components/integration/routes.triggerUkdsIngest
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/integrations/ukds/incremental
+                method: POST
+                cors: true
     # Publication bundles
     createPublicationBundle:
         handler: dist/src/components/publicationBundle/routes.create

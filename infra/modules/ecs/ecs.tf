@@ -4,7 +4,13 @@ resource "aws_service_discovery_private_dns_namespace" "namespace" {
   vpc         = var.vpc_id
 
   tags = {
-    Name = "${var.project_name}-namespace-${var.environment}"
+    Name          = "${var.project_name}-namespace-${var.environment}"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 
@@ -26,7 +32,13 @@ resource "aws_service_discovery_service" "discovery-service" {
   }
 
   tags = {
-    Name = "${var.project_name}-ds-${var.environment}"
+    Name          = "${var.project_name}-ds-${var.environment}"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 

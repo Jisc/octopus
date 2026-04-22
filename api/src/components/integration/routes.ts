@@ -16,3 +16,8 @@ export const triggerAriArchivedCheck = middy(integrationController.triggerAriArc
     .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
     .use(middleware.authentication(false, false, triggerScriptApiKey))
     .use(middleware.validator(integrationSchema.triggerAriArchivedCheck, 'queryStringParameters'));
+
+export const triggerUkdsIngest = middy(integrationController.triggerUKDSIngest)
+    .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
+    .use(middleware.authentication(false, false, triggerScriptApiKey))
+    .use(middleware.validator(integrationSchema.triggerUKDSIngest, 'queryStringParameters'));

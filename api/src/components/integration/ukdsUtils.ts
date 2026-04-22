@@ -1,173 +1,88 @@
+import { StudyItem, StudyItemResponse, StudyListResponse } from 'pearl/types';
+import lowerToTopTopicMapping from 'pearl/lowerToTopTopicMapping.json';
 import * as client from 'lib/client';
 import * as I from 'interface';
-import { StudyItemResponse } from './types';
-import lowerToTopTopicMapping from './lowerToTopTopicMapping.json';
+import * as fs from 'fs/promises';
+import * as email from 'email';
+import { create, update } from 'pearl/service';
+import { HandledUKDS } from 'interface';
 
-export const getAll = async (): Promise<I.Pearl[]> => {
-    return client.prisma.pearl.findMany({
-        include: {
-            creators: true,
-            source: true,
-            topics: true,
-            subPearls: true
-        }
-    });
-};
+const apiURL = process.env.UKDS_API_URL;
+const apiKey = process.env.UKDS_API_KEY;
 
-export const getAllPaginated = async (limit: number, offset: number): Promise<{ pearls: I.Pearl[]; total: number }> => {
-    const [pearls, total] = await Promise.all([
-        client.prisma.pearl.findMany({
-            include: {
-                creators: true,
-                source: true,
-                topics: true,
-                subPearls: true
-            },
-            orderBy: {
-                createdAt: 'desc'
-            },
-            take: limit,
-            skip: offset
-        }),
-        client.prisma.pearl.count()
-    ]);
+export const fetchStudyList = async (
+    start = 0,
+    limit = 100
+): Promise<{
+    totalCount: number;
+    list: Pick<StudyItem, 'FriendlyId' | 'LatestEditionReleaseDate'>[];
+}> => {
+    if (!apiURL || !apiKey) {
+        console.error('UKDS API URL or API Key is not defined.');
 
-    return { pearls, total };
-};
+        return {
+            totalCount: 0,
+            list: []
+        };
+    }
 
-export const getSubPearl = async (pearlId: string, subPearlId: string) => {
-    const pearl = await client.prisma.pearl.findUnique({
-        where: {
-            id: pearlId
-        },
-        include: {
-            creators: true,
-            source: true,
-            topics: true,
-            subPearls: {
-                where: {
-                    id: subPearlId
-                }
+    const query = `
+        query GetStudyList($DateFrom: Int, $DateTo: Int, $QueryString: String, $Rows: Int, $Sort: Int, $Start: Int, $FacetParams: String, $Phrase: Boolean) {
+            getStudyList(DateFrom: $DateFrom, DateTo: $DateTo, QueryString: $QueryString, Rows: $Rows, Sort: $Sort, Start: $Start, FacetParams: $FacetParams, Phrase: $Phrase) {
+                Count
+                Results { FriendlyId, LatestEditionReleaseDate }
             }
-        }
-    });
+        }`;
 
-    if (!pearl || pearl.subPearls.length === 0) {
-        return null;
+    const variables = {
+        QueryString: '',
+        Start: start,
+        Rows: limit,
+        Phrase: false,
+        DateFrom: '440',
+        DateTo: new Date().getFullYear().toString()
+    };
+
+    try {
+        // https://datacatalogue.ukdataservice.ac.uk/searchresults?sort=0&tab=0
+        const res = await fetch(apiURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': apiKey
+            },
+            body: JSON.stringify({ query, variables })
+        });
+
+        if (!res.ok) {
+            return {
+                totalCount: 0,
+                list: []
+            };
+        }
+
+        const json = (await res.json()) as StudyListResponse;
+
+        return {
+            totalCount: json.data.getStudyList.Count,
+            list: json.data.getStudyList.Results.map((result) => ({
+                FriendlyId: result.FriendlyId,
+                LatestEditionReleaseDate: result.LatestEditionReleaseDate
+            }))
+        };
+    } catch (error) {
+        console.error(error);
     }
 
     return {
-        pearl,
-        subPearl: pearl.subPearls[0]
+        totalCount: 0,
+        list: []
     };
 };
 
-export const create = async (data: I.CreatePearlRequestBody) => {
-    const topics: { id: string }[] = [];
-
-    // Remove duplicate topic IDs
-    for (const topicId of data.topicIds) {
-        if (!topics.find((t) => t.id === topicId)) {
-            topics.push({ id: topicId });
-        }
-    }
-
-    try {
-        return await client.prisma.pearl.create({
-            data: {
-                doi: data.doi,
-                title: data.title,
-                creators: {
-                    create: data.creators
-                },
-                language: data.language,
-                externalId: data.externalId,
-                licenceType: data.licenceType,
-                topics: { connect: topics },
-                source: { connect: { id: data.sourceId } },
-                subPearls: { create: data.subPearls }
-            },
-            select: {
-                id: true
-            }
-        });
-    } catch (error) {
-        console.error('Error creating pearl:', error);
-        throw error;
-    }
-};
-
-export const update = async (pearlId: string, data: I.UpdatePearlRequestBody) => {
-    const topics: { id: string }[] = [];
-
-    // Remove duplicate topic IDs
-    for (const topicId of data.topicIds || []) {
-        if (!topics.find((t) => t.id === topicId)) {
-            topics.push({ id: topicId });
-        }
-    }
-
-    try {
-        return await client.prisma.pearl.update({
-            where: {
-                id: pearlId
-            },
-            data: {
-                doi: data.doi,
-                title: data.title,
-                language: data.language,
-                externalId: data.externalId,
-                licenceType: data.licenceType,
-                topics: { connect: topics },
-                source: { connect: { id: data.sourceId } },
-                subPearls: { create: data.subPearls }
-            }
-        });
-    } catch (error) {
-        console.error('Error updating pearl:', error);
-        throw error;
-    }
-};
-
-export const deletePearl = async (pearlId: string) => {
-    await client.prisma.pearl.delete({
-        where: {
-            id: pearlId
-        }
-    });
-};
-
-export const getSource = async (sourceId: string): Promise<I.PearlSource | null> => {
-    return client.prisma.pearlSource.findUnique({
-        where: {
-            id: sourceId
-        }
-    });
-};
-
-export const getAllSources = async (): Promise<I.PearlSource[]> => {
-    return client.prisma.pearlSource.findMany();
-};
-
-export const createSource = async (data: I.CreatePearlSourceRequestBody) => {
-    return client.prisma.pearlSource.create({
-        data: data
-    });
-};
-
-const fetchStudyItem = async (resourceId: string): Promise<StudyItemResponse['data']['getStudyItem'] | null> => {
-    const apiURL = process.env.UKDS_API_URL;
-
-    if (!apiURL) {
-        console.error('UKDS API URL is not defined.');
-
-        return null;
-    }
-
-    const apiKey = process.env.UKDS_API_KEY;
-
-    if (!apiKey) {
-        console.error('UKDS API Key is not defined.');
+export const fetchStudyItem = async (friendlyId: string): Promise<StudyItem | null> => {
+    if (!apiURL || !apiKey) {
+        console.error('UKDS API URL or API Key is not defined.');
 
         return null;
     }
@@ -197,7 +112,7 @@ const fetchStudyItem = async (resourceId: string): Promise<StudyItemResponse['da
     }}`;
 
     const variables = {
-        FriendlyId: resourceId
+        FriendlyId: friendlyId
     };
 
     try {
@@ -222,6 +137,82 @@ const fetchStudyItem = async (resourceId: string): Promise<StudyItemResponse['da
     }
 
     return null;
+};
+
+export const getSource = async (slug: I.PublicationImportSource): Promise<I.PearlSource | null> => {
+    try {
+        const source = await client.prisma.pearlSource.findFirst({ where: { slug } });
+
+        if (!source) {
+            console.error(`No source found with slug "${slug}".`);
+
+            return null;
+        }
+
+        return source;
+    } catch (error) {
+        console.error(`Error fetching source with slug "${slug}":`, error);
+
+        return null;
+    }
+};
+
+export const ingestReport = async (
+    format: I.IngestReportFormat,
+    ingestDetails: {
+        checkedCount: number;
+        durationSeconds: number;
+        createdCount: number;
+        updatedCount: number;
+        skippedCount: number;
+        subpearlCount: number;
+        dryRun: boolean;
+    }
+): Promise<void> => {
+    const { checkedCount, durationSeconds, createdCount, updatedCount, skippedCount, subpearlCount, dryRun } =
+        ingestDetails;
+    const intro = `Full UKDS import ${dryRun ? 'dry ' : ''}run completed.`;
+    const timingInfo = `Duration: ${durationSeconds} seconds.`;
+    const detailsPrefix = `The ${dryRun ? 'simulated ' : ''}results of this run are as follows.`;
+    const text = `
+${intro}
+${timingInfo}
+${detailsPrefix} 
+Studies checked: ${checkedCount}.
+Pearls created: ${createdCount}.
+Pearls updated: ${updatedCount}.
+Pearls skipped (already up to date): ${skippedCount}.
+Subpearls processed: ${subpearlCount}.`;
+
+    if (format === 'file') {
+        const fileName = 'ukds-import-report.txt';
+        await fs.writeFile(fileName, text);
+        console.log(`Report file written to ${fileName}.`);
+
+        return;
+    }
+
+    if (format === 'email') {
+        const html = `
+        <html>
+            <body>
+                <p>${intro}</p>
+                <p>${timingInfo}</p>
+                <p>${detailsPrefix}</p>
+                <ul>
+                    <li>Studies checked: ${checkedCount}</li>    
+                    <li>Pearls created: ${createdCount}</li>
+                    <li>Pearls updated: ${updatedCount}</li>    
+                    <li>Pearls skipped (already up to date): ${skippedCount}</li>
+                    <li>Subpearls processed: ${subpearlCount}</li>
+                </ul>
+            </body>
+        </html>
+    `;
+        await email.ukdsReport(html, text);
+
+        return;
+    }
 };
 
 function formatHTML(htmlString: string): string {
@@ -474,125 +465,127 @@ async function buildTopicIds(
     return { topicIds, unmappedTopicTitles };
 }
 
-export const harvestFromUKDS = async (
+export const handleIncomingStudy = async (
+    study: Pick<StudyItem, 'FriendlyId' | 'LatestEditionReleaseDate'>,
     source: I.PearlSource,
-    resourceIds: string[]
-): Promise<I.HarvestPearlsResponse> => {
-    const responseData: I.HarvestPearlsResponse = { message: '', success: true };
-
-    responseData.data = {
-        pearlsCreated: { count: 0, items: [] },
-        pearlsSkipped: { count: 0, items: [] }
+    dryRun?: boolean
+): Promise<HandledUKDS> => {
+    const responseData: HandledUKDS = {
+        totalSubpearls: 0,
+        unrecognisedTopics: new Set<string>(),
+        success: false,
+        message: '',
+        actionTaken: 'none'
     };
 
-    responseData.metadata = {
-        performanceTimings: []
-    };
+    let requiresUpdate = false;
 
-    for (const id of resourceIds) {
-        try {
-            let t = Date.now();
-            const record = await fetchStudyItem(id);
-            responseData.metadata.performanceTimings.push({ op: 'recordFetching', ms: Date.now() - t });
+    try {
+        const existingPearl = await client.prisma.pearl.findFirst({
+            where: { externalId: study.FriendlyId, sourceId: source.id }
+        });
 
-            if (!record) {
-                const reason = 'Failed to fetch record from UKDS. Please check the resource ID.';
-                responseData.data.pearlsSkipped.count += 1;
-                responseData.data.pearlsSkipped.items.push({ id, reason });
-                continue;
+        if (existingPearl) {
+            const existingPearlDate = new Date(existingPearl.updatedAt);
+            const studyDate = study.LatestEditionReleaseDate ? new Date(study.LatestEditionReleaseDate) : null;
+
+            if (studyDate && studyDate > existingPearlDate) {
+                requiresUpdate = true;
+            } else {
+                responseData.success = true;
+                responseData.message =
+                    'A publication linked to this UKDS record already exists in the system and is up to date.';
+                responseData.actionTaken = 'none';
+
+                return responseData;
             }
-
-            const existingPearl = await client.prisma.pearl.findFirst({
-                where: {
-                    externalId: id,
-                    sourceId: source.id
-                }
-            });
-
-            if (existingPearl) {
-                responseData.data.pearlsSkipped.count += 1;
-                responseData.data.pearlsSkipped.items.push({
-                    id,
-                    reason: 'Pearl with this resource ID already exists.'
-                });
-                continue;
-            }
-
-            const doi = record.DOI;
-
-            if (!doi) {
-                const reason = 'No DOI found in the record.';
-                responseData.data.pearlsSkipped.count += 1;
-                responseData.data.pearlsSkipped.items.push({ id, reason });
-                continue;
-            }
-
-            const creators = buildCreators(record);
-
-            const subPearls: I.SubPearlInput[] = [];
-
-            const hypothesisSubPearl = buildHypothesis(record);
-
-            if (hypothesisSubPearl) {
-                subPearls.push(hypothesisSubPearl);
-            }
-
-            const methodologySubPearl = buildMethodology(record);
-
-            if (methodologySubPearl) {
-                subPearls.push(methodologySubPearl);
-            }
-
-            const resultsSubPearl = buildResults(record);
-
-            if (resultsSubPearl) {
-                subPearls.push(resultsSubPearl);
-            }
-
-            t = Date.now();
-
-            const { topicIds, unmappedTopicTitles } = await buildTopicIds(record, source);
-
-            responseData.metadata.performanceTimings.push({ op: 'topicMapping', ms: Date.now() - t });
-
-            if (unmappedTopicTitles.size > 0) {
-                const reason = `Missing topics: ${Array.from(unmappedTopicTitles).join(', ')}`;
-                responseData.data.pearlsSkipped.count += 1;
-                responseData.data.pearlsSkipped.items.push({ id, reason });
-                continue;
-            }
-
-            t = Date.now();
-            const newPearl = await create({
-                doi: doi,
-                externalId: id,
-                sourceId: source.id,
-                title: getTitle(record),
-                creators: creators as [I.PearlCreatorInput, ...I.PearlCreatorInput[]],
-                topicIds: topicIds as [string, ...string[]],
-                subPearls: subPearls as [I.SubPearlInput, ...I.SubPearlInput[]]
-            });
-
-            responseData.data.pearlsCreated.count += 1;
-            responseData.data.pearlsCreated.items.push({ id: newPearl.id });
-            responseData.metadata.performanceTimings.push({ op: 'pearlCreation', ms: Date.now() - t });
-        } catch (error) {
-            responseData.data.pearlsSkipped.count += 1;
-            responseData.data.pearlsSkipped.items.push({
-                id,
-                reason: 'Error occurred during processing.'
-            });
-            continue;
         }
-    }
 
-    responseData.success = responseData.data.pearlsCreated.count > 0;
-    responseData.message =
-        responseData.data.pearlsCreated.count === 0
-            ? 'No records were processed successfully.'
-            : responseData.data.pearlsSkipped.count === 0
-            ? 'All records processed successfully.'
-            : 'Some records were processed successfully, some were skipped.';
+        const record = await fetchStudyItem(study.FriendlyId);
+
+        if (!record) {
+            responseData.success = false;
+            responseData.message = 'Failed to fetch record from UKDS. Please check the resource ID.';
+            responseData.actionTaken = 'none';
+
+            return responseData;
+        }
+
+        const doi = record.DOI;
+
+        if (!doi) {
+            responseData.success = false;
+            responseData.message = 'No DOI found in the record.';
+            responseData.actionTaken = 'none';
+
+            return responseData;
+        }
+
+        const creators = buildCreators(record);
+
+        const subPearls: I.SubPearlInput[] = [];
+
+        const hypothesisSubPearl = buildHypothesis(record);
+
+        if (hypothesisSubPearl) {
+            subPearls.push(hypothesisSubPearl);
+        }
+
+        const methodologySubPearl = buildMethodology(record);
+
+        if (methodologySubPearl) {
+            subPearls.push(methodologySubPearl);
+        }
+
+        const resultsSubPearl = buildResults(record);
+
+        if (resultsSubPearl) {
+            subPearls.push(resultsSubPearl);
+        }
+
+        const { topicIds, unmappedTopicTitles } = await buildTopicIds(record, source);
+
+        if (unmappedTopicTitles.size > 0) {
+            responseData.success = false;
+            responseData.message = 'Some topics in the record could not be mapped to existing topics in the system.';
+            responseData.unrecognisedTopics = unmappedTopicTitles;
+
+            return responseData;
+        }
+
+        const pearlData = {
+            doi: doi,
+            title: getTitle(record),
+            externalId: study.FriendlyId,
+            creators: creators as [I.PearlCreatorInput, ...I.PearlCreatorInput[]],
+            topicIds: topicIds as [string, ...string[]],
+            subPearls: subPearls as [I.SubPearlInput, ...I.SubPearlInput[]]
+        };
+
+        if (existingPearl && requiresUpdate) {
+            if (!dryRun) {
+                await update(existingPearl.id, pearlData);
+            }
+
+            responseData.actionTaken = 'update';
+            responseData.message = 'An existing publication linked to this UKDS record was updated in the system.';
+        } else {
+            if (!dryRun) {
+                await create({ sourceId: source.id, ...pearlData });
+            }
+
+            responseData.actionTaken = 'create';
+            responseData.message = 'A new pearl was created in the system based on this UKDS record.';
+        }
+
+        responseData.success = true;
+        responseData.totalSubpearls = subPearls.length;
+    } catch (error) {
+        console.error(`Error processing UKDS study with ID ${study.FriendlyId}:`, error);
+        responseData.success = false;
+        responseData.message =
+            'An unexpected error occurred while processing the record. Please check the logs for details.';
+    }
 
     return responseData;
 };

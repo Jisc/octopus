@@ -92,7 +92,13 @@ data "aws_iam_policy_document" "codepipeline_role_policy" {
 resource "aws_iam_role" "codepipeline_role" {
   name = "${var.project_name}-codepipeline-role-${var.environment}"
   tags = {
-    Name = "${var.project_name}-codepipeline-role-${var.environment}"
+    Name          = "${var.project_name}-codepipeline-role-${var.environment}"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 
   assume_role_policy = data.aws_iam_policy_document.codepipeline_role_policy.json

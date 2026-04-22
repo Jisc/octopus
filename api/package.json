@@ -34,6 +34,7 @@
         "type": "tsc --noEmit",
         "ariArchivedCheck": "tsx scripts/ariArchivedCheck.ts",
         "ariImport": "tsx scripts/ariImport.ts",
+        "ukdsImport": "tsx scripts/ukdsImport.ts",
         "backfillCoAuthors": "tsx scripts/backfillCoAuthors.ts",
         "createOrganisationalAccounts": "tsx scripts/createOrganisationalAccounts.ts",
         "createTopicMappings": "tsx scripts/createTopicMappings.ts",

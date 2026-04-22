@@ -4,6 +4,15 @@ export interface StudyItemResponse {
     };
 }
 
+export interface StudyListResponse {
+    data: {
+        getStudyList: {
+            Count: number;
+            Results: Pick<StudyItem, 'FriendlyId' | 'LatestEditionReleaseDate'>[];
+        };
+    };
+}
+
 export interface StudyItem {
     Abstract: string | null;
     AccessCondition: string | null;

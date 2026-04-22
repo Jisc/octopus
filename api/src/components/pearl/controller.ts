@@ -3,11 +3,36 @@ import * as I from 'interface';
 import * as pearlService from 'pearl/service';
 import * as topicService from 'topic/service';
 
-export const getAll = async (): Promise<I.JSONResponse> => {
-    try {
-        const pearls = await pearlService.getAll();
+const parsePaginationNumber = (value: string | undefined, defaultValue: number): number => {
+    if (value === undefined) {
+        return defaultValue;
+    }
 
-        return response.json(200, { pearls });
+    const parsedValue = Number(value);
+
+    if (!Number.isInteger(parsedValue) || parsedValue < 0) {
+        return defaultValue;
+    }
+
+    return parsedValue;
+};
+
+export const getAll = async (
+    event: I.APIRequest<undefined, I.GetPearlsQueryStringParameters>
+): Promise<I.JSONResponse> => {
+    try {
+        const limit = parsePaginationNumber(event.queryStringParameters?.limit, 10);
+        const offset = parsePaginationNumber(event.queryStringParameters?.offset, 0);
+        const { pearls, total } = await pearlService.getAllPaginated(limit, offset);
+
+        return response.json(200, {
+            pearls,
+            metadata: {
+                limit,
+                offset,
+                total
+            }
+        });
     } catch (error) {
         console.error(error);
 

@@ -140,7 +140,13 @@ resource "aws_security_group" "script-runner-task-sg" {
   }
 
   tags = {
-    Name = "${var.project_name}-script-runner-task-sg-${var.environment}"
+    Name          = "${var.project_name}-script-runner-task-sg-${var.environment}"
+    Environment   = var.environment
+    Product       = "Octopus"
+    Owner         = "OctopusTeam"
+    "Cost Centre" = "P10031"
+    Application   = "Octopus"
+    Compliance    = "CE"
   }
 }
 
