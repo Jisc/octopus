@@ -98,7 +98,7 @@ const constructQueryParams = (params: {
     }
 
     if (generativeAI) {
-        paramString.push('generativeAI=' + generativeAI);
+        paramString.push('generativeAI=' + generativeAI.toLocaleUpperCase());
     }
 
     return paramString.join('&');
@@ -156,7 +156,7 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
             dateTo,
             authorTypes,
             affiliation,
-            generativeAI,
+            generativeAI: generativeAI?.toLocaleUpperCase(),
             fallback: {
                 [swrKey]: fallbackData
             },
@@ -175,10 +175,12 @@ type Props = {
     dateTo: string | null;
     authorTypes: string | null;
     affiliation: string | null;
-    generativeAI: string | null;
+    generativeAI: Interfaces.PublicationVersion['generativeAIUsage'];
     error: string | null;
     fallback: { [key: string]: { data: Interfaces.PublicationVersion[] } & Interfaces.SearchResultMeta };
 };
+
+type GenerativeAIState = 'YES' | 'NO' | 'UNSURE' | null;
 
 const Publications: Types.NextPage<Props> = (props): React.ReactElement => {
     const router = Router.useRouter();
@@ -189,7 +191,7 @@ const Publications: Types.NextPage<Props> = (props): React.ReactElement => {
     const [publicationTypes, setPublicationTypes] = React.useState(props.publicationTypes || '');
     const [dateFrom, setDateFrom] = React.useState(props.dateFrom ? props.dateFrom : '');
     const [dateTo, setDateTo] = React.useState(props.dateTo ? props.dateTo : '');
-    const [generativeAI, setGenerativeAI] = React.useState(props.generativeAI || '');
+    const [generativeAI, setGenerativeAI] = React.useState<GenerativeAIState>(props.generativeAI ?? null);
     const dateFromRef = React.useRef<HTMLInputElement>(null);
     const dateToRef = React.useRef<HTMLInputElement>(null);
     // param for pagination
@@ -255,21 +257,21 @@ const Publications: Types.NextPage<Props> = (props): React.ReactElement => {
         }
     };
 
-    const handleGenerativeAICheckbox = async (value: 'true' | 'false', checked: boolean) => {
+    const handleGenerativeAICheckbox = async (value: GenerativeAIState, checked: boolean) => {
         if (checked) {
             setGenerativeAI(value);
             await router.push(
                 {
                     query: {
                         ...router.query,
-                        generativeAI: value
+                        generativeAI: value?.toLocaleLowerCase()
                     }
                 },
                 undefined,
                 { shallow: true }
             );
         } else {
-            setGenerativeAI('');
+            setGenerativeAI(null);
             const queryWithoutGenerativeAI = { ...router.query };
             delete queryWithoutGenerativeAI.generativeAI;
             await router.push({ query: queryWithoutGenerativeAI }, undefined, { shallow: true });
@@ -329,7 +331,7 @@ const Publications: Types.NextPage<Props> = (props): React.ReactElement => {
         setDateTo('');
         dateToRef.current && (dateToRef.current.value = '');
         setAuthorTypes('');
-        setGenerativeAI('');
+        setGenerativeAI(null);
     };
 
     React.useEffect((): void => {
@@ -390,20 +392,30 @@ const Publications: Types.NextPage<Props> = (props): React.ReactElement => {
                         id="ai-true"
                         name="ai-true"
                         label="Yes"
-                        checked={generativeAI === 'true'}
+                        checked={generativeAI === 'YES'}
                         disabled={!response}
                         onChange={(e) => {
-                            handleGenerativeAICheckbox('true', e.target.checked);
+                            handleGenerativeAICheckbox('YES', e.target.checked);
                         }}
                     />
                     <Components.Checkbox
                         id="ai-false"
                         name="ai-false"
                         label="No"
-                        checked={generativeAI === 'false'}
+                        checked={generativeAI === 'NO'}
                         disabled={!response}
                         onChange={(e) => {
-                            handleGenerativeAICheckbox('false', e.target.checked);
+                            handleGenerativeAICheckbox('NO', e.target.checked);
+                        }}
+                    />
+                    <Components.Checkbox
+                        id="ai-unsure"
+                        name="ai-unsure"
+                        label="Unsure"
+                        checked={generativeAI === 'UNSURE'}
+                        disabled={!response}
+                        onChange={(e) => {
+                            handleGenerativeAICheckbox('UNSURE', e.target.checked);
                         }}
                     />
                 </div>

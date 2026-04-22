@@ -137,7 +137,7 @@ model PublicationVersion {
     topics                             Topic[]
     additionalInformation              AdditionalInformation[]
     linkedFromPublications             Links[]                 @relation("toVersion")
-    generativeAIUsage                  Boolean?
+    generativeAIUsage                  GenerativeAIUsageEnum?
     generativeAIUsageDetails           String?
 }
 
@@ -722,4 +722,10 @@ enum NotificationStatusEnum {
 enum PublicationImportSource {
     ARI
     UKDS
+}
+
+enum GenerativeAIUsageEnum {
+    YES
+    NO
+    UNSURE
 }

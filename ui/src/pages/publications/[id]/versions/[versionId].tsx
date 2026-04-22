@@ -1190,16 +1190,14 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
                             </p>
                         </Components.ContentSection>
 
-                        <Components.ContentSection id="generative-ai" title="Generative AI Usage">
-                            <p
-                                lang={publicationVersion.generativeAIUsageDetails ? languageIfNotEnglish : undefined}
-                                className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100"
-                            >
-                                {publicationVersion.generativeAIUsageDetails
-                                    ? publicationVersion.generativeAIUsageDetails
-                                    : `This ${Helpers.formatPublicationType(
-                                          publicationVersion.publication.type
-                                      )} does not have any specified generative AI usage.`}
+                        <Components.ContentSection id="generative-ai" title="Generative AI usage">
+                            <p className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100">
+                                {publicationVersion.generativeAIUsageDetails ||
+                                    (publicationVersion.generativeAIUsage === 'YES'
+                                        ? `The authors have indicated that they have used generative AI in the creation of this ${Helpers.formatPublicationType(publicationVersion.publication.type)}.`
+                                        : publicationVersion.generativeAIUsage === 'NO'
+                                          ? `The authors have indicated that they have not used generative AI in the creation of this ${Helpers.formatPublicationType(publicationVersion.publication.type)}.`
+                                          : `This ${Helpers.formatPublicationType(publicationVersion.publication.type)} does not have any specified generative AI usage.`)}
                             </p>
                         </Components.ContentSection>
                     </section>

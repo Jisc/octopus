@@ -72,7 +72,8 @@ const updatePublicationVersionSchema: I.JSONSchemaType<I.UpdatePublicationVersio
             nullable: true
         },
         generativeAIUsage: {
-            type: 'boolean',
+            type: 'string',
+            enum: Enum.generativeAIUsage,
             nullable: true
         },
         generativeAIUsageDetails: {

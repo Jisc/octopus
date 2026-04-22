@@ -487,10 +487,10 @@ export const getOpenSearchPublications = (filters: I.OpenSearchPublicationFilter
         }
     }
 
-    if (filters.generativeAI) {
+    if (filters.generativeAI && (Enum.generativeAIUsage as string[]).includes(filters.generativeAI)) {
         must.push({
             term: {
-                generativeAIUsage: filters.generativeAI === 'true'
+                generativeAIUsage: filters.generativeAI.toLowerCase()
             }
         });
     }

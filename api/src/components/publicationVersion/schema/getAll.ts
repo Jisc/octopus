@@ -59,7 +59,7 @@ const getAll: I.JSONSchemaType<I.GetPublicationVersionsQueryParams> = {
         },
         generativeAI: {
             type: 'string',
-            enum: ['true', 'false'],
+            enum: Enum.generativeAIUsage,
             nullable: true
         }
     },

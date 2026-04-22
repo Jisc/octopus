@@ -1,6 +1,7 @@
 import {
     BookmarkType,
     EventType,
+    GenerativeAIUsageEnum,
     Languages,
     LicenceType,
     Notification,
@@ -26,6 +27,7 @@ import * as eventService from 'event/service';
 export {
     BookmarkType,
     EventType,
+    GenerativeAIUsageEnum,
     ImageExtension,
     Languages,
     LicenceType,
@@ -148,7 +150,7 @@ export interface OpenSearchPublication {
     keywords: string[];
     description?: string | null;
     content?: string | null;
-    generativeAIUsage?: boolean | null;
+    generativeAIUsage?: GenerativeAIUsageEnum | null;
     cleanContent?: string | null;
     publishedDate?: Date | null;
     affiliations?: IndexableAffiliation[];
@@ -212,7 +214,7 @@ export interface UpdatePublicationVersionRequestBody {
     conflictOfInterestStatus?: boolean;
     conflictOfInterestText?: string;
     fundersStatement?: string;
-    generativeAIUsage?: boolean;
+    generativeAIUsage?: GenerativeAIUsageEnum;
     generativeAIUsageDetails?: string;
 }
 

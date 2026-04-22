@@ -365,3 +365,5 @@ export type PartialPublicationVersion = Pick<
 >;
 
 export type PublicationImportSource = 'ARI';
+
+export type GenerativeUIUsage = 'YES' | 'NO' | 'UNSURE';

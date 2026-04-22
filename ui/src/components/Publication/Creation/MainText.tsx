@@ -161,10 +161,9 @@ const MainText: React.FC = (): React.ReactElement | null => {
             </div>
 
             <div data-testid="generative-ai">
-                <Components.PublicationCreationStepTitle text="Use of generative AI tools" />
+                <Components.PublicationCreationStepTitle text="Use of generative AI tools" required />
                 <span className="mb-2 block text-sm leading-snug text-grey-700 transition-colors duration-500 dark:text-white-50">
-                    Some researchers use generative AI tools during drafting, analysis or editing. Have you used any
-                    generative AI tools as part of preparing this publication?
+                    Have generative AI tools been used to help create this publication?
                 </span>
                 <fieldset className="mb-2 space-x-6">
                     <label className="inline-flex items-center">
@@ -173,9 +172,9 @@ const MainText: React.FC = (): React.ReactElement | null => {
                             name="ai"
                             value="true"
                             id="ai-true"
-                            checked={publicationVersion.generativeAIUsage === true}
+                            checked={publicationVersion.generativeAIUsage === 'YES'}
                             onChange={() =>
-                                updatePublicationVersion({ ...publicationVersion, generativeAIUsage: true })
+                                updatePublicationVersion({ ...publicationVersion, generativeAIUsage: 'YES' })
                             }
                         />
                         <span className="ml-2 text-grey-800 transition-colors duration-500 dark:text-white-50">
@@ -188,32 +187,56 @@ const MainText: React.FC = (): React.ReactElement | null => {
                             name="ai"
                             value="false"
                             id="ai-false"
-                            checked={publicationVersion.generativeAIUsage === false}
+                            checked={publicationVersion.generativeAIUsage === 'NO'}
                             onChange={() => {
                                 updatePublicationVersion({
                                     ...publicationVersion,
-                                    generativeAIUsage: false
+                                    generativeAIUsage: 'NO'
                                 });
                             }}
                         />
                         <span className="ml-2 text-grey-800 transition-colors duration-500 dark:text-white-50">No</span>
                     </label>
+                    <label className="inline-flex items-center">
+                        <input
+                            type="radio"
+                            name="ai"
+                            value="unsure"
+                            id="ai-unsure"
+                            checked={publicationVersion.generativeAIUsage === 'UNSURE'}
+                            onChange={() =>
+                                updatePublicationVersion({ ...publicationVersion, generativeAIUsage: 'UNSURE' })
+                            }
+                        />
+                        <span className="ml-2 text-grey-800 transition-colors duration-500 dark:text-white-50">
+                            I&apos;m not sure
+                        </span>
+                    </label>
                 </fieldset>
 
-                {publicationVersion.generativeAIUsage ? (
+                {publicationVersion.generativeAIUsage === 'YES' || publicationVersion.generativeAIUsage === 'UNSURE' ? (
                     <>
                         <label
                             htmlFor="generativeAITools"
                             className="mb-4 block text-sm text-grey-800 transition-colors duration-500 dark:text-white-50"
                         >
-                            If you&apos;d like, please tell us how you&apos;ve used generative AI tools for this
-                            publication.
+                            {publicationVersion.generativeAIUsage === 'YES' ? (
+                                <>
+                                    If you&apos;d like, please tell us how you&apos;ve used generative AI tools for this
+                                    publication.
+                                </>
+                            ) : (
+                                <>
+                                    If you can, tell us why you&apos;re unsure (for example, you weren&apos;t involved
+                                    in all versions, or a co-author may have used AI)
+                                </>
+                            )}
                         </label>
                         <textarea
                             id="generativeAITools"
                             name="generativeAITools"
                             value={publicationVersion.generativeAIUsageDetails || ''}
-                            rows={6}
+                            rows={4}
                             onChange={(e) =>
                                 updatePublicationVersion({
                                     ...publicationVersion,

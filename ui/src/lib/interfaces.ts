@@ -84,7 +84,7 @@ export interface PublicationVersion {
     publication: CorePublication;
     topics: BaseTopic[];
     additionalInformation: AdditionalInformation[];
-    generativeAIUsage?: boolean;
+    generativeAIUsage?: Types.GenerativeUIUsage;
     generativeAIUsageDetails?: string;
 }
 

@@ -240,3 +240,5 @@ export const sourceIdentifierTypes = ['ROR', 'GRID', 'RINGGOLD', 'ISNI', 'CROSSR
 export const authorTypes = ['individual', 'organisational'];
 
 export const pearlCreatorType = ['ORGANISATION', 'INDIVIDUAL'];
+
+export const generativeAIUsage: I.GenerativeAIUsageEnum[] = ['YES', 'NO', 'UNSURE'];

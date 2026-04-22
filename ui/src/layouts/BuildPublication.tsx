@@ -71,6 +71,12 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
 
             if (!publicationVersion.title) ready = { ready: false, message: 'You must provide a title' };
             if (!publicationVersion.content) ready = { ready: false, message: 'You must provide main content' };
+            if (!publicationVersion.generativeAIUsage)
+                ready = {
+                    ready: false,
+                    message:
+                        'You must select whether you have used generative AI tools in the creation of this publication'
+                };
             const hasLiveLinks =
                 linkedTo.length && linkedTo.every((linkedPublication) => linkedPublication.currentStatus === 'LIVE');
             const hasLinkNotPendingDeletion = linkedTo.some((link) => link.pendingDeletion === false);
@@ -134,6 +140,12 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
 
             if (!publicationVersion.title) ready = { ready: false, message: 'You must provide a title' };
             if (!publicationVersion.content) ready = { ready: false, message: 'You must provide main content' };
+            if (!publicationVersion.generativeAIUsage)
+                ready = {
+                    ready: false,
+                    message:
+                        'You must select whether you have used generative AI tools in the creation of this publication'
+                };
             if (!linkedTo.length && !publicationVersion.topics.length)
                 ready = { ready: false, message: 'You must link this publication to at least one other item' };
 

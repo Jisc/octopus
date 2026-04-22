@@ -409,7 +409,8 @@ export const getTabCompleteness = (
                 if (
                     publicationVersion?.content &&
                     !isEmptyContent(publicationVersion?.content) &&
-                    publicationVersion.language
+                    publicationVersion.language &&
+                    publicationVersion.generativeAIUsage
                 ) {
                     stepsWithCompleteness.push({ status: 'COMPLETE', ...step });
                 } else {
