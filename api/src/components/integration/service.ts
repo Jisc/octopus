@@ -378,7 +378,7 @@ export const triggerUKDSIngest = async (dryRun?: boolean): Promise<string> => {
         const commandParts = [
             'npm',
             'run',
-            'ukdsIngest',
+            'ukdsImport',
             '--',
             ...(dryRun ? ['dryRun=true'] : []),
             'reportFormat=email'
