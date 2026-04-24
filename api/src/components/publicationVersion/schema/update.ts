@@ -73,7 +73,7 @@ const updatePublicationVersionSchema: I.JSONSchemaType<I.UpdatePublicationVersio
         },
         generativeAIUsage: {
             type: 'string',
-            enum: Enum.generativeAIUsage,
+            enum: [...Enum.generativeAIUsage, null],
             nullable: true
         },
         generativeAIUsageDetails: {

@@ -77,6 +77,15 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
                     message:
                         'You must select whether you have used generative AI tools in the creation of this publication'
                 };
+            if (
+                (publicationVersion.generativeAIUsage === 'YES' || publicationVersion.generativeAIUsage === 'UNSURE') &&
+                !publicationVersion.generativeAIUsageDetails
+            ) {
+                ready = {
+                    ready: false,
+                    message: 'You must provide details about your use of generative AI tools.'
+                };
+            }
             const hasLiveLinks =
                 linkedTo.length && linkedTo.every((linkedPublication) => linkedPublication.currentStatus === 'LIVE');
             const hasLinkNotPendingDeletion = linkedTo.some((link) => link.pendingDeletion === false);
@@ -146,6 +155,15 @@ const BuildPublication: React.FC<BuildPublicationProps> = (props) => {
                     message:
                         'You must select whether you have used generative AI tools in the creation of this publication'
                 };
+            if (
+                (publicationVersion.generativeAIUsage === 'YES' || publicationVersion.generativeAIUsage === 'UNSURE') &&
+                !publicationVersion.generativeAIUsageDetails
+            ) {
+                ready = {
+                    ready: false,
+                    message: 'You must provide details about your use of generative AI tools.'
+                };
+            }
             if (!linkedTo.length && !publicationVersion.topics.length)
                 ready = { ready: false, message: 'You must link this publication to at least one other item' };
 

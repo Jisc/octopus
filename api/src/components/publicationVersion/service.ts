@@ -515,7 +515,10 @@ export const checkIsReadyToPublish = async (publicationVersion: I.PublicationVer
     const hasFilledRequiredFields =
         (['title', 'licence'] as const).every((field) => publicationVersion[field]) &&
         !Helpers.isEmptyContent(publicationVersion.content || '') &&
-        !!publicationVersion.generativeAIUsage;
+        !!publicationVersion.generativeAIUsage &&
+        (publicationVersion.generativeAIUsage === 'YES' || publicationVersion.generativeAIUsage === 'UNSURE'
+            ? !!publicationVersion.generativeAIUsageDetails
+            : true);
 
     const conflictOfInterest = validateConflictOfInterest(publicationVersion);
     const hasPublishDate = Boolean(publicationVersion.publishedDate);
@@ -573,7 +576,11 @@ export const checkIsReadyToRequestApprovals = async (
         (publicationVersion.publication.type === 'PROBLEM' && publicationVersion.topics.length !== 0);
     const hasFilledRequiredFields =
         (['title', 'licence'] as const).every((field) => publicationVersion[field]) &&
-        !Helpers.isEmptyContent(publicationVersion.content || '');
+        !Helpers.isEmptyContent(publicationVersion.content || '') &&
+        (publicationVersion.generativeAIUsage === 'YES' || publicationVersion.generativeAIUsage === 'UNSURE'
+            ? !!publicationVersion.generativeAIUsageDetails
+            : true);
+
     const conflictOfInterest = validateConflictOfInterest(publicationVersion);
     const isDataAndHasEthicalStatement =
         publicationVersion.publication.type === 'DATA' ? publicationVersion.ethicalStatement !== null : true;

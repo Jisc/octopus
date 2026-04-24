@@ -222,13 +222,14 @@ const MainText: React.FC = (): React.ReactElement | null => {
                         >
                             {publicationVersion.generativeAIUsage === 'YES' ? (
                                 <>
-                                    If you&apos;d like, please tell us how you&apos;ve used generative AI tools for this
-                                    publication.
+                                    Please provide a summary of the generative AI tools used for this publication and
+                                    what they were used for. Your response will be published on the publication page
                                 </>
                             ) : (
                                 <>
                                     If you can, tell us why you&apos;re unsure (for example, you weren&apos;t involved
-                                    in all versions, or a co-author may have used AI)
+                                    in all versions, or a co-author may have used AI). Your response will be published
+                                    on the publication page
                                 </>
                             )}
                         </label>
@@ -236,6 +237,11 @@ const MainText: React.FC = (): React.ReactElement | null => {
                             id="generativeAITools"
                             name="generativeAITools"
                             value={publicationVersion.generativeAIUsageDetails || ''}
+                            placeholder={
+                                publicationVersion.generativeAIUsage === 'YES'
+                                    ? 'Summary of generative AI tools used and their purpose*'
+                                    : 'Explanation of why you are unsure about the use of generative AI tools*'
+                            }
                             rows={4}
                             onChange={(e) =>
                                 updatePublicationVersion({

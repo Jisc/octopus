@@ -1192,13 +1192,22 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
 
                         <Components.ContentSection id="generative-ai" title="Generative AI usage">
                             <p className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100">
-                                {publicationVersion.generativeAIUsageDetails ||
-                                    (publicationVersion.generativeAIUsage === 'YES'
-                                        ? `The authors have indicated that they have used generative AI in the creation of this ${Helpers.formatPublicationType(publicationVersion.publication.type)}.`
-                                        : publicationVersion.generativeAIUsage === 'NO'
-                                          ? `The authors have indicated that they have not used generative AI in the creation of this ${Helpers.formatPublicationType(publicationVersion.publication.type)}.`
-                                          : `This ${Helpers.formatPublicationType(publicationVersion.publication.type)} does not have any specified generative AI usage.`)}
+                                {publicationVersion.generativeAIUsage === 'YES'
+                                    ? `The authors of this publication have declared the use of generative AI for this research.${publicationVersion.generativeAIUsageDetails ? ` The author stated:` : ''}`
+                                    : publicationVersion.generativeAIUsage === 'NO'
+                                      ? `The authors of this publication have declared that they did not use generative AI for this research.`
+                                      : publicationVersion.generativeAIUsage === 'UNSURE'
+                                        ? `The authors of this publication have indicated that they are unclear whether or not generative AI tools have been used for this research.${publicationVersion.generativeAIUsageDetails ? ` The author stated:` : ''}`
+                                        : `It is unclear if generative AI tools have been used for this publication because it predates the release of the generative AI usage declaration.`}
                             </p>
+                            {publicationVersion.generativeAIUsageDetails ? (
+                                <>
+                                    <br />
+                                    <p className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100">
+                                        {publicationVersion.generativeAIUsageDetails}
+                                    </p>
+                                </>
+                            ) : null}
                         </Components.ContentSection>
                     </section>
                     <aside className="relative hidden lg:col-span-4 lg:block xl:col-span-3">
