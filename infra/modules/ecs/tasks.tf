@@ -121,6 +121,14 @@ resource "aws_ecs_task_definition" "script-runner" {
           "name" : "SQS_ENDPOINT",
           "valueFrom" : "arn:aws:ssm:${local.region_name}:${local.account_id}:parameter/sqs_endpoint_${var.environment}_${var.project_name}"
         },
+        {
+          "name" : "UKDS_API_URL",
+          "valueFrom" : "arn:aws:ssm:${local.region_name}:${local.account_id}:parameter/ukds_api_url_${var.environment}_${var.project_name}"
+        },
+        {
+          "name" : "UKDS_API_KEY",
+          "valueFrom" : "arn:aws:ssm:${local.region_name}:${local.account_id}:parameter/ukds_api_key_${var.environment}_${var.project_name}"
+        },
       ]
     }
   ])

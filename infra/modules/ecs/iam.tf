@@ -48,7 +48,9 @@ data "aws_iam_policy_document" "task-exec-policy" {
       "arn:aws:ssm:${local.region_name}:${local.account_id}:parameter/helpdesk_enabled_user_ids_${var.environment}_${var.project_name}",
       "arn:aws:ssm:${local.region_name}:${local.account_id}:parameter/queue_url_${var.environment}_${var.project_name}",
       "arn:aws:ssm:${local.region_name}:${local.account_id}:parameter/slack_channel_email_${var.environment}_${var.project_name}",
-      "arn:aws:ssm:${local.region_name}:${local.account_id}:parameter/sqs_endpoint_${var.environment}_${var.project_name}"
+      "arn:aws:ssm:${local.region_name}:${local.account_id}:parameter/sqs_endpoint_${var.environment}_${var.project_name}",
+      "arn:aws:ssm:${local.region_name}:${local.account_id}:parameter/ukds_api_url_${var.environment}_${var.project_name}",
+      "arn:aws:ssm:${local.region_name}:${local.account_id}:parameter/ukds_api_key_${var.environment}_${var.project_name}"
     ]
   }
 }
