@@ -329,6 +329,11 @@ export const incrementalUKDSIngest = async (dryRun: boolean, reportFormat: I.Ing
 
             if (!handle.success) {
                 console.log(`Error when handling UKDS study with ID ${study.FriendlyId}: ${handle.message}`);
+
+                if (handle.unrecognisedTopics) {
+                    handle.unrecognisedTopics.forEach((topic) => console.log(`Unrecognised topic: ${topic}`));
+                }
+
                 continue;
             }
 
