@@ -1193,11 +1193,11 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
                         <Components.ContentSection id="generative-ai" title="Generative AI usage">
                             <p className="block leading-relaxed text-grey-800 transition-colors duration-500 dark:text-grey-100">
                                 {publicationVersion.generativeAIUsage === 'YES'
-                                    ? `The authors of this publication have declared the use of generative AI for this research.${publicationVersion.generativeAIUsageDetails ? ` The author stated:` : ''}`
+                                    ? `The authors of this publication have declared the use of generative AI for this research.${publicationVersion.generativeAIUsageDetails ? ` The authors stated:` : ''}`
                                     : publicationVersion.generativeAIUsage === 'NO'
                                       ? `The authors of this publication have declared that they did not use generative AI for this research.`
                                       : publicationVersion.generativeAIUsage === 'UNSURE'
-                                        ? `The authors of this publication have indicated that they are unclear whether or not generative AI tools have been used for this research.${publicationVersion.generativeAIUsageDetails ? ` The author stated:` : ''}`
+                                        ? `The authors of this publication have indicated that they are unclear whether or not generative AI tools have been used for this research.${publicationVersion.generativeAIUsageDetails ? ` The authors stated:` : ''}`
                                         : `It is unclear if generative AI tools have been used for this publication because it predates the release of the generative AI usage declaration.`}
                             </p>
                             {publicationVersion.generativeAIUsageDetails ? (
