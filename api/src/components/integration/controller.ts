@@ -21,7 +21,10 @@ export const triggerAriArchivedCheck = async (
 export const triggerUKDSIngest = async (
     event: I.APIRequest<undefined, I.TriggerUKDSIngestQueryParams, undefined>
 ): Promise<I.JSONResponse> => {
-    const triggerTaskOutput = await integrationService.triggerUKDSIngest(event.queryStringParameters.dryRun);
+    const triggerTaskOutput = await integrationService.triggerUKDSIngest(
+        event.queryStringParameters.dryRun,
+        event.queryStringParameters.forceUpdate
+    );
 
     return response.json(200, { message: triggerTaskOutput });
 };

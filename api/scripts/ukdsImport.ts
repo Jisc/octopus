@@ -12,6 +12,7 @@ import * as integrationService from 'integration/service';
  *  - dryRun: If "true", the script will not actually create or update any publications,
  *    and instead report on what it would have done.
  *    - Default: false
+ *  - forceUpdate: If "true", the script will update all publications that are in the UKDS feed, even if they have not changed since the last ingest.
  *  - reportFormat: Controls how the output of the job is reported. Can be "email" or "file". Emails
  *    are sent to the addresses listed in the INGEST_REPORT_RECIPIENTS environment variable. Files are
  *    written to "ari-import-report.txt".
@@ -22,19 +23,20 @@ import * as integrationService from 'integration/service';
  */
 const parseArguments = (): {
     dryRun: boolean;
+    forceUpdate: boolean;
     reportFormat: I.IngestReportFormat;
 } => {
     const args = Helpers.parseNpmScriptArgs();
 
     for (const arg of Object.keys(args)) {
-        if (!['dryRun', 'full', 'reportFormat'].includes(arg)) {
+        if (!['dryRun', 'forceUpdate', 'reportFormat'].includes(arg)) {
             throw new Error(`Unexpected argument: ${arg}`);
         }
     }
 
-    const { dryRun: dryRunArg, full: fullArg, reportFormat: reportFormatArg } = args;
+    const { dryRun: dryRunArg, forceUpdate: forceUpdateArg, reportFormat: reportFormatArg } = args;
 
-    for (const arg of [dryRunArg, fullArg]) {
+    for (const arg of [dryRunArg, forceUpdateArg]) {
         Helpers.checkBooleanArgValue(arg);
     }
 
@@ -44,12 +46,13 @@ const parseArguments = (): {
 
     return {
         dryRun: dryRunArg === 'true',
+        forceUpdate: forceUpdateArg === 'true',
         reportFormat: reportFormatArg ? (reportFormatArg as I.IngestReportFormat) : 'file'
     };
 };
 
-const { dryRun, reportFormat } = parseArguments();
+const { dryRun, forceUpdate, reportFormat } = parseArguments();
 
-integrationService.incrementalUKDSIngest(dryRun, reportFormat)
+integrationService.incrementalUKDSIngest(dryRun,forceUpdate, reportFormat)
     .then((message) => console.log(message))
     .catch((err) => console.log(err));

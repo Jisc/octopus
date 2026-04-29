@@ -9,6 +9,10 @@ const incrementalUKDSIngestHttpSchema: I.JSONSchemaType<I.TriggerUKDSIngestQuery
         dryRun: {
             type: 'boolean',
             nullable: true
+        },
+        forceUpdate: {
+            type: 'boolean',
+            nullable: true
         }
     },
     additionalProperties: false,

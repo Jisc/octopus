@@ -1182,6 +1182,7 @@ export interface TriggerNotificationsQueryParams {
 export interface TriggerUKDSIngestQueryParams {
     apiKey: string;
     dryRun?: boolean;
+    forceUpdate?: boolean;
 }
 
 export interface LocalNotifyPubRouterPathParams {

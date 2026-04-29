@@ -7,7 +7,6 @@ import * as OutlineIcons from '@heroicons/react/24/outline';
 import * as Components from '@/components';
 import * as Config from '@/config';
 import * as Helpers from '@/helpers';
-import * as Interfaces from '@/interfaces';
 import * as Layouts from '@/layouts';
 import * as Types from '@/types';
 import * as api from '@/api';
@@ -17,7 +16,7 @@ type SubPearl = {
     title: string;
     doi: string;
     content: string;
-    type: string;
+    type: Types.PublicationType;
 };
 
 type Pearl = {
@@ -103,7 +102,7 @@ const SubPearlPage: Types.NextPage<Props> = (props): React.ReactElement => {
                     <article className="col-span-full space-y-8 lg:col-span-6">
                         <header className="border-b border-grey-200 pb-6 dark:border-grey-700">
                             <div className="mb-4 inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-teal-700 bg-teal-700 dark:bg-teal-700 dark:text-white-50">
-                                {subPearl.type}
+                                {Helpers.formatPublicationType(subPearl.type)}
                             </div>
 
                             <h1 className="mb-4 font-montserrat text-3xl font-bold leading-tight text-grey-800 transition-colors duration-500 dark:text-white-50 lg:text-4xl">
@@ -126,7 +125,15 @@ const SubPearlPage: Types.NextPage<Props> = (props): React.ReactElement => {
                                     </p>
                                 )}
                                 <p>
-                                    <span className="font-semibold">DOI:</span> {subPearl.doi}
+                                    <span className="font-semibold">DOI: </span>
+                                    <Components.Link
+                                        href={`http://doi.org/${subPearl.doi}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="underline"
+                                    >
+                                        {subPearl.doi}
+                                    </Components.Link>
                                 </p>
                             </div>
                         </header>
@@ -154,11 +161,18 @@ const SubPearlPage: Types.NextPage<Props> = (props): React.ReactElement => {
                                 <div className="space-y-3 text-sm text-grey-600 dark:text-grey-400">
                                     <div>
                                         <p className="font-semibold text-grey-800 dark:text-white-50">Type</p>
-                                        <p className="mt-1">{subPearl.type}</p>
+                                        <p className="mt-1">{Helpers.formatPublicationType(subPearl.type)}</p>
                                     </div>
                                     <div>
                                         <p className="font-semibold text-grey-800 dark:text-white-50">DOI</p>
-                                        <p className="mt-1 break-all">{subPearl.doi}</p>
+                                        <Components.Link
+                                            href={`http://doi.org/${subPearl.doi}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="underline break-all"
+                                        >
+                                            {subPearl.doi}
+                                        </Components.Link>
                                     </div>
                                 </div>
                             </div>

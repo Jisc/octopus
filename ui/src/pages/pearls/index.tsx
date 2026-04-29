@@ -56,7 +56,7 @@ type Pearl = {
         title: string;
         doi: string;
         content: string;
-        type: string;
+        type: Types.PublicationType;
     }>;
     createdAt: string;
     updatedAt: string;
@@ -337,8 +337,10 @@ const Pearls: Types.NextPage<Props> = (props): React.ReactElement => {
                                                             {subPearl.title}
                                                         </p>
                                                         <p className="text-xs text-grey-500 dark:text-grey-400">
-                                                            <span className="font-semibold">{subPearl.type}</span> •
-                                                            DOI: {subPearl.doi}
+                                                            <span className="font-semibold">
+                                                                {Helpers.formatPublicationType(subPearl.type)}
+                                                            </span>{' '}
+                                                            • DOI: {subPearl.doi}
                                                         </p>
                                                     </Link>
                                                 ))}

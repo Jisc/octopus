@@ -271,7 +271,11 @@ export const triggerAriIngest = async (dryRun?: boolean): Promise<string> => {
     }
 };
 
-export const incrementalUKDSIngest = async (dryRun: boolean, reportFormat: I.IngestReportFormat): Promise<string> => {
+export const incrementalUKDSIngest = async (
+    dryRun: boolean,
+    forceUpdate: boolean,
+    reportFormat: I.IngestReportFormat
+): Promise<string> => {
     const lastLog = await ingestLogService.getMostRecentLog('UKDS', true);
 
     if (lastLog && !lastLog.end) {
@@ -322,7 +326,7 @@ export const incrementalUKDSIngest = async (dryRun: boolean, reportFormat: I.Ing
         }
 
         for (const study of data.list) {
-            const handle = await ukdsUtils.handleIncomingStudy(study, source, dryRun);
+            const handle = await ukdsUtils.handleIncomingStudy(study, source, dryRun, forceUpdate);
             checkedCount++;
 
             subpearlCount += handle.totalSubpearls || 0;
@@ -377,7 +381,7 @@ export const incrementalUKDSIngest = async (dryRun: boolean, reportFormat: I.Ing
     return `${preamble} ${writeCount} publication${writeCount !== 1 ? 's' : ''}.`;
 };
 
-export const triggerUKDSIngest = async (dryRun?: boolean): Promise<string> => {
+export const triggerUKDSIngest = async (dryRun?: boolean, forceUpdate?: boolean): Promise<string> => {
     if (process.env.STAGE !== 'local') {
         // If not local, trigger task to run in ECS.
         const commandParts = [
@@ -386,6 +390,7 @@ export const triggerUKDSIngest = async (dryRun?: boolean): Promise<string> => {
             'ukdsImport',
             '--',
             ...(dryRun ? ['dryRun=true'] : []),
+            ...(forceUpdate ? ['forceUpdate=true'] : []),
             'reportFormat=email'
         ];
         await triggerScriptECSTask(commandParts);
@@ -393,7 +398,7 @@ export const triggerUKDSIngest = async (dryRun?: boolean): Promise<string> => {
         return 'Task triggered.';
     } else {
         // If local, just run the ingest directly.
-        return await incrementalUKDSIngest(!!dryRun, 'file');
+        return await incrementalUKDSIngest(!!dryRun, !!forceUpdate, 'file');
     }
 };
 

@@ -336,8 +336,20 @@ function buildResults(record: StudyItemResponse['data']['getStudyItem']): I.SubP
         results += buildTitledSection('Time period', record.TimePeriod);
     }
 
+    if (record.DateOfCollection) {
+        results += buildTitledSection('Dates of fieldwork', record.DateOfCollection);
+    }
+
     if (record.Country && record.Country.length > 0) {
         results += buildTitledSection('Country', record.Country);
+    }
+
+    if (record.Region) {
+        results += buildTitledSection('Region', record.Region);
+    }
+
+    if (record.Town) {
+        results += buildTitledSection('Town', record.Town);
     }
 
     if (record.SpatialUnit && record.SpatialUnit.length > 0) {
@@ -354,6 +366,10 @@ function buildResults(record: StudyItemResponse['data']['getStudyItem']): I.SubP
 
     if (record.Universe) {
         results += buildTitledSection('Population', record.Universe);
+    }
+
+    if (record.DeviationFromSample) {
+        results += buildTitledSection('Number of units', record.DeviationFromSample);
     }
 
     if (record.Datasets) {
@@ -468,7 +484,8 @@ async function buildTopicIds(
 export const handleIncomingStudy = async (
     study: Pick<StudyItem, 'FriendlyId' | 'LatestEditionReleaseDate'>,
     source: I.PearlSource,
-    dryRun?: boolean
+    dryRun?: boolean,
+    forceUpdate?: boolean
 ): Promise<HandledUKDS> => {
     const responseData: HandledUKDS = {
         totalSubpearls: 0,
@@ -478,7 +495,7 @@ export const handleIncomingStudy = async (
         actionTaken: 'none'
     };
 
-    let requiresUpdate = false;
+    let requiresUpdate = forceUpdate || false;
 
     try {
         const existingPearl = await client.prisma.pearl.findFirst({
