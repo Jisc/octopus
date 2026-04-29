@@ -40,6 +40,7 @@ const VideoModal = (props: {
 
     React.useEffect(() => {
         if (!videoURL || videoURLError) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setVideoOEmbed(null);
             return;
         }
@@ -61,6 +62,7 @@ const VideoModal = (props: {
 
     React.useEffect(() => {
         if (visible) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setVideoURL('');
             setTranscript('');
         }

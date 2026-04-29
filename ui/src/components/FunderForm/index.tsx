@@ -196,6 +196,7 @@ const FunderForm: React.FC = (): React.ReactElement => {
 
     React.useEffect(() => {
         if (method === 'manual') {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setRor('');
         }
     }, [method]);

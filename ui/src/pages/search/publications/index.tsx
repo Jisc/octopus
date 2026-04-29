@@ -335,6 +335,7 @@ const Publications: Types.NextPage<Props> = (props): React.ReactElement => {
     };
 
     React.useEffect((): void => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setOffset(0);
     }, [query, publicationTypes, limit]);
 

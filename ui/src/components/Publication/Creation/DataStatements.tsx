@@ -29,6 +29,7 @@ const DataStatements: React.FC = (): React.ReactElement => {
             publicationVersion.dataAccessStatement &&
             !dataAccessOptions.includes(publicationVersion.dataAccessStatement)
         ) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setDataAccessStatementOther(publicationVersion.dataAccessStatement);
         }
     }, [publicationVersion.dataAccessStatement]);

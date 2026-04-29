@@ -47,6 +47,7 @@ const EditReferenceModal: React.FC<Props> = ({ title, reference, onSave, onClose
     useEffect(() => {
         if (reference?.id) {
             textEditor?.commands?.setContent(reference.text);
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setReferenceLink(reference.location);
             setSubmitError(null);
         }

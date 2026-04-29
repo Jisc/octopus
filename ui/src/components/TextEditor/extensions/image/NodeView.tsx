@@ -22,6 +22,7 @@ const NodeView = (props: Readonly<Props>) => {
     }
 
     React.useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setTempAlt(alt);
     }, [alt]);
 

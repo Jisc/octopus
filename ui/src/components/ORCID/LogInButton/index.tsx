@@ -13,6 +13,7 @@ const LogInButton: React.FC<Props> = (props): React.ReactElement => {
 
     React.useEffect(() => {
         const url = `${Config.urls.orcidLogin.path}&state=${encodeURIComponent(props.currentPath)}`;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setOauthUrl(url);
     }, [props.currentPath]);
 

@@ -257,6 +257,7 @@ const MenuBar: React.FC<MenuBarProps> = (props) => {
         if (props.editor) {
             if (props.editor.isActive('heading', { level: 1 })) {
                 const option = headingOptions.find((option) => option.name === 'Heading 1');
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 if (option) setSelected(option);
                 props.setLoading(false);
             }

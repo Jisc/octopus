@@ -19,6 +19,7 @@ const VideoTranscriptModal = (props: {
 
     React.useEffect(() => {
         if (visible) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setTranscript(initialTranscript);
         }
     }, [visible, initialTranscript]);
