@@ -581,7 +581,18 @@ export const handleIncomingStudy = async (
 
         if (existingPearl && requiresUpdate) {
             if (!dryRun) {
-                await update(existingPearl.id, pearlData);
+                const existingSubPearls = await client.prisma.subPearl.findMany({
+                    where: { pearlId: existingPearl.id },
+                    select: { id: true, type: true }
+                });
+
+                const subPearlsWithIds = pearlData.subPearls.map((subPearl) => {
+                    const existingSubPearl = existingSubPearls.find((existing) => existing.type === subPearl.type);
+
+                    return existingSubPearl ? { ...subPearl, id: existingSubPearl.id } : subPearl;
+                });
+
+                await update(existingPearl.id, { ...pearlData, subPearls: subPearlsWithIds });
             }
 
             responseData.actionTaken = 'update';

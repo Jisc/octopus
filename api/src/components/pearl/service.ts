@@ -99,6 +99,32 @@ export const create = async (data: I.CreatePearlRequestBody) => {
 
 export const update = async (pearlId: string, data: I.UpdatePearlRequestBody) => {
     const topics: { id: string }[] = [];
+    const topicsUpdate = data.topicIds ? { set: topics } : undefined;
+    const source = data.sourceId ? { connect: { id: data.sourceId } } : undefined;
+    const existingSubPearls = data.subPearls?.filter((subPearl) => !!subPearl.id) || [];
+    const newSubPearls = data.subPearls?.filter((subPearl) => !subPearl.id) || [];
+    const keepSubPearlIds = existingSubPearls.map((subPearl) => subPearl.id as string);
+
+    const subPearls = data.subPearls
+        ? {
+              deleteMany: keepSubPearlIds.length > 0 ? { id: { notIn: keepSubPearlIds } } : {},
+              update: existingSubPearls.map((subPearl) => ({
+                  where: { id: subPearl.id as string },
+                  data: {
+                      doi: subPearl.doi,
+                      title: subPearl.title,
+                      content: subPearl.content,
+                      type: subPearl.type
+                  }
+              })),
+              create: newSubPearls.map((subPearl) => ({
+                  doi: subPearl.doi,
+                  title: subPearl.title,
+                  content: subPearl.content,
+                  type: subPearl.type
+              }))
+          }
+        : undefined;
 
     // Remove duplicate topic IDs
     for (const topicId of data.topicIds || []) {
@@ -118,9 +144,9 @@ export const update = async (pearlId: string, data: I.UpdatePearlRequestBody) =>
                 language: data.language,
                 externalId: data.externalId,
                 licenceType: data.licenceType,
-                topics: { connect: topics },
-                source: { connect: { id: data.sourceId } },
-                subPearls: { create: data.subPearls }
+                topics: topicsUpdate,
+                source,
+                subPearls
             }
         });
     } catch (error) {

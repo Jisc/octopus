@@ -1266,6 +1266,7 @@ export interface PearlSourceInput {
 }
 
 export interface SubPearlInput {
+    id?: string;
     doi: string;
     title: string;
     content: string;
