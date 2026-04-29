@@ -53,6 +53,6 @@ const parseArguments = (): {
 
 const { dryRun, forceUpdate, reportFormat } = parseArguments();
 
-integrationService.incrementalUKDSIngest(dryRun,forceUpdate, reportFormat)
+integrationService.incrementalUKDSIngest(dryRun, forceUpdate, reportFormat)
     .then((message) => console.log(message))
     .catch((err) => console.log(err));

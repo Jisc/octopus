@@ -508,7 +508,7 @@ export const handleIncomingStudy = async (
 
             if (studyDate && studyDate > existingPearlDate) {
                 requiresUpdate = true;
-            } else {
+            } else if (!forceUpdate) {
                 responseData.success = true;
                 responseData.message =
                     'A publication linked to this UKDS record already exists in the system and is up to date.';
