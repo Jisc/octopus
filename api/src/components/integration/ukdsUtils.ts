@@ -96,6 +96,8 @@ export const fetchStudyItem = async (friendlyId: string): Promise<StudyItem | nu
         DataCollectionMethodology { Id Value }
         DataFormat { Id Value Comment }
         Datasets { Id Title }
+        DateOfCollection
+        DeviationFromSample
         Documents { Description Uri }
         DOI
         Keyword { Id Value }
@@ -103,10 +105,12 @@ export const fetchStudyItem = async (friendlyId: string): Promise<StudyItem | nu
         NumberOfVariables
         ObservationUnit
         ObservationUnitLocation
+        Region
         SamplingProcedure
         SpatialUnit
         TimePeriod
         Title
+        Town
         Universe
         WeightingMethodology
     }}`;
