@@ -205,6 +205,16 @@ const faqContents = [
             <p className="mb-2">To make sure that this section contains useful links, after clicking through to a related publication, you are able to vote on whether or not you think it is in some way relevant to the one you just came from.</p>
             <p>If you know of another publication that is relevant to the one you are viewing, you can also use the “Suggest a link” option to add it to the list.</p>
         `
+    },
+    {
+        title: 'What is a Pearl on Octopus?',
+        href: 'pearls_on_octopus',
+        id: 'pearls_on_octopus',
+        heading: 'What is a Pearl on Octopus?',
+        content: `
+            <p className='mb-2'>Pearls are records that have been ingested from other systems to describe datasets, archive materials, and other research objects. Each Pearl is broken down into a series of "sub-Pearls" to represent different stages of the record. Typically, each Pearl will at least have a rationale/hypothesis, method and results.</p>
+            <p>These records are available in Octopus in order to be discovered, utilised, and built upon by creating publications that are linked to them to reflect how they led to new research.</p>
+        `
     }
 ];
 

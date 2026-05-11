@@ -376,7 +376,7 @@ model PublicationBundleEntry {
 }
 
 model Pearl {
-    id          String         @id @default(cuid())
+    id          String         @id
     doi         String?
     externalId  String?
     title       String
@@ -428,7 +428,7 @@ enum PearlSourceIdentifierType {
 }
 
 model SubPearl {
-    id      String          @id @default(cuid())
+    id      String          @id
     doi     String
     title   String
     content String

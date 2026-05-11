@@ -623,6 +623,13 @@ functions:
                 path: ${self:custom.versions.v1}/pearls/{pearlId}/sub-pearls/{subPearlId}
                 method: GET
                 cors: true
+    getPearlLinks:
+        handler: dist/src/components/pearl/routes.getLinks
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/pearls/{pearlId}/links
+                method: GET
+                cors: true
     createPearl:
         handler: dist/src/components/pearl/routes.create
         events:

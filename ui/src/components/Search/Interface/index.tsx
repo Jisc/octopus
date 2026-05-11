@@ -4,6 +4,7 @@ import * as Router from 'next/router';
 import * as SolidIcons from '@heroicons/react/24/solid';
 
 import * as Components from '@/components';
+import * as Config from '@/config';
 import * as Interfaces from '@/interfaces';
 import * as Types from '@/types';
 
@@ -50,8 +51,21 @@ const SearchInterface = React.forwardRef(
                     }
 
                     if (props.searchType === 'publication-versions') {
-                        const { coAuthors, content, description, publication, publishedDate, title, versionOf } =
-                            result as Interfaces.PublicationVersion;
+                        const {
+                            coAuthors,
+                            content,
+                            description,
+                            publication,
+                            publishedDate,
+                            title,
+                            versionOf,
+                            isSubPearl,
+                            id
+                        } = result as Interfaces.PublicationVersion;
+
+                        const linkDestination = isSubPearl
+                            ? `${Config.urls.viewPearl.path}/${versionOf}/${id}`
+                            : `${Config.urls.viewPublication.path}/${versionOf}`;
                         return (
                             <Components.PublicationSearchResult
                                 key={`publication-${index}-${result.id}`}
@@ -59,6 +73,7 @@ const SearchInterface = React.forwardRef(
                                 content={content}
                                 description={description}
                                 flagCount={publication.flagCount}
+                                linkDestination={linkDestination}
                                 peerReviewCount={publication.peerReviewCount}
                                 publicationId={versionOf}
                                 publishedDate={publishedDate}

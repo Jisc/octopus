@@ -1306,6 +1306,10 @@ export interface GetSubPearlPathParams {
     subPearlId: string;
 }
 
+export interface GetPearlLinksPathParams {
+    pearlId: string;
+}
+
 export interface GetPearlsQueryStringParameters {
     limit?: string;
     offset?: string;

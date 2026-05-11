@@ -1,6 +1,7 @@
 import * as I from 'interface';
 import * as response from 'lib/response';
 import * as publicationVersionService from 'publicationVersion/service';
+import * as pearlService from 'pearl/service';
 import * as publicationService from 'publication/service';
 import * as coAuthorService from 'coAuthor/service';
 import * as userService from 'user/service';
@@ -113,16 +114,34 @@ export const getAll = async (
                 event.queryStringParameters
             );
 
-            const publicationIds: string[] = openSearchPublications.body.hits.hits.map((hit) => hit._id as string);
+            const publicationIds: string[] = [];
+            const subPearlIds: string[] = [];
+
+            for (const hit of openSearchPublications.body.hits.hits) {
+                if (hit._source?.isPearl) {
+                    subPearlIds.push(hit._id as string);
+                } else {
+                    publicationIds.push(hit._id as string);
+                }
+            }
 
             const publicationVersions = await publicationVersionService.getAllByPublicationIds(publicationIds);
+            const subPearls = await pearlService.getSubPearlsByIds(subPearlIds);
 
             const versionsOrderedBySearch = publicationIds.map((publicationId) =>
                 publicationVersions.find((version) => version.versionOf === publicationId)
             );
 
+            type SearchResultVersion = Awaited<
+                ReturnType<typeof publicationVersionService.getAllByPublicationIds>
+            >[number];
+
+            const mappedSubPearls: SearchResultVersion[] = subPearls.map(pearlService.mapSubPearlToSearchResult);
+
+            const data = versionsOrderedBySearch.concat(mappedSubPearls);
+
             return response.json(200, {
-                data: versionsOrderedBySearch,
+                data,
                 metadata: {
                     total: openSearchPublications.body.hits.total.value,
                     limit: Number(event.queryStringParameters.limit) || 10,

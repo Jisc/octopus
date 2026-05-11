@@ -52,6 +52,7 @@ export interface PublicationVersionUser {
 }
 export interface PublicationVersion {
     id: string;
+    isSubPearl?: boolean;
     doi?: string;
     versionOf: string;
     versionNumber: number;

@@ -60,6 +60,26 @@ export const getSubPearl = async (
     }
 };
 
+export const getLinks = async (
+    event: I.APIRequest<undefined, undefined, I.GetPearlLinksPathParams>
+): Promise<I.JSONResponse> => {
+    const { pearlId } = event.pathParameters;
+
+    try {
+        const pearl = await pearlService.getLinks(pearlId);
+
+        if (!pearl) {
+            return response.json(404, { message: 'Pearl not found.' });
+        }
+
+        return response.json(200, { pearl, subPearls: pearl.subPearls });
+    } catch (error) {
+        console.error(error);
+
+        return response.json(500, { message: 'Unknown server error.' });
+    }
+};
+
 export const create = async (event: I.AuthenticatedAPIRequest<I.CreatePearlRequestBody>): Promise<I.JSONResponse> => {
     try {
         const source = await pearlService.getSource(event.body.sourceId);

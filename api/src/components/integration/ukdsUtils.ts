@@ -4,6 +4,7 @@ import * as client from 'lib/client';
 import * as I from 'interface';
 import * as fs from 'fs/promises';
 import * as email from 'email';
+import * as entities from 'entities';
 import { create, update } from 'pearl/service';
 import { HandledUKDS } from 'interface';
 
@@ -220,7 +221,19 @@ Subpearls processed: ${subpearlCount}.`;
 };
 
 function formatHTML(htmlString: string): string {
-    return htmlString.replace(/\n/g, '<br/>').replace(/style="[^"]*"/g, '');
+    return entities
+        .decodeHTML(htmlString)
+        .replace(/\n/g, '<br/>')
+        .replace(/style="[^"]*"/g, '');
+}
+
+function toAnchorId(value: string): string {
+    return value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
 }
 
 function buildTitledSection(title: string, content: string | number | (string | number)[]): string {
@@ -231,7 +244,7 @@ function buildTitledSection(title: string, content: string | number | (string | 
         return '';
     }
 
-    return `<strong>${title}:</strong><br/>${filteredValues.join('<br/>')}<br/><br/>`;
+    return `<strong id="${toAnchorId(title)}">${title}:</strong><br/>${filteredValues.join('<br/>')}<br/><br/>`;
 }
 
 function getTitle(record: StudyItemResponse['data']['getStudyItem']): string {
@@ -240,13 +253,31 @@ function getTitle(record: StudyItemResponse['data']['getStudyItem']): string {
 
 function buildCreators(record: StudyItemResponse['data']['getStudyItem']): I.PearlCreatorInput[] {
     const creators: I.PearlCreatorInput[] = [];
+    const seenCreators = new Set<string>();
+
+    const addCreator = (name: string, type: I.PearlCreatorInput['type']): void => {
+        const trimmedName = name.trim();
+
+        if (!trimmedName) {
+            return;
+        }
+
+        const key = `${type}:${trimmedName.toLowerCase()}`;
+
+        if (seenCreators.has(key)) {
+            return;
+        }
+
+        seenCreators.add(key);
+        creators.push({ name: trimmedName, type });
+    };
 
     for (const individual of record.Creator.Individuals || []) {
-        creators.push({ name: individual, type: 'INDIVIDUAL' });
+        addCreator(individual, 'INDIVIDUAL');
     }
 
     for (const organisation of record.Creator.Organisations || []) {
-        creators.push({ name: organisation, type: 'ORGANISATION' });
+        addCreator(organisation, 'ORGANISATION');
     }
 
     return creators;

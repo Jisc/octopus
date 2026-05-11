@@ -1,7 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import parse from 'html-react-parser';
+import Image from 'next/image';
 
 import * as OutlineIcons from '@heroicons/react/24/outline';
 import * as Components from '@/components';
@@ -19,16 +19,93 @@ type SubPearl = {
     type: Types.PublicationType;
 };
 
+type PearlSource = {
+    name: string;
+    slug?: string;
+    identifier?: string;
+    language?: Types.Languages;
+    licenceType?: Types.LicenceType;
+};
+
+type PearlTopic = {
+    id: string;
+    title: string;
+};
+
 type Pearl = {
     id: string;
     title: string;
+    externalId?: string | null;
     creators: Array<{ name: string }>;
-    source?: { name: string };
+    topics: PearlTopic[];
+    language?: Types.Languages;
+    licenceType?: Types.LicenceType;
+    createdAt?: string;
+    source?: PearlSource | null;
+};
+
+type SiblingSubPearl = {
+    id: string;
+    title: string;
+    type: Types.PublicationType;
 };
 
 type Props = {
     pearl: Pearl;
     subPearl: SubPearl;
+};
+
+type SectionListItem = {
+    title: string;
+    href: string;
+};
+
+const publicationHierarchy: Types.PublicationType[] = [
+    'PROBLEM',
+    'HYPOTHESIS',
+    'PROTOCOL',
+    'DATA',
+    'ANALYSIS',
+    'INTERPRETATION',
+    'REAL_WORLD_APPLICATION',
+    'PEER_REVIEW'
+];
+
+const getOriginalRecordUrl = (pearl: Pearl): string | null => {
+    if (pearl.source?.slug === 'UKDS' && pearl.externalId) {
+        return `https://datacatalogue.ukdataservice.ac.uk/studies/study/${pearl.externalId}`;
+    }
+
+    if (pearl.source?.identifier?.startsWith('http')) {
+        return pearl.source.identifier;
+    }
+
+    return null;
+};
+
+const getSectionList = (content: string): SectionListItem[] => {
+    const sectionList: SectionListItem[] = [{ title: 'Main content', href: 'main-text' }];
+
+    if (!content.startsWith('<')) {
+        return sectionList;
+    }
+
+    const titleMatches = content.matchAll(/<strong\s+id="([^"]+)">([\s\S]*?)<\/strong>/g);
+
+    for (const [, href, rawTitle] of titleMatches) {
+        const title = rawTitle
+            .replace(/<[^>]+>/g, '')
+            .replace(/:$/, '')
+            .trim();
+
+        if (!title || sectionList.some((section) => section.href === href)) {
+            continue;
+        }
+
+        sectionList.push({ title, href });
+    }
+
+    return sectionList;
 };
 
 export const getServerSideProps: Types.GetServerSideProps<Props> = async (context) => {
@@ -50,7 +127,12 @@ export const getServerSideProps: Types.GetServerSideProps<Props> = async (contex
                 pearl: {
                     id: pearl.id,
                     title: pearl.title,
+                    externalId: pearl.externalId,
                     creators: pearl.creators,
+                    topics: pearl.topics || [],
+                    language: pearl.language,
+                    licenceType: pearl.licenceType,
+                    createdAt: pearl.createdAt,
                     source: pearl.source
                 },
                 subPearl: {
@@ -71,10 +153,131 @@ export const getServerSideProps: Types.GetServerSideProps<Props> = async (contex
 };
 
 const SubPearlPage: Types.NextPage<Props> = (props): React.ReactElement => {
-    const router = useRouter();
     const { pearl, subPearl } = props;
 
     const pageTitle = `${subPearl.title} - Pearls - ${Config.urls.base.title}`;
+    const sourceUrl = getOriginalRecordUrl(pearl);
+    const sectionList = getSectionList(subPearl.content);
+
+    const languageCode = pearl.language || pearl.source?.language || 'en';
+    const languageName =
+        Config.values.octopusInformation.languages.find((language) => language.code === languageCode)?.name ||
+        languageCode;
+    const licenceType = pearl.licenceType || pearl.source?.licenceType || 'CC_BY';
+    const licenceDetails = Config.values.octopusInformation.licences[licenceType];
+
+    const onDownloadJson = () => {
+        const payload = {
+            pearl: {
+                id: pearl.id,
+                title: pearl.title,
+                creators: pearl.creators,
+                topics: pearl.topics,
+                source: pearl.source
+            },
+            subPearl: {
+                ...subPearl,
+                formattedType: Helpers.formatPublicationType(subPearl.type)
+            }
+        };
+
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = `${subPearl.id}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl);
+    };
+
+    const MetadataCard = (
+        <div className="w-full space-y-2 rounded bg-white-50 px-6 py-6 shadow transition-colors duration-500 dark:bg-grey-900">
+            <div className="flex">
+                <span className="mr-2 text-sm font-semibold text-grey-800 transition-colors duration-500 dark:text-grey-100">
+                    Sub-pearl type:
+                </span>
+                <span className="text-sm font-medium text-grey-800 transition-colors duration-500 dark:text-white-50">
+                    {Helpers.formatPublicationType(subPearl.type)}
+                </span>
+            </div>
+            <div className="flex">
+                <span className="mr-2 text-sm font-semibold text-grey-800 transition-colors duration-500 dark:text-grey-100">
+                    Published date:
+                </span>
+                <span className="text-sm font-medium text-grey-800 transition-colors duration-500 dark:text-white-50">
+                    {pearl.createdAt ? Helpers.formatDate(pearl.createdAt) : 'Not available'}
+                </span>
+            </div>
+            <div className="flex">
+                <span className="mr-2 text-sm font-semibold text-grey-800 transition-colors duration-500 dark:text-grey-100">
+                    Language:
+                </span>
+                <span className="text-sm font-medium text-grey-800 transition-colors duration-500 dark:text-white-50">
+                    {languageName}
+                </span>
+            </div>
+            <div className="flex">
+                <span className="mr-2 text-sm font-semibold text-grey-800 transition-colors duration-500 dark:text-grey-100">
+                    License:
+                </span>
+                <Components.Link
+                    href={licenceDetails.link}
+                    className="flex items-center text-sm font-medium text-teal-600 transition-colors duration-500 hover:underline dark:text-teal-400"
+                    openNew
+                >
+                    <span>{licenceDetails.nicename}</span>
+                    <OutlineIcons.ArrowTopRightOnSquareIcon className="ml-1 h-4 w-4" />
+                </Components.Link>
+            </div>
+            <div className="flex">
+                <span className="mr-2 text-sm font-semibold text-grey-800 transition-colors duration-500 dark:text-grey-100">
+                    Pearl ID:
+                </span>
+                <span className="text-sm font-medium text-grey-800 transition-colors duration-500 dark:text-white-50">
+                    {pearl.id}
+                </span>
+            </div>
+            <div className="flex w-full flex-wrap whitespace-normal">
+                <span className="mr-2 whitespace-nowrap text-sm font-semibold text-grey-800 transition-colors duration-500 dark:text-grey-100">
+                    DOI:
+                </span>
+                <Components.Link
+                    href={`https://doi.org/${subPearl.doi}`}
+                    className="text-sm font-medium text-teal-600 transition-colors duration-500 hover:underline dark:text-teal-400"
+                    openNew
+                >
+                    <span className="break-all">{subPearl.doi}</span>
+                </Components.Link>
+            </div>
+
+            <Components.SectionBreak name="Actions" />
+            <div className="flex">
+                <span className="mr-2 text-sm font-semibold text-grey-800 transition-colors duration-500 dark:text-grey-100">
+                    Download:
+                </span>
+                <button
+                    aria-label="Download PDF"
+                    onClick={() => window.print()}
+                    className="mr-4 flex items-center rounded border-transparent text-right text-sm font-medium text-teal-600 outline-0 transition-colors duration-500 hover:underline focus:overflow-hidden focus:ring-2 focus:ring-yellow-400 dark:text-teal-400"
+                >
+                    <Image src="/images/pdf.svg" alt="PDF Icon" width={18} height={18} />
+                    <span className="ml-1">pdf</span>
+                </button>
+                <button
+                    aria-label="Download JSON"
+                    onClick={onDownloadJson}
+                    className="mr-4 flex items-center rounded border-transparent text-right text-sm font-medium text-teal-600 outline-0 transition-colors duration-500 hover:underline focus:overflow-hidden focus:ring-2 focus:ring-yellow-400 dark:text-teal-400"
+                >
+                    <Image src="/images/json.svg" alt="JSON Icon" width={18} height={18} />
+                    <span className="ml-1">json</span>
+                </button>
+            </div>
+
+            <Components.PublicationSidebarCardSections sectionList={sectionList} />
+        </div>
+    );
 
     return (
         <>
@@ -86,61 +289,50 @@ const SubPearlPage: Types.NextPage<Props> = (props): React.ReactElement => {
                 <link rel="canonical" href={`${Config.urls.viewPearl.canonical}/${props.pearl.id}/${subPearl.id}`} />
             </Head>
 
-            <Layouts.Standard fixedHeader={false}>
-                <section className="container mx-auto grid grid-cols-1 px-8 py-4 lg:grid-cols-8 lg:gap-16 lg:pt-16">
-                    {/* Back Button */}
-                    <div className="col-span-full mb-4">
-                        <Components.Button
-                            href="/pearls"
-                            title="Back to Pearls"
-                            startIcon={<OutlineIcons.ArrowLeftIcon className="h-4 w-4 text-white-50" />}
-                            variant="underlined"
-                        />
-                    </div>
-
-                    {/* Main Content */}
-                    <article className="col-span-full space-y-8 lg:col-span-6">
-                        <header className="border-b border-grey-200 pb-6 dark:border-grey-700">
-                            <div className="mb-4 inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide text-teal-700 bg-teal-700 dark:bg-teal-700 dark:text-white-50">
-                                {Helpers.formatPublicationType(subPearl.type)}
-                            </div>
-
-                            <h1 className="mb-4 font-montserrat text-3xl font-bold leading-tight text-grey-800 transition-colors duration-500 dark:text-white-50 lg:text-4xl">
+            <Layouts.Pearl fixedHeader={false} pearlId={pearl.id}>
+                <section className="col-span-12 lg:col-span-8 xl:col-span-9">
+                    <article>
+                        <header className="border-b border-grey-200 pb-8 dark:border-grey-700">
+                            <h1 className="mb-4 block font-montserrat text-2xl font-bold leading-tight text-grey-800 transition-colors duration-500 dark:text-white-50 md:text-3xl xl:text-3xl xl:leading-normal">
                                 {subPearl.title}
                             </h1>
 
-                            <div className="space-y-2 text-sm text-grey-600 dark:text-grey-400">
-                                <p>
-                                    <span className="font-semibold">Parent Pearl:</span> {pearl.title}
+                            {pearl.creators.length > 0 && (
+                                <p className="mb-5 text-sm text-grey-700 transition-colors duration-500 dark:text-grey-200">
+                                    {pearl.creators.map((creator) => creator.name).join(', ')}
                                 </p>
-                                {pearl.creators.length > 0 && (
-                                    <p>
-                                        <span className="font-semibold">Creators:</span>{' '}
-                                        {pearl.creators.map((c) => c.name).join(', ')}
-                                    </p>
-                                )}
-                                {pearl.source && (
-                                    <p>
-                                        <span className="font-semibold">Source:</span> {pearl.source.name}
-                                    </p>
-                                )}
-                                <p>
-                                    <span className="font-semibold">DOI: </span>
+                            )}
+
+                            <p className="text-sm leading-relaxed text-grey-700 transition-colors duration-500 dark:bg-grey-800 dark:text-grey-200">
+                                This record represents the {Helpers.formatPublicationType(subPearl.type)} for a dataset
+                                that has been harvested from an external source for use on the Octopus platform. Please
+                                visit{' '}
+                                {sourceUrl ? (
                                     <Components.Link
-                                        href={`http://doi.org/${subPearl.doi}`}
+                                        href={sourceUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="underline"
+                                        className="font-medium text-teal-600 underline transition-colors duration-500 dark:text-teal-400"
                                     >
-                                        {subPearl.doi}
+                                        {pearl.source?.name || 'the source'}
                                     </Components.Link>
-                                </p>
-                            </div>
+                                ) : (
+                                    pearl.source?.name || 'the source'
+                                )}{' '}
+                                to view this record on the original site.{' '}
+                                <Components.Link
+                                    href={`${Config.urls.faq.path}#pearls_on_octopus`}
+                                    className="font-medium text-teal-600 underline transition-colors duration-500 dark:text-teal-400"
+                                >
+                                    Click here to learn more about Pearls.
+                                </Components.Link>
+                            </p>
+
+                            <div className="mt-6 block space-y-8 lg:hidden">{MetadataCard}</div>
                         </header>
 
-                        {/* Sub-Pearl Content */}
-                        <section id="main-text" className="prose dark:prose-invert max-w-none">
-                            <div className="text-grey-800 dark:text-grey-100">
+                        <Components.ContentSection id="main-text" isMainText>
+                            <div className="prose max-w-none text-grey-800 transition-colors duration-500 dark:prose-invert dark:text-grey-100 mt-8">
                                 {typeof subPearl.content === 'string' ? (
                                     subPearl.content.startsWith('<') ? (
                                         parse(subPearl.content)
@@ -151,35 +343,13 @@ const SubPearlPage: Types.NextPage<Props> = (props): React.ReactElement => {
                                     <p>{subPearl.content}</p>
                                 )}
                             </div>
-                        </section>
+                        </Components.ContentSection>
                     </article>
-
-                    {/* Sidebar */}
-                    <aside className="col-span-full lg:col-span-2">
-                        <div className="sticky top-20 space-y-4">
-                            <div className="rounded bg-white-50 px-6 py-6 shadow transition-colors duration-500 dark:bg-grey-900">
-                                <div className="space-y-3 text-sm text-grey-600 dark:text-grey-400">
-                                    <div>
-                                        <p className="font-semibold text-grey-800 dark:text-white-50">Type</p>
-                                        <p className="mt-1">{Helpers.formatPublicationType(subPearl.type)}</p>
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold text-grey-800 dark:text-white-50">DOI</p>
-                                        <Components.Link
-                                            href={`http://doi.org/${subPearl.doi}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="underline break-all"
-                                        >
-                                            {subPearl.doi}
-                                        </Components.Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
                 </section>
-            </Layouts.Standard>
+                <aside className="relative hidden lg:col-span-4 lg:block xl:col-span-3">
+                    <div className="sticky top-20">{MetadataCard}</div>
+                </aside>
+            </Layouts.Pearl>
         </>
     );
 };

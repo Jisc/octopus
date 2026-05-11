@@ -1,5 +1,7 @@
 import * as client from 'lib/client';
 import * as I from 'interface';
+import * as entities from 'entities';
+import { generatePearlId } from 'lib/helpers';
 import { StudyItemResponse } from './types';
 import lowerToTopTopicMapping from './lowerToTopTopicMapping.json';
 
@@ -62,6 +64,21 @@ export const getSubPearl = async (pearlId: string, subPearlId: string) => {
     };
 };
 
+export const getSubPearlsByIds = async (subPearlIds: string[]) => {
+    return client.prisma.subPearl.findMany({
+        where: {
+            id: { in: subPearlIds }
+        },
+        include: {
+            Pearl: {
+                include: {
+                    creators: true
+                }
+            }
+        }
+    });
+};
+
 export const create = async (data: I.CreatePearlRequestBody) => {
     const topics: { id: string }[] = [];
 
@@ -75,6 +92,7 @@ export const create = async (data: I.CreatePearlRequestBody) => {
     try {
         return await client.prisma.pearl.create({
             data: {
+                id: generatePearlId(),
                 doi: data.doi,
                 title: data.title,
                 creators: {
@@ -85,7 +103,7 @@ export const create = async (data: I.CreatePearlRequestBody) => {
                 licenceType: data.licenceType,
                 topics: { connect: topics },
                 source: { connect: { id: data.sourceId } },
-                subPearls: { create: data.subPearls }
+                subPearls: { create: data.subPearls.map((sp) => ({ ...sp, id: generatePearlId() })) }
             },
             select: {
                 id: true
@@ -118,6 +136,7 @@ export const update = async (pearlId: string, data: I.UpdatePearlRequestBody) =>
                   }
               })),
               create: newSubPearls.map((subPearl) => ({
+                  id: generatePearlId(),
                   doi: subPearl.doi,
                   title: subPearl.title,
                   content: subPearl.content,
@@ -159,6 +178,29 @@ export const deletePearl = async (pearlId: string) => {
     await client.prisma.pearl.delete({
         where: {
             id: pearlId
+        }
+    });
+};
+
+export const getLinks = async (pearlId: string) => {
+    return client.prisma.pearl.findUnique({
+        where: { id: pearlId },
+        select: {
+            id: true,
+            title: true,
+            createdAt: true,
+            creators: {
+                select: {
+                    name: true
+                }
+            },
+            subPearls: {
+                select: {
+                    id: true,
+                    title: true,
+                    type: true
+                }
+            }
         }
     });
 };
@@ -251,7 +293,10 @@ const fetchStudyItem = async (resourceId: string): Promise<StudyItemResponse['da
 };
 
 function formatHTML(htmlString: string): string {
-    return htmlString.replace(/\n/g, '<br/>').replace(/style="[^"]*"/g, '');
+    return entities
+        .decodeHTML(htmlString)
+        .replace(/\n/g, '<br/>')
+        .replace(/style="[^"]*"/g, '');
 }
 
 function buildTitledSection(title: string, content: string | number | (string | number)[]): string {
@@ -271,13 +316,31 @@ function getTitle(record: StudyItemResponse['data']['getStudyItem']): string {
 
 function buildCreators(record: StudyItemResponse['data']['getStudyItem']): I.PearlCreatorInput[] {
     const creators: I.PearlCreatorInput[] = [];
+    const seenCreators = new Set<string>();
+
+    const addCreator = (name: string, type: I.PearlCreatorInput['type']) => {
+        const trimmedName = name.trim();
+
+        if (!trimmedName) {
+            return;
+        }
+
+        const key = `${type}:${trimmedName.toLowerCase()}`;
+
+        if (seenCreators.has(key)) {
+            return;
+        }
+
+        seenCreators.add(key);
+        creators.push({ name: trimmedName, type });
+    };
 
     for (const individual of record.Creator.Individuals || []) {
-        creators.push({ name: individual, type: 'INDIVIDUAL' });
+        addCreator(individual, 'INDIVIDUAL');
     }
 
     for (const organisation of record.Creator.Organisations || []) {
-        creators.push({ name: organisation, type: 'ORGANISATION' });
+        addCreator(organisation, 'ORGANISATION');
     }
 
     return creators;
@@ -621,4 +684,104 @@ export const harvestFromUKDS = async (
             : 'Some records were processed successfully, some were skipped.';
 
     return responseData;
+};
+
+export const mapSubPearlToSearchResult = (subPearl: Awaited<ReturnType<typeof getSubPearlsByIds>>[number]) => {
+    const createdAt = subPearl.Pearl?.createdAt || new Date();
+    const updatedAt = subPearl.Pearl?.updatedAt || createdAt;
+    const versionOf = subPearl.pearlId || subPearl.id;
+    const fallbackUser = {
+        id: 'octopus',
+        orcid: null,
+        firstName: 'Octopus',
+        lastName: null
+    };
+
+    const coAuthorsFromCreators = (subPearl.Pearl?.creators || []).map((creator, index) => {
+        const nameParts = creator.name.trim().split(/\s+/);
+        const firstName = nameParts[0] || creator.name;
+        const lastName = nameParts.slice(1).join(' ') || null;
+        const creatorUserId = `pearl-creator-${creator.id}`;
+
+        return {
+            id: `${subPearl.id}-author-${index}`,
+            linkedUser: creatorUserId,
+            confirmedCoAuthor: true,
+            user: {
+                id: creatorUserId,
+                orcid: null,
+                firstName,
+                lastName
+            }
+        };
+    });
+
+    const coAuthors =
+        coAuthorsFromCreators.length > 0
+            ? coAuthorsFromCreators
+            : [
+                  {
+                      id: `${subPearl.id}-author`,
+                      linkedUser: fallbackUser.id,
+                      confirmedCoAuthor: true,
+                      user: fallbackUser
+                  }
+              ];
+
+    const correspondingAuthor = coAuthors[0].user;
+
+    return {
+        id: subPearl.id,
+        isSubPearl: true,
+        doi: subPearl.doi,
+        versionOf,
+        versionNumber: 1,
+        isLatestVersion: true,
+        isLatestLiveVersion: true,
+        createdBy: coAuthors[0].linkedUser,
+        createdAt,
+        updatedAt,
+        currentStatus: I.PublicationStatusEnum.LIVE,
+        publishedDate: createdAt,
+        title: subPearl.title,
+        licence: subPearl.Pearl?.licenceType || 'CC_BY',
+        conflictOfInterestStatus: null,
+        conflictOfInterestText: null,
+        ethicalStatement: null,
+        ethicalStatementFreeText: null,
+        dataPermissionsStatement: null,
+        dataPermissionsStatementProvidedBy: null,
+        dataAccessStatement: null,
+        selfDeclaration: false,
+        description: null,
+        keywords: [],
+        content: subPearl.content,
+        language: subPearl.Pearl?.language || 'en',
+        fundersStatement: null,
+        publication: {
+            id: versionOf,
+            doi: subPearl.Pearl?.doi || subPearl.doi,
+            url_slug: versionOf,
+            type: subPearl.type,
+            externalId: subPearl.Pearl?.externalId || null,
+            externalSource: null,
+            archived: false,
+            flagCount: 0,
+            peerReviewCount: 0
+        },
+        user: correspondingAuthor,
+        publicationStatus: [
+            {
+                id: `${subPearl.id}-live`,
+                status: I.PublicationStatusEnum.LIVE,
+                createdAt
+            }
+        ],
+        funders: [],
+        coAuthors,
+        topics: [],
+        additionalInformation: [],
+        generativeAIUsage: null,
+        generativeAIUsageDetails: null
+    };
 };

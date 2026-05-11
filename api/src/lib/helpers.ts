@@ -128,6 +128,25 @@ export const generateOTP = (length = 10): string => {
     return OTP;
 };
 
+const PEARL_ID_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const PEARL_ID_DIGITS = '0123456789';
+
+/**
+ * Generates a unique 6-character pearl ID in the format: letter + 4 digits + letter.
+ * e.g. "A1234z"
+ */
+export const generatePearlId = (): string => {
+    const bytes = webcrypto.getRandomValues(new Uint8Array(6));
+    const first = PEARL_ID_LETTERS[bytes[0] % PEARL_ID_LETTERS.length];
+    const d1 = PEARL_ID_DIGITS[bytes[1] % PEARL_ID_DIGITS.length];
+    const d2 = PEARL_ID_DIGITS[bytes[2] % PEARL_ID_DIGITS.length];
+    const d3 = PEARL_ID_DIGITS[bytes[3] % PEARL_ID_DIGITS.length];
+    const d4 = PEARL_ID_DIGITS[bytes[4] % PEARL_ID_DIGITS.length];
+    const last = PEARL_ID_LETTERS[bytes[5] % PEARL_ID_LETTERS.length];
+
+    return `${first}${d1}${d2}${d3}${d4}${last}`;
+};
+
 /**
  *
  * @param fieldsParam - string of the form: "id,type,versions(id,title,createdAt,user)"

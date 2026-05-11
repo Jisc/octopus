@@ -14,7 +14,16 @@ export const publicationTypes: Types.PublicationType[] = [
 
 export const publicationTitleMaxLength = 1000;
 
-export const authorTypes = ['individual', 'organisational'];
+export const authorTypes = [
+    {
+        id: 'individual',
+        label: 'Octopus authors'
+    },
+    {
+        id: 'organisational',
+        label: 'External sources'
+    }
+];
 
 export const octopusInformation: Interfaces.OctopusInformation = {
     publicationTypes: {

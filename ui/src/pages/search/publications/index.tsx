@@ -88,7 +88,7 @@ const constructQueryParams = (params: {
             'authorType=' +
                 authorTypes
                     .split(',')
-                    .filter((type) => Config.values.authorTypes.includes(type))
+                    .filter((type) => Config.values.authorTypes.some((authorType) => authorType.id === type))
                     .join(',')
         );
     }
@@ -156,7 +156,7 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
             dateTo,
             authorTypes,
             affiliation,
-            generativeAI: generativeAI?.toLocaleUpperCase(),
+            generativeAI: generativeAI?.toLocaleUpperCase() ?? null,
             fallback: {
                 [swrKey]: fallbackData
             },
@@ -347,13 +347,13 @@ const Publications: Types.NextPage<Props> = (props): React.ReactElement => {
                 </legend>
                 {Config.values.authorTypes.map((type) => (
                     <Components.Checkbox
-                        key={type}
-                        checked={authorTypes ? authorTypes.split(',').includes(type) : false}
+                        key={type.id}
+                        checked={authorTypes ? authorTypes.split(',').includes(type.id) : false}
                         disabled={!response}
-                        id={type}
-                        label={type.charAt(0).toUpperCase() + type.slice(1)}
-                        name={type}
-                        onChange={(e) => collateAuthorTypes(e, type)}
+                        id={type.id}
+                        label={type.label}
+                        name={type.id}
+                        onChange={(e) => collateAuthorTypes(e, type.id)}
                     />
                 ))}
             </fieldset>

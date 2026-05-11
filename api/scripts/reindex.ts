@@ -45,7 +45,7 @@ const reindex = async (): Promise<void> => {
         }
     });
 
-    console.log(`reindexing ${pubs.length}`);
+    console.log(`reindexing ${pubs.length} publications`);
 
     for (const pub of pubs) {
         const latestLiveVersion = pub.versions[0];
@@ -64,8 +64,55 @@ const reindex = async (): Promise<void> => {
                     content: latestLiveVersion.content,
                     publishedDate: latestLiveVersion.publishedDate,
                     cleanContent: convert(latestLiveVersion.content),
-                    generativeAIUsage: latestLiveVersion.generativeAIUsage,
-                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestLiveVersion.coAuthors) }
+                    generativeAIUsage: latestLiveVersion.generativeAIUsage || null,
+                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestLiveVersion.coAuthors)
+                }
+            });
+        }
+    }
+
+    const pearls = await client.prisma.pearl.findMany({
+        select: {
+            id: true,
+            title: true,
+            createdAt: true,
+            creators: {
+                select: {
+                    name: true
+                }
+            },
+            subPearls: {
+                select: {
+                    id: true,
+                    title: true,
+                    type: true,
+                    content: true
+                }
+            }
+        }
+    });
+    
+    console.log(`reindexing ${pearls.length} pearls`);
+
+    for (const pearl of pearls) {
+        for (const subPearl of pearl.subPearls) {
+            await client.search.create({
+                index: 'publications',
+                id: subPearl.id,
+                body: {
+                    id: subPearl.id,
+                    type: subPearl.type,
+                    title: subPearl.title,
+                    organisationalAuthor: true,
+                    description: "",
+                    keywords: [],
+                    content: subPearl.content,
+                    publishedDate: pearl.createdAt,
+                    cleanContent: convert(subPearl.content),
+                    generativeAIUsage: null,
+                    affiliations: [],
+                    isPearl: true
+                }
             });
         }
     }
