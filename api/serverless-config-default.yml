@@ -616,6 +616,13 @@ functions:
             - http:
                 path: ${self:custom.versions.v1}/pearls
                 method: GET
+    getPearlsByTopic:
+        handler: dist/src/components/pearl/routes.getByTopicId
+        events:
+            - http:
+                path: ${self:custom.versions.v1}/pearls/by-topic
+                method: GET
+                cors: true
     getSubPearl:
         handler: dist/src/components/pearl/routes.getSubPearl
         events:

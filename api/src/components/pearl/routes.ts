@@ -9,6 +9,10 @@ export const getAll = middy(pearlController.getAll)
     .use(middleware.httpJsonBodyParser())
     .use(middleware.authentication());
 
+export const getByTopicId = middy(pearlController.getByTopicId)
+    .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
+    .use(middleware.httpJsonBodyParser());
+
 export const getSubPearl = middy(pearlController.getSubPearl)
     .use(middleware.doNotWaitForEmptyEventLoop({ runOnError: true, runOnBefore: true, runOnAfter: true }))
     .use(middleware.httpJsonBodyParser());

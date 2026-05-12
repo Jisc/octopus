@@ -14,27 +14,55 @@ import * as Layouts from '@/layouts';
 import * as Stores from '@/stores';
 import * as Types from '@/types';
 
+interface PearlData {
+    id: string;
+    title: string;
+    earliestSubPearlId?: string;
+    earliestSubPearlTitle?: string;
+}
+
 export const getServerSideProps: Types.GetServerSideProps = async (context) => {
     const id = context.query.id;
     let topic: Interfaces.Topic | null = null;
     let bookmarkId: string | null = null;
     let error: string | null = null;
+    let pearls: PearlData[] = [];
 
     const token = Helpers.getJWT(context);
 
-    try {
-        const response = await api.get(`${Config.endpoints.topics}/${id}`, token);
-        topic = response.data;
-    } catch (err) {
-        const { message } = err as Interfaces.JSONResponseError;
+    const [topicResult, bookmarkResult, pearlsResult] = await Promise.allSettled([
+        api.get(`${Config.endpoints.topics}/${id}`, token),
+        api.get(`${Config.endpoints.bookmarks}?type=TOPIC&entityId=${id}`, token),
+        api.get(`${Config.endpoints.pearls}/by-topic?topicId=${id}`, token)
+    ]);
+
+    if (topicResult.status === 'fulfilled') {
+        topic = topicResult.value.data;
+    } else {
+        const { message } = topicResult.reason as Interfaces.JSONResponseError;
         error = message;
     }
 
-    try {
-        const response = await api.get(`${Config.endpoints.bookmarks}?type=TOPIC&entityId=${id}`, token);
-        bookmarkId = response.data && response.data.length === 1 ? response.data[0].id : null;
-    } catch (err) {
-        console.log(err);
+    if (bookmarkResult.status === 'fulfilled') {
+        bookmarkId =
+            bookmarkResult.value.data && bookmarkResult.value.data.length === 1
+                ? bookmarkResult.value.data[0].id
+                : null;
+    } else {
+        console.log(bookmarkResult.reason);
+    }
+
+    if (pearlsResult.status === 'fulfilled') {
+        const fetchedPearls = pearlsResult.value.data.pearls || [];
+
+        pearls = fetchedPearls.map((pearl: any) => ({
+            id: pearl.id,
+            title: pearl.title,
+            earliestSubPearlId: pearl.earliestSubPearl?.id,
+            earliestSubPearlTitle: pearl.earliestSubPearl?.title
+        }));
+    } else {
+        console.log('Error fetching pearls:', pearlsResult.reason);
     }
 
     if (!topic || error) {
@@ -46,7 +74,8 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
     return {
         props: {
             topic,
-            bookmarkId
+            bookmarkId,
+            pearls
         }
     };
 };
@@ -54,6 +83,7 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
 type Props = {
     topic: Interfaces.Topic;
     bookmarkId: string | null;
+    pearls: PearlData[];
 };
 
 const Topic: Types.NextPage<Props> = (props): React.ReactElement => {
@@ -66,6 +96,7 @@ const Topic: Types.NextPage<Props> = (props): React.ReactElement => {
     const showChildren = Boolean(topic.children.length);
     const showParents = Boolean(topic.parents.length);
     const showPublications = Boolean(topic.publicationVersions.length);
+    const showPearls = Boolean(props.pearls.length);
 
     // if current topic has only one parent, fetch the parent and check if it's the god topic
     const { data: parentTopic } = useSWR<Interfaces.Topic>(
@@ -245,6 +276,31 @@ const Topic: Types.NextPage<Props> = (props): React.ReactElement => {
                                             >
                                                 {publicationVersion.title}
                                             </Components.Link>
+                                        </Components.ListItem>
+                                    ))}
+                                </Components.List>
+                            </Components.ContentSection>
+                        </div>
+                    )}
+
+                    {showPearls && (
+                        <div className="border-t border-grey-200">
+                            <Components.ContentSection id="pearls" title="Pearls below this in the hierarchy">
+                                <Components.List ordered={false}>
+                                    {props.pearls.map((pearl) => (
+                                        <Components.ListItem key={pearl.id}>
+                                            {pearl.earliestSubPearlId ? (
+                                                <Components.Link
+                                                    href={`${Config.urls.viewPearl.path}/${pearl.id}/${pearl.earliestSubPearlId}`}
+                                                    className="mb-2 text-teal-600 transition-colors duration-500 hover:underline dark:text-teal-400"
+                                                >
+                                                    {pearl.title}
+                                                </Components.Link>
+                                            ) : (
+                                                <span className="mb-2 text-grey-800 dark:text-grey-100">
+                                                    {pearl.title}
+                                                </span>
+                                            )}
                                         </Components.ListItem>
                                     ))}
                                 </Components.List>

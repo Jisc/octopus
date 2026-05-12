@@ -40,6 +40,26 @@ export const getAll = async (
     }
 };
 
+export const getByTopicId = async (
+    event: I.APIRequest<undefined, I.GetPearlsByTopicQueryStringParameters>
+): Promise<I.JSONResponse> => {
+    const topicId = event.queryStringParameters?.topicId;
+
+    if (!topicId) {
+        return response.json(400, { message: 'topicId query parameter is required.' });
+    }
+
+    try {
+        const pearls = await pearlService.getByTopic(topicId);
+
+        return response.json(200, { pearls });
+    } catch (error) {
+        console.error(error);
+
+        return response.json(500, { message: 'Unknown server error.' });
+    }
+};
+
 export const getSubPearl = async (
     event: I.APIRequest<undefined, undefined, I.GetSubPearlPathParams>
 ): Promise<I.JSONResponse> => {

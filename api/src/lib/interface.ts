@@ -1315,6 +1315,16 @@ export interface GetPearlsQueryStringParameters {
     offset?: string;
 }
 
+export interface GetPearlsByTopicQueryStringParameters {
+    topicId: string;
+}
+
+export interface PearlsByTopicItem {
+    id: string;
+    title: string;
+    earliestSubPearl: { id: string; title: string } | null;
+}
+
 export type OAIPublicationVersion = Prisma.PromiseReturnType<typeof publicationVersionService.getOAIPublicationVersion>;
 
 export type OAIPublicationVersionHeader = Pick<

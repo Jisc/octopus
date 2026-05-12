@@ -182,6 +182,45 @@ export const deletePearl = async (pearlId: string) => {
     });
 };
 
+const publicationHierarchy: I.PublicationType[] = [
+    I.PublicationType.PROBLEM,
+    I.PublicationType.HYPOTHESIS,
+    I.PublicationType.PROTOCOL,
+    I.PublicationType.DATA,
+    I.PublicationType.ANALYSIS,
+    I.PublicationType.INTERPRETATION,
+    I.PublicationType.REAL_WORLD_APPLICATION,
+    I.PublicationType.PEER_REVIEW
+];
+
+export const getByTopic = async (topicId: string): Promise<I.PearlsByTopicItem[]> => {
+    const pearls = await client.prisma.pearl.findMany({
+        where: {
+            topics: { some: { id: topicId } }
+        },
+        select: {
+            id: true,
+            title: true,
+            subPearls: {
+                select: { id: true, title: true, type: true }
+            }
+        }
+    });
+
+    return pearls.map((pearl) => {
+        const sorted = [...pearl.subPearls].sort(
+            (a, b) => publicationHierarchy.indexOf(a.type) - publicationHierarchy.indexOf(b.type)
+        );
+        const earliest = sorted[0] ?? null;
+
+        return {
+            id: pearl.id,
+            title: pearl.title,
+            earliestSubPearl: earliest ? { id: earliest.id, title: earliest.title } : null
+        };
+    });
+};
+
 export const getLinks = async (pearlId: string) => {
     return client.prisma.pearl.findUnique({
         where: { id: pearlId },
