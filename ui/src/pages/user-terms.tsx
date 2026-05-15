@@ -60,7 +60,7 @@ const UserTerms: NextPage = (): React.ReactElement => (
                         </h1>
                         <StandardText>
                             <>
-                                Please read these Octopus Platform User Terms (<span className="font-bold">Terms</span>)
+                                Please read these Octopus Platform User Terms (<span className="font-bold">Terms</span>){' '}
                                 carefully before you access and use the resources and tools on the Octopus Service (
                                 <span className="font-bold">the Service</span>).
                                 <br />
@@ -85,7 +85,7 @@ const UserTerms: NextPage = (): React.ReactElement => (
                         <StandardText asDiv={true}>
                             <ul className="ml-8 list-disc">
                                 <li className="mb-6">
-                                    <span className="font-bold">About the service:</span> To see more information on the
+                                    <span className="font-bold">About the service:</span>{' '}To see more information on the
                                     Jisc&apos;s Octopus service and what it offers see our service information page at:
                                     <Components.Link
                                         href={Config.urls.about.path}
@@ -96,7 +96,7 @@ const UserTerms: NextPage = (): React.ReactElement => (
                                     </Components.Link>
                                 </li>
                                 <li className="mb-6">
-                                    <span className="font-bold">About Jisc:</span> The Service is operated by{' '}
+                                    <span className="font-bold">About Jisc:</span>{' '}The Service is operated by{' '}
                                     <Components.Link
                                         href="https://www.jisc.ac.uk/"
                                         openNew={true}
@@ -109,7 +109,7 @@ const UserTerms: NextPage = (): React.ReactElement => (
                                     Bristol, BS1 6NB (Jisc).
                                 </li>
                                 <li className="mb-6">
-                                    <span className="font-bold">To contact us</span> Please email:
+                                    <span className="font-bold">To contact us</span>{' '}Please email:
                                     <Components.Link
                                         href="mailto:help@jisc.ac.uk"
                                         openNew={true}
@@ -119,11 +119,11 @@ const UserTerms: NextPage = (): React.ReactElement => (
                                     </Components.Link>
                                     <br />
                                     <br />
-                                    <span className="font-bold">How these Terms apply:</span> These Terms apply to your
+                                    <span className="font-bold">How these Terms apply:</span>{' '}These Terms apply to your
                                     access to and use of the Service
                                 </li>
                                 <li className="mb-6">
-                                    <span className="font-bold">Privacy Policy:</span> Our Privacy Policy also applies
+                                    <span className="font-bold">Privacy Policy:</span>{' '}Our Privacy Policy also applies
                                     to your use of the Service:
                                     <Components.Link
                                         href={Config.urls.privacy.path}
@@ -134,7 +134,7 @@ const UserTerms: NextPage = (): React.ReactElement => (
                                     </Components.Link>
                                 </li>
                                 <li className="mb-6">
-                                    <span className="font-bold">Changes to terms:</span> We may update these Terms and
+                                    <span className="font-bold">Changes to terms:</span>{' '}We may update these Terms and
                                     the Privacy Policy. Changes will have immediate effect from the date of posting on
                                     the Service website. All Service users should therefore review these Terms
                                     regularly. Your continued use of the Service after changes have been made will be
@@ -142,14 +142,14 @@ const UserTerms: NextPage = (): React.ReactElement => (
                                     reserve the right to revoke, withdraw or amend these Terms without notice.
                                 </li>
                                 <li className="mb-6">
-                                    <span className="font-bold">Changes to the Service:</span> We may update and change
+                                    <span className="font-bold">Changes to the Service:</span>{' '}We may update and change
                                     our Service from time to time, for example, to reflect changes to our products or
                                     our users&apos; needs. We will try to give you reasonable notice of any major
                                     changes. Jisc does not guarantee that the Service website, or any content on it
                                     (including any guidance and resources), will be free from errors or omissions.
                                 </li>
                                 <li className="mb-6">
-                                    <span className="font-bold">We may suspend or withdraw the Service: </span> We do
+                                    <span className="font-bold">We may suspend or withdraw the Service:</span>{' '}We do
                                     not guarantee that the Service website, or any content on it, will always be
                                     available or be uninterrupted. Use of the Service and access to the Service website
                                     is permitted on a temporary basis. We may suspend or withdraw or restrict the
@@ -157,7 +157,7 @@ const UserTerms: NextPage = (): React.ReactElement => (
                                     reasons. We will try to give you reasonable notice of any suspension or withdrawal.
                                 </li>
                                 <li className="mb-6">
-                                    <span className="font-bold">Viruses: </span> We have designed the Service following
+                                    <span className="font-bold">Viruses:</span>{' '}We have designed the Service following
                                     best practice in secure design and development however we cannot guarantee that the
                                     Service is virus / bug free and advises that you use up-to-date browsers and virus
                                     protection software.
@@ -175,14 +175,14 @@ const UserTerms: NextPage = (): React.ReactElement => (
                         <StandardText asDiv={true}>
                             <ul className="ml-8 mt-6 list-disc">
                                 <li className="mb-6">
-                                    An <span className="font-bold">Ordinary User </span> is a user anywhere in the world
+                                    An <span className="font-bold">Ordinary User</span>{' '}is a user anywhere in the world
                                     who accesses the Service via an internet device (and who has not logged into the
                                     Service as a Registered User). An Ordinary Users can search, browse, and view
                                     content published to the Service website, and use a limited set of resources and
                                     tools, in accordance with these Terms.
                                 </li>
                                 <li className="mb-6">
-                                    A <span className="font-bold">Registered User </span> is an individual who has
+                                    A <span className="font-bold">Registered User</span>{' '}is an individual who has
                                     created an Octopus user account affiliated with an ORCID® iD by following the steps
                                     set out in Section 3. A Registered User can search, browse, and view content
                                     published to the site, but can also publish their own research as well as review,
@@ -533,31 +533,31 @@ const UserTerms: NextPage = (): React.ReactElement => (
                         <StandardText asDiv={true}>
                             <ul className="ml-8 list-disc">
                                 <li className="mb-6">
-                                    <span className="font-bold">No partnership: </span> Users acknowledge that these
+                                    <span className="font-bold">No partnership:</span>{' '}Users acknowledge that these
                                     Terms do not create or imply any partnership, joint venture or trust relationship
                                     between Jisc and any User.
                                 </li>
                                 <li className="mb-6">
-                                    <span className="font-bold">Entire agreement: </span> These Terms (including the
+                                    <span className="font-bold">Entire agreement:</span>{' '}These Terms (including the
                                     Privacy Policy and any relevant User Content licence terms) contain all the terms
                                     applicable to the use of the Service and Service website by you, and form the entire
                                     agreement between you and Jisc.
                                 </li>
                                 <li className="mb-6">
-                                    <span className="font-bold">Invalidity/ enforceability: </span>Each of the terms of
+                                    <span className="font-bold">Invalidity/ enforceability:</span>{' '}Each of the terms of
                                     these Terms operates separately. If any court or competent authority decides that
                                     any of them are unlawful or unenforceable, the remaining conditions will remain in
                                     full force and effect.
                                 </li>
                                 <li className="mb-6">
-                                    <span className="font-bold">No waiver: </span>If Jisc fails to insist that you
+                                    <span className="font-bold">No waiver:</span>{' '}If Jisc fails to insist that you
                                     perform any of your obligations, or if Jisc does not enforce its rights against you,
                                     or if Jisc delays in doing so, that will not mean that Jisc has waived its rights
                                     against you and will not mean that you do not have to comply with those obligations.
                                     Any waiver would need to be given by Jisc in writing.
                                 </li>
                                 <li className="mb-6">
-                                    <span className="font-bold">Matters outside of Jisc&apos;s control: </span>Jisc will
+                                    <span className="font-bold">Matters outside of Jisc&apos;s control:</span>{' '}Jisc will
                                     not be liable or responsible for any failure to perform, or delay in performance of,
                                     any of its obligations under these Terms if that is caused by events outside
                                     Jisc&apos;s reasonable control, including any act, event, non-happening, omission or
@@ -584,27 +584,31 @@ const UserTerms: NextPage = (): React.ReactElement => (
                                 <li className="mb-6">
                                     The acts, decrees, legislation, regulations or restrictions of any government.
                                 </li>
+                            </ul>
+
+                            <p className="ml-16">
                                 Jisc&apos;s performance under these Terms will be suspended for the period that such
                                 events set out above continues, and Jisc will have an extension of time to carry out
                                 their obligations under any contract for the duration of that period. Where possible,
                                 Jisc will use reasonable efforts to bring such event detailed above to a close or to
                                 find a solution.
-                            </ul>
+                            </p>
+
                             <ul className="ml-8 list-disc">
                                 <li className="mb-6 mt-6">
-                                    <span className="font-bold">Notices to you: </span> These Terms and the Privacy
+                                    <span className="font-bold">Notices to you:</span>{' '}These Terms and the Privacy
                                     Policy are drawn up in the English language. All written communications between you
                                     and us relating to these Terms and the Privacy Policy will be given in English. We
                                     will send any notices relating to any of the matters set out in these Terms to the
                                     email address you use to access the Service or the Service.
                                 </li>
                                 <li className="mb-6">
-                                    <span className="font-bold">Governing law: </span> These Terms and any dispute in
+                                    <span className="font-bold">Governing law:</span>{' '}These Terms and any dispute in
                                     relation to the materials available from the Service will be governed by laws of
                                     England and Wales.
                                 </li>
                                 <li className="mb-6">
-                                    <span className="font-bold">Jurisdiction: </span> The English courts have exclusive
+                                    <span className="font-bold">Jurisdiction:</span>{' '}The English courts have exclusive
                                     jurisdiction to settle any disputes which may arise out of or in connection with
                                     these Terms or use of the Service and/or Service website
                                 </li>
@@ -659,7 +663,7 @@ const UserTerms: NextPage = (): React.ReactElement => (
                                     Exit) Regulations 2019 (as amended by SI 2020 no. 1586) and incorporated into UK law
                                     under the UK European Union (Withdrawal) Act 2018, as amended to be referred to as{' '}
                                     <span className="font-bold">DPA 2018</span> and the{' '}
-                                    <span className="font-bold">UK GDPR </span>respectively; and (b) any code of
+                                    <span className="font-bold">UK GDPR</span>{' '}respectively; and (b) any code of
                                     practice or guidance published by the ICO or European Data Protection Board from
                                     time to time;
                                     <br />
@@ -748,7 +752,7 @@ const UserTerms: NextPage = (): React.ReactElement => (
                                         <span className="font-bold">Processing</span>
                                         <br />
                                         has the meaning set out in the UK GDPR (and{' '}
-                                        <span className="font-bold">Process and Processed</span> shall be construed
+                                        <span className="font-bold">Process and Processed</span>{' '}shall be construed
                                         accordingly);
                                         <br />
                                         <br />

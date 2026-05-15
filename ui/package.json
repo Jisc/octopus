@@ -57,7 +57,7 @@
         "katex": "^0.16.21",
         "luxon": "^3.4.4",
         "mammoth": "^1.11.0",
-        "next": "^16.1.6",
+        "next": "^16.2.6",
         "next-nprogress-bar": "^2.3.5",
         "react": "19.2.0",
         "react-click-away-listener": "^2.2.3",

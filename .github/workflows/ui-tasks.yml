@@ -71,7 +71,6 @@ jobs:
         working-directory: ./ui
         run: |
           npm run customInstall --tiptap_token=${{secrets.TIPTAP_REGISTRY_ACCESS_TOKEN}}
-          npm install -g @lhci/cli@0.8.x
 
       - name: Run build
         working-directory: ./ui
@@ -79,7 +78,7 @@ jobs:
 
       - name: Run lighthouseCI
         working-directory: ./ui
-        run: lhci autorun
+        run: npm run lighthouse
 
   ui-tests:
     if: github.repository != 'Jisc/octopus'
