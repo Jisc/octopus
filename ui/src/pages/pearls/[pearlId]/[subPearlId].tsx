@@ -50,9 +50,19 @@ type SiblingSubPearl = {
     type: Types.PublicationType;
 };
 
+type PearlLinksData = {
+    pearl: {
+        id: string;
+        createdAt: string;
+        creators: Array<{ name: string }>;
+    };
+    subPearls: SiblingSubPearl[];
+};
+
 type Props = {
     pearl: Pearl;
     subPearl: SubPearl;
+    pearlLinks: PearlLinksData;
 };
 
 type SectionListItem = {
@@ -70,6 +80,22 @@ const publicationHierarchy: Types.PublicationType[] = [
     'REAL_WORLD_APPLICATION',
     'PEER_REVIEW'
 ];
+
+const getFirstSubPearlByHierarchy = (subPearls: SiblingSubPearl[]): SiblingSubPearl | null => {
+    if (!subPearls.length) {
+        return null;
+    }
+
+    return [...subPearls].sort((a, b) => {
+        const aIndex = publicationHierarchy.indexOf(a.type);
+        const bIndex = publicationHierarchy.indexOf(b.type);
+
+        const normalisedAIndex = aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex;
+        const normalisedBIndex = bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex;
+
+        return normalisedAIndex - normalisedBIndex;
+    })[0];
+};
 
 const getOriginalRecordUrl = (pearl: Pearl): string | null => {
     if (pearl.source?.slug === 'UKDS' && pearl.externalId) {
@@ -113,14 +139,26 @@ export const getServerSideProps: Types.GetServerSideProps<Props> = async (contex
 
     try {
         const token = Helpers.getJWT(context);
-        const response = await api.get(`${Config.endpoints.pearls}/${pearlId}/sub-pearls/${subPearlId}`, token);
-        const { pearl, subPearl } = response.data;
+        const [subPearlResponse, linksResponse] = await Promise.all([
+            api.get(`${Config.endpoints.pearls}/${pearlId}/sub-pearls/${subPearlId}`, token),
+            api.get(`${Config.endpoints.pearls}/${pearlId}/links`, token)
+        ]);
+        const { pearl, subPearl } = subPearlResponse.data;
 
         if (!pearl || !subPearl) {
             return {
                 notFound: true
             };
         }
+
+        const pearlLinks: PearlLinksData = {
+            pearl: linksResponse.data?.pearl || {
+                id: pearl.id,
+                createdAt: pearl.createdAt || new Date().toISOString(),
+                creators: pearl.creators || []
+            },
+            subPearls: linksResponse.data?.subPearls || []
+        };
 
         return {
             props: {
@@ -141,7 +179,8 @@ export const getServerSideProps: Types.GetServerSideProps<Props> = async (contex
                     doi: subPearl.doi,
                     content: subPearl.content,
                     type: subPearl.type
-                }
+                },
+                pearlLinks
             }
         };
     } catch (error) {
@@ -153,11 +192,17 @@ export const getServerSideProps: Types.GetServerSideProps<Props> = async (contex
 };
 
 const SubPearlPage: Types.NextPage<Props> = (props): React.ReactElement => {
-    const { pearl, subPearl } = props;
+    const { pearl, subPearl, pearlLinks } = props;
 
     const pageTitle = `${subPearl.title} - Pearls - ${Config.urls.base.title}`;
     const sourceUrl = getOriginalRecordUrl(pearl);
+    const firstSubPearl = getFirstSubPearlByHierarchy(pearlLinks.subPearls);
+    const showTopics = !!pearl.topics.length && firstSubPearl?.id === subPearl.id;
     const sectionList = getSectionList(subPearl.content);
+
+    if (showTopics) {
+        sectionList.push({ title: 'Linked topics', href: 'topics' });
+    }
 
     const languageCode = pearl.language || pearl.source?.language || 'en';
     const languageName =
@@ -289,7 +334,7 @@ const SubPearlPage: Types.NextPage<Props> = (props): React.ReactElement => {
                 <link rel="canonical" href={`${Config.urls.viewPearl.canonical}/${props.pearl.id}/${subPearl.id}`} />
             </Head>
 
-            <Layouts.Pearl fixedHeader={false} pearlId={pearl.id}>
+            <Layouts.Pearl fixedHeader={false} pearlId={pearl.id} pearlLinks={pearlLinks}>
                 <section className="col-span-12 lg:col-span-8 xl:col-span-9">
                     <article>
                         <header className="border-b border-grey-200 pb-8 dark:border-grey-700">
@@ -344,6 +389,27 @@ const SubPearlPage: Types.NextPage<Props> = (props): React.ReactElement => {
                                 )}
                             </div>
                         </Components.ContentSection>
+
+                        {showTopics && (
+                            <Components.ContentSection
+                                id="topics"
+                                title="Research topics above this in the hierarchy"
+                                hasBreak
+                            >
+                                <Components.List ordered={false}>
+                                    {pearl.topics.map((topic) => (
+                                        <Components.ListItem key={topic.id}>
+                                            <Components.Link
+                                                href={`${Config.urls.viewTopic.path}/${topic.id}`}
+                                                className="mb-2 text-teal-600 transition-colors duration-500 hover:underline dark:text-teal-400"
+                                            >
+                                                {topic.title}
+                                            </Components.Link>
+                                        </Components.ListItem>
+                                    ))}
+                                </Components.List>
+                            </Components.ContentSection>
+                        )}
                     </article>
                 </section>
                 <aside className="relative hidden lg:col-span-4 lg:block xl:col-span-3">

@@ -21,7 +21,7 @@ export const authorTypes = [
     },
     {
         id: 'organisational',
-        label: 'External sources'
+        label: 'Non-Octopus sources'
     }
 ];
 

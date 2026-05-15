@@ -64,16 +64,23 @@ const getArrows = (subPearlsByType: SubPearlStages) => {
 
 type VisualizationProps = {
     pearlId: string;
+    linksData?: PearlLinksResponse;
 };
 
 const Visualization: React.FC<VisualizationProps> = (props): React.ReactElement => {
     const router = useRouter();
     const currentSubPearlId = router.query.subPearlId as string | undefined;
-    const { data } = useSWR<PearlLinksResponse>(`${Config.endpoints.pearls}/${props.pearlId}/links`, null, {
-        fallback: {
-            data: {}
+    const shouldFetchLinks = !props.linksData;
+    const { data } = useSWR<PearlLinksResponse>(
+        shouldFetchLinks ? `${Config.endpoints.pearls}/${props.pearlId}/links` : null,
+        null,
+        {
+            fallback: {
+                data: {}
+            }
         }
-    });
+    );
+    const linksData = props.linksData || data;
 
     const visualizationHeaderRef = useRef<HTMLDivElement>(null);
     const visualizationWrapperRef = useRef<HTMLDivElement>(null);
@@ -99,7 +106,7 @@ const Visualization: React.FC<VisualizationProps> = (props): React.ReactElement 
     );
 
     const subPearlsByType = useMemo((): SubPearlStages => {
-        return (data?.subPearls || []).reduce<SubPearlStages>(
+        return (linksData?.subPearls || []).reduce<SubPearlStages>(
             (acc, subPearl) => {
                 if (subPearl.type === 'HYPOTHESIS') {
                     acc.HYPOTHESIS.push(subPearl);
@@ -126,7 +133,7 @@ const Visualization: React.FC<VisualizationProps> = (props): React.ReactElement 
                 DATA: []
             }
         );
-    }, [data]);
+    }, [linksData]);
 
     const arrows = useMemo(() => getArrows(subPearlsByType), [subPearlsByType]);
 
@@ -150,17 +157,17 @@ const Visualization: React.FC<VisualizationProps> = (props): React.ReactElement 
                 >
                     <Xwrapper>
                         <div className="grid min-w-[1000px] grid-cols-7 gap-[2%] 3xl:gap-[1.75%]">
-                            {data &&
+                            {linksData &&
                                 filteredPublicationTypes.map((type) => (
                                     <div key={type} className="space-y-4 p-1">
-                                        {getSubPearlsByType(data.subPearls, type as Types.PublicationType).map(
+                                        {getSubPearlsByType(linksData.subPearls, type as Types.PublicationType).map(
                                             (subPearl) => {
                                                 const isSelected = currentSubPearlId === subPearl.id;
                                                 return (
                                                     <Components.Link
                                                         key={subPearl.id}
                                                         id={subPearl.id}
-                                                        href={`${Config.urls.viewPearl.path}/${data.pearl.id}/${subPearl.id}`}
+                                                        href={`${Config.urls.viewPearl.path}/${linksData.pearl.id}/${subPearl.id}`}
                                                         className={`${
                                                             isSelected
                                                                 ? 'border-teal-600 bg-teal-700 tracking-wide text-white-50 dark:bg-teal-800'
@@ -178,7 +185,7 @@ const Visualization: React.FC<VisualizationProps> = (props): React.ReactElement 
                                                             <span>{subPearl.title}</span>
                                                         </div>
                                                         <div className="space-y-2">
-                                                            {data.pearl.creators.length > 0 && (
+                                                            {linksData.pearl.creators.length > 0 && (
                                                                 <span
                                                                     className={`${
                                                                         isSelected
@@ -186,7 +193,9 @@ const Visualization: React.FC<VisualizationProps> = (props): React.ReactElement 
                                                                             : 'text-grey-600 dark:font-medium dark:text-teal-50'
                                                                     } block overflow-hidden text-ellipsis whitespace-nowrap text-xxs transition-colors duration-500 2xl:text-xs`}
                                                                 >
-                                                                    {data.pearl.creators.map((c) => c.name).join(', ')}
+                                                                    {linksData.pearl.creators
+                                                                        .map((c) => c.name)
+                                                                        .join(', ')}
                                                                 </span>
                                                             )}
                                                             <time
@@ -196,10 +205,10 @@ const Visualization: React.FC<VisualizationProps> = (props): React.ReactElement 
                                                                         : 'text-grey-600 dark:text-grey-200'
                                                                 } block text-xxs transition-colors duration-500 2xl:text-xs`}
                                                             >
-                                                                {Helpers.formatDate(data.pearl.createdAt, 'short')}
+                                                                {Helpers.formatDate(linksData.pearl.createdAt, 'short')}
                                                             </time>
                                                             <span className="mt-1 ml-auto block w-fit truncate rounded-md bg-white-50 px-1.5 text-xxs font-semibold text-teal-700 transition-colors duration-500 dark:bg-teal-600 dark:text-white-50">
-                                                                Part of Pearl #{data.pearl.id.slice(0, 6)}
+                                                                Part of Pearl #{linksData.pearl.id.slice(0, 6)}
                                                             </span>
                                                         </div>
                                                     </Components.Link>
