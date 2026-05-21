@@ -212,8 +212,8 @@ const faqContents = [
         id: 'pearls_on_octopus',
         heading: 'What is a Pearl on Octopus?',
         content: `
-            <p className='mb-2'>Pearls are records that have been ingested from other systems to describe datasets, archive materials, and other research objects. Each Pearl is broken down into a series of "sub-Pearls" to represent different stages of the record. Typically, each Pearl will at least have a rationale/hypothesis, method and results.</p>
-            <p>These records are available in Octopus in order to be discovered, utilised, and built upon by creating publications that are linked to them to reflect how they led to new research.</p>
+            <p className='mb-2'>We want to help researchers who use existing data or digital objects as the basis for their research, and those whose work is not 'Problem'-driven. 'Pearls' are our name for digital objects that exist in a specialist repository somewhere else and already have a DOI, but which we have pulled in to Octopus within a wrapper in order to make them easier to find, and easier to link your work to.</p>
+            <p>For example, if your work is an analysis of a digitised manuscript, and that manuscript is in Octopus as a Pearl, you can link your analysis directly to it. This makes it easier for others to find your work and understand the sources you have used, and also allows funders to trace who is using resources that they may have funded.</p>
         `
     }
 ];

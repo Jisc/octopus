@@ -19,16 +19,25 @@ type OptionProps = {
         lastName: string | null;
         role: Types.UserRole;
     };
+    pearl?: {
+        id: string;
+        creators: {
+            name: string;
+        }[];
+    } | null;
 };
 
 const Option = (props: OptionProps): React.ReactElement => {
-    const { content, id, flagCount, peerReviewCount, publishedDate, title, type, user } = props;
+    const { content, id, flagCount, peerReviewCount, publishedDate, title, type, user, pearl } = props;
     const hasFlagAndPeerReview = flagCount && peerReviewCount;
     const hasOneOfFlagOrPeerReview = flagCount || peerReviewCount;
     const value: Types.LinkedPublicationComboboxOptionValue = {
         id,
         title
     };
+
+    const authorName = pearl ? pearl.creators[0].name : Helpers.abbreviateUserName(user);
+
     return (
         <HeadlessUI.Combobox.Option
             key={id}
@@ -56,7 +65,7 @@ const Option = (props: OptionProps): React.ReactElement => {
                                 <time suppressHydrationWarning>{Helpers.formatDate(publishedDate)}</time>,
                             </span>
                         )}
-                        <span className="text-xs leading-none text-grey-700">{Helpers.abbreviateUserName(user)}</span>
+                        <span className="text-xs leading-none text-grey-700">{authorName}</span>
                     </div>
                     <Components.EngagementCounts
                         flagCount={flagCount}

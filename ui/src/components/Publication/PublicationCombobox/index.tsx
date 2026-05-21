@@ -91,6 +91,7 @@ const PublicationCombobox: React.FC<PublicationComboboxProps> = (props): React.R
                 type={publicationVersion.publication.type}
                 user={publicationVersion.user}
                 first={index === 0}
+                pearl={publicationVersion.publication.pearl}
                 last={index === livePublications.length - 1}
                 flagCount={publicationVersion.publication.flagCount || 0}
                 peerReviewCount={publicationVersion.publication.peerReviewCount || 0}

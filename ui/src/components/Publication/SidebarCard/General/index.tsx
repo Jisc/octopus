@@ -24,8 +24,13 @@ const General: React.FC<Props> = (props): React.ReactElement => {
     const activeFlags = React.useMemo(() => props.flags.filter((flag) => !flag.resolved), [props.flags]);
 
     const showVersionDoi = props.publicationVersion.doi;
-    const versionDoiUrl = Config.values.doiBaseUrl + props.publicationVersion.doi;
-    const versionlessDoiUrl = Config.values.doiBaseUrl + props.publicationVersion.publication.doi;
+
+    const doiBaseUrl = props.publicationVersion.publication.pearl
+        ? Config.values.pearlDoiBaseUrl
+        : Config.values.doiBaseUrl;
+
+    const versionDoiUrl = doiBaseUrl + props.publicationVersion.doi;
+    const versionlessDoiUrl = doiBaseUrl + props.publicationVersion.publication.doi;
 
     const uniqueRedFlagCategoryList = React.useMemo(
         () => Array.from(new Set(activeFlags.map((flag) => flag.category))),

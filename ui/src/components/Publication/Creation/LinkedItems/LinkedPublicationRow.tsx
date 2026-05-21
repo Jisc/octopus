@@ -14,6 +14,7 @@ type Props = {
 const LinkedPublicationRow: React.FC<Props> = (props): React.ReactElement => {
     const [loading, setLoading] = React.useState(false);
     const inherited = !props.linkedPublication.draft;
+    const pearl = props.linkedPublication.pearl;
 
     const handleDelete = async () => {
         setLoading(true);
@@ -25,6 +26,14 @@ const LinkedPublicationRow: React.FC<Props> = (props): React.ReactElement => {
         await props.markLinkForDeletion(props.linkedPublication.linkId, toDelete);
         setLoading(false);
     };
+
+    const authorName = pearl
+        ? pearl.creators[0].name
+        : Helpers.abbreviateUserName({
+              firstName: props.linkedPublication.authorFirstName,
+              lastName: props.linkedPublication.authorLastName
+          });
+
     const iconClasses = 'h-6 w-6 text-teal-600 transition-colors duration-500 dark:text-teal-400';
     const tdClasses = 'py-4 px-3 sm:px-6 text-sm text-grey-900 transition-colors duration-500 dark:text-white-50';
 
@@ -50,10 +59,7 @@ const LinkedPublicationRow: React.FC<Props> = (props): React.ReactElement => {
                             ,
                         </span>
                         <span className="text-sm text-grey-700 transition-colors duration-500 dark:text-white-100">
-                            {Helpers.abbreviateUserName({
-                                firstName: props.linkedPublication.authorFirstName,
-                                lastName: props.linkedPublication.authorLastName
-                            })}
+                            {authorName}
                         </span>
                     </div>
                 </div>

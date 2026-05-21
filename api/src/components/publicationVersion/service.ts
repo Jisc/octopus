@@ -1016,6 +1016,7 @@ export const postPublishHook = async (publicationVersion: I.PublicationVersion, 
         }
 
         let versionWithDOI: I.PublicationVersion | null = null;
+        const isPearl = publicationVersion.publication.pearl;
 
         if (!Helpers.isPublicationExemptFromReversioning(publicationVersion.publication)) {
             // Generate a DOI for this version.
@@ -1035,7 +1036,7 @@ export const postPublishHook = async (publicationVersion: I.PublicationVersion, 
 
         // Update the canonical DOI with the latest details from this version.
         // If we have a version with a DOI, pass that, but if not just pass one without.
-        if (!publicationVersion.publication.pearl?.id) {
+        if (!isPearl) {
             await doi.updateCanonicalDOI(publicationVersion.publication.doi, versionWithDOI || publicationVersion);
         }
 
@@ -1043,7 +1044,9 @@ export const postPublishHook = async (publicationVersion: I.PublicationVersion, 
         const postDBUpdatePromises: Array<Promise<unknown>> = [];
 
         // Notifications
-        postDBUpdatePromises.push(createBulletinNotifications(publicationVersion, previousVersion));
+        if (!isPearl) {
+            postDBUpdatePromises.push(createBulletinNotifications(publicationVersion, previousVersion));
+        }
 
         // (Re)index publication in opensearch.
         postDBUpdatePromises.push(
@@ -1083,7 +1086,8 @@ export const postPublishHook = async (publicationVersion: I.PublicationVersion, 
             })
         );
 
-        if (process.env.STAGE !== 'local') {
+        // Pearls should neither generate a PDF nor notify the publications router.
+        if (process.env.STAGE !== 'local' && !isPearl) {
             if (!skipPdfGeneration) {
                 // Send message to the pdf generation queue.
                 // Skipped locally, as there is not an SQS queue in localstack.

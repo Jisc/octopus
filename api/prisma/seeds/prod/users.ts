@@ -11,12 +11,12 @@ const userSeeds: Prisma.UserCreateInput[] = [
     },
     {
         id: 'ukds',
-        orcid: 'XXXX-XXXX-XXXX-XXXX',
+        orcid: 'YYYY-YYYY-YYYY-YYYY',
         firstName: 'UKDS',
         lastName: '',
         email: 'octopus@jisc.ac.uk',
-        apiKey: process.env.UKDS_API_KEY,
-        isSystemAccount: true
+        isSystemAccount: true,
+        role: 'ORGANISATION'
     }
 ];
 
