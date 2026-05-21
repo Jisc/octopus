@@ -23,7 +23,17 @@ export const defaultPublicationVersionInclude = {
             url_slug: true,
             externalId: true,
             externalSource: true,
-            archived: true
+            archived: true,
+            pearl: {
+                select: {
+                    id: true,
+                    creators: {
+                        select: {
+                            name: true
+                        }
+                    }
+                }
+            }
         }
     },
     publicationStatus: {
@@ -136,6 +146,20 @@ export const privateGetById = (id: string) =>
             id
         },
         include: privatePublicationVersionInclude
+    });
+
+export const getLatestLiveIdByExternalIdAndType = (externalId: string, type: I.PublicationType) =>
+    client.prisma.publicationVersion.findFirst({
+        where: {
+            publication: {
+                externalId,
+                type
+            },
+            isLatestLiveVersion: true
+        },
+        select: {
+            id: true
+        }
     });
 
 export const getOAIPublicationVersion = (doiString: string) =>
@@ -291,6 +315,16 @@ export const getAllByPublicationIds = async (ids: string[]) => {
                     type: true,
                     doi: true,
                     url_slug: true,
+                    pearl: {
+                        select: {
+                            id: true,
+                            creators: {
+                                select: {
+                                    name: true
+                                }
+                            }
+                        }
+                    },
                     linkedFrom: {
                         where: {
                             publicationFrom: {
@@ -1001,7 +1035,9 @@ export const postPublishHook = async (publicationVersion: I.PublicationVersion, 
 
         // Update the canonical DOI with the latest details from this version.
         // If we have a version with a DOI, pass that, but if not just pass one without.
-        await doi.updateCanonicalDOI(publicationVersion.publication.doi, versionWithDOI || publicationVersion);
+        if (!publicationVersion.publication.pearl?.id) {
+            await doi.updateCanonicalDOI(publicationVersion.publication.doi, versionWithDOI || publicationVersion);
+        }
 
         // Complete remaining tasks in parallel.
         const postDBUpdatePromises: Array<Promise<unknown>> = [];

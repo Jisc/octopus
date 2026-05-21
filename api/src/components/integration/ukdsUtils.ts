@@ -1,11 +1,15 @@
 import { StudyItem, StudyItemResponse, StudyListResponse } from 'pearl/types';
 import lowerToTopTopicMapping from 'pearl/lowerToTopTopicMapping.json';
-import * as client from 'lib/client';
 import * as I from 'interface';
 import * as fs from 'fs/promises';
 import * as email from 'email';
 import * as entities from 'entities';
-import { create, update } from 'pearl/service';
+import * as pearlService from 'pearl/service';
+import * as publicationService from 'publication/service';
+import * as publicationVersionService from 'publicationVersion/service';
+import * as topicService from 'topic/service';
+import * as userService from 'user/service';
+import * as Enum from 'enum';
 import { HandledUKDS } from 'interface';
 
 const apiURL = process.env.UKDS_API_URL;
@@ -146,7 +150,7 @@ export const fetchStudyItem = async (friendlyId: string): Promise<StudyItem | nu
 
 export const getSource = async (slug: I.PublicationImportSource): Promise<I.PearlSource | null> => {
     try {
-        const source = await client.prisma.pearlSource.findFirst({ where: { slug } });
+        const source = await pearlService.getSourceBySlug(slug);
 
         if (!source) {
             console.error(`No source found with slug "${slug}".`);
@@ -160,6 +164,12 @@ export const getSource = async (slug: I.PublicationImportSource): Promise<I.Pear
 
         return null;
     }
+};
+
+export const getIngestUser = async (firstName: string): Promise<I.User | null> => {
+    const user = await userService.getSystemAccountByFirstName(firstName);
+
+    return user;
 };
 
 export const ingestReport = async (
@@ -451,9 +461,7 @@ async function buildTopicIds(
         unmappedTopicTitles.add(keyword.Value);
     }
 
-    const topics = await client.prisma.topic.findMany({
-        where: { title: { in: Array.from(unmappedTopicTitles) } }
-    });
+    const topics = await topicService.getByMultipleTitles(Array.from(unmappedTopicTitles));
 
     for (const topic of topics) {
         topicIds.push(topic.id);
@@ -486,9 +494,7 @@ async function buildTopicIds(
             }
         }
 
-        const topicMapping = await client.prisma.topicMapping.findMany({
-            where: { title: { in: Array.from(topicsToSearch) }, source: source.slug }
-        });
+        const topicMapping = await topicService.getMappingsByTitlesAndSource(Array.from(topicsToSearch), source.slug);
 
         for (const mapping of topicMapping) {
             if (mapping.topicId) {
@@ -516,9 +522,93 @@ async function buildTopicIds(
     return { topicIds, unmappedTopicTitles };
 }
 
+async function updatePearlSubPublications(
+    studyFriendlyId: string,
+    pearlData: I.PearlInput,
+    source: I.PearlSource
+): Promise<void> {
+    for (const subPearl of pearlData.subPearls || []) {
+        const correspondingPublicationVersion = await publicationVersionService.getLatestLiveIdByExternalIdAndType(
+            studyFriendlyId,
+            subPearl.type
+        );
+
+        if (!correspondingPublicationVersion) {
+            console.warn(
+                `No existing publication version found for subpearl with DOI "${subPearl.doi}" and type "${subPearl.type}". Skipping update for this subpearl.`
+            );
+            continue;
+        }
+
+        const publicationVersionBody = pearlService.mapPearlDataToPublicationVersionBody(pearlData, subPearl, source);
+
+        await publicationVersionService.update(correspondingPublicationVersion.id, publicationVersionBody);
+    }
+}
+
+async function createPearlSubPublications(
+    pearlData: I.PearlInput,
+    source: I.PearlSource,
+    user: I.User,
+    pearlId: string
+): Promise<void> {
+    let prevLinkedPublications: { publicationId: string; versionId: string }[] = [];
+
+    for (const subPearl of pearlData.subPearls || []) {
+        const publicationBody = pearlService.mapPearlDataToPublicationBody(pearlData, subPearl, source, pearlId);
+
+        const publication = await publicationService.create(publicationBody, user, true, prevLinkedPublications, {
+            id: pearlService.generatePublicationId(subPearl.doi, subPearl.type),
+            doi: pearlData.doi
+        });
+
+        if (!publication) {
+            console.warn(
+                `Failed to create publication for subpearl with title "${subPearl.title}". Skipping this subpearl.`
+            );
+            continue;
+        }
+
+        prevLinkedPublications = [{ publicationId: publication.id, versionId: publication.versions[0].id }];
+    }
+}
+
+function buildSubPearls(record: StudyItemResponse['data']['getStudyItem']): I.SubPearlInput[] {
+    const subPearls: I.SubPearlInput[] = [];
+
+    const hypothesisSubPearl = buildHypothesis(record);
+
+    if (hypothesisSubPearl) {
+        subPearls.push(hypothesisSubPearl);
+    }
+
+    const methodologySubPearl = buildMethodology(record);
+
+    if (methodologySubPearl) {
+        subPearls.push(methodologySubPearl);
+    }
+
+    const resultsSubPearl = buildResults(record);
+
+    if (resultsSubPearl) {
+        subPearls.push(resultsSubPearl);
+    }
+
+    // Order is important because we link them as they are being created
+    subPearls.sort((a, b) => {
+        const aIndex = Enum.publicationTypes.indexOf(a.type);
+        const bIndex = Enum.publicationTypes.indexOf(b.type);
+
+        return aIndex - bIndex;
+    });
+
+    return subPearls;
+}
+
 export const handleIncomingStudy = async (
     study: Pick<StudyItem, 'FriendlyId' | 'LatestEditionReleaseDate'>,
     source: I.PearlSource,
+    user: I.User,
     dryRun?: boolean,
     forceUpdate?: boolean
 ): Promise<HandledUKDS> => {
@@ -533,9 +623,7 @@ export const handleIncomingStudy = async (
     let requiresUpdate = forceUpdate || false;
 
     try {
-        const existingPearl = await client.prisma.pearl.findFirst({
-            where: { externalId: study.FriendlyId, sourceId: source.id }
-        });
+        const existingPearl = await pearlService.getByExternalIdAndSourceId(study.FriendlyId, source.id);
 
         if (existingPearl) {
             const existingPearlDate = new Date(existingPearl.updatedAt);
@@ -546,7 +634,7 @@ export const handleIncomingStudy = async (
             } else if (!forceUpdate) {
                 responseData.success = true;
                 responseData.message =
-                    'A publication linked to this UKDS record already exists in the system and is up to date.';
+                    'A pearl linked to this UKDS record already exists in the system and is up to date.';
                 responseData.actionTaken = 'none';
 
                 return responseData;
@@ -575,25 +663,7 @@ export const handleIncomingStudy = async (
 
         const creators = buildCreators(record);
 
-        const subPearls: I.SubPearlInput[] = [];
-
-        const hypothesisSubPearl = buildHypothesis(record);
-
-        if (hypothesisSubPearl) {
-            subPearls.push(hypothesisSubPearl);
-        }
-
-        const methodologySubPearl = buildMethodology(record);
-
-        if (methodologySubPearl) {
-            subPearls.push(methodologySubPearl);
-        }
-
-        const resultsSubPearl = buildResults(record);
-
-        if (resultsSubPearl) {
-            subPearls.push(resultsSubPearl);
-        }
+        const subPearls = buildSubPearls(record);
 
         const { topicIds, unmappedTopicTitles } = await buildTopicIds(record, source);
 
@@ -605,7 +675,7 @@ export const handleIncomingStudy = async (
             return responseData;
         }
 
-        const pearlData = {
+        const pearlData: I.PearlInput = {
             doi: doi,
             title: getTitle(record),
             externalId: study.FriendlyId,
@@ -616,25 +686,15 @@ export const handleIncomingStudy = async (
 
         if (existingPearl && requiresUpdate) {
             if (!dryRun) {
-                const existingSubPearls = await client.prisma.subPearl.findMany({
-                    where: { pearlId: existingPearl.id },
-                    select: { id: true, type: true }
-                });
-
-                const subPearlsWithIds = pearlData.subPearls.map((subPearl) => {
-                    const existingSubPearl = existingSubPearls.find((existing) => existing.type === subPearl.type);
-
-                    return existingSubPearl ? { ...subPearl, id: existingSubPearl.id } : subPearl;
-                });
-
-                await update(existingPearl.id, { ...pearlData, subPearls: subPearlsWithIds });
+                await updatePearlSubPublications(study.FriendlyId, pearlData, source);
             }
 
             responseData.actionTaken = 'update';
             responseData.message = 'An existing publication linked to this UKDS record was updated in the system.';
         } else {
             if (!dryRun) {
-                await create({ sourceId: source.id, ...pearlData });
+                const createdPearl = await pearlService.create({ sourceId: source.id, ...pearlData });
+                await createPearlSubPublications(pearlData, source, user, createdPearl.id);
             }
 
             responseData.actionTaken = 'create';

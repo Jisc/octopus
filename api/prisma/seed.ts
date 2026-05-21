@@ -68,6 +68,14 @@ const createTopics = async (): Promise<void> => {
     }
 };
 
+const createPearls = async (data: { sources: Prisma.PearlSourceCreateInput[] }): Promise<void> => {
+    for (const source of data.sources) {
+        await client.prisma.pearlSource.create({
+            data: source
+        });
+    }
+}
+
 export const initialDevSeed = async (): Promise<void> => {
     // Create basic users. These are relied upon when creating publications.
     await client.prisma.user.createMany({ data: SeedData.devUsers });
@@ -85,7 +93,10 @@ export const initialDevSeed = async (): Promise<void> => {
     await Promise.all([
         createPublications(SeedData.devProblems),
         createPublications(SeedData.devOtherPublications),
-        createTopics()
+        createTopics(),
+        createPearls({
+            sources: SeedData.devPearls.pearlSources
+        })
     ]);
 
     // Add topic mappings and organisational accounts - these depend on topics.
@@ -187,7 +198,7 @@ export const initialProdSeed = async (): Promise<void> => {
                     currentStatus: latestVersion.currentStatus,
                     publishedDate: latestVersion.publishedDate,
                     cleanContent: convert(latestVersion.content),
-                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestVersion.coAuthors), 
+                    affiliations: Helpers.indexableAffilicationsFromCoAuthors(latestVersion.coAuthors),
                 }
             });
         }

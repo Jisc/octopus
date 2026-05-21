@@ -15,10 +15,18 @@ type Props = {
 
 const Card: React.FC<Props> = (props): React.ReactElement => {
     const authors = React.useMemo(() => {
-        const authors = props.publicationVersion.coAuthors.filter((author) => author.confirmedCoAuthor && author.user);
+        const authors = props.publicationVersion.publication.pearl
+            ? props.publicationVersion.publication.pearl.creators.map((creator) => ({
+                  user: { firstName: creator.name, lastName: '' },
+                  linkedUser: null
+              }))
+            : props.publicationVersion.coAuthors.filter((author) => author.confirmedCoAuthor && author.user);
         return authors;
     }, [props.publicationVersion]);
-    const correspondingAuthor = authors.find((author) => author.linkedUser === props.publicationVersion.createdBy);
+
+    const correspondingAuthor = props.publicationVersion.publication.pearl
+        ? authors[0]
+        : authors.find((author) => author.linkedUser === props.publicationVersion.createdBy) || authors[0];
 
     const { flagCount, peerReviewCount } = props.publicationVersion.publication;
     const hasFlagAndPeerReview = flagCount && peerReviewCount;

@@ -42,6 +42,7 @@ export {
     Role,
     Topic,
     Pearl,
+    PearlCreator,
     PearlSource
 } from '@prisma/client';
 export { JSONSchemaType, Schema } from 'ajv';
@@ -136,6 +137,7 @@ export interface CreatePublicationRequestBody {
     linkedPublicationIds?: string[];
     externalId?: string;
     externalSource?: PublicationImportSource;
+    pearlId?: string;
 }
 
 export interface CreatePublicationQueryStringParameters {
@@ -278,6 +280,7 @@ export interface LinkedPublication {
     authors: LinkedPublicationAuthor[] | null;
     flagCount: number;
     peerReviewCount: number;
+    pearl?: { id: string; creators: { name: string }[] } | null;
     // Only returned with ?direct=true on the getPublicationLinks endpoint.
     // Just used at present to show, and link to, the version a Peer Review was created against.
     parentVersionId?: string;
@@ -1183,6 +1186,7 @@ export interface TriggerUKDSIngestQueryParams {
     apiKey: string;
     dryRun?: boolean;
     forceUpdate?: boolean;
+    limit?: number;
 }
 
 export interface LocalNotifyPubRouterPathParams {
@@ -1248,6 +1252,17 @@ export interface StartHelpdeskSessionBody {
     userId: string;
 }
 
+export interface CreatePearlRequestBody {
+    title: string;
+    externalId?: string;
+    doi?: string;
+    creators: [PearlCreatorInput, ...PearlCreatorInput[]];
+    language?: Languages;
+    licenceType?: LicenceType;
+    topicIds: [string, ...string[]];
+    sourceId: string;
+}
+
 export interface PearlCreatorInput {
     name: string;
     type?: PearlCreatorType;
@@ -1265,64 +1280,21 @@ export interface PearlSourceInput {
     defaultTopicId?: string;
 }
 
+export interface PearlInput {
+    doi: string;
+    title: string;
+    externalId: string;
+    creators: [PearlCreatorInput, ...PearlCreatorInput[]];
+    topicIds: [string, ...string[]];
+    subPearls?: SubPearlInput[];
+}
+
 export interface SubPearlInput {
     id?: string;
     doi: string;
     title: string;
     content: string;
     type: PublicationType;
-}
-
-export interface CreatePearlRequestBody {
-    title: string;
-    externalId?: string;
-    doi?: string;
-    creators: [PearlCreatorInput, ...PearlCreatorInput[]];
-    language?: Languages;
-    licenceType?: LicenceType;
-    topicIds: [string, ...string[]];
-    sourceId: string;
-    subPearls: [SubPearlInput, ...SubPearlInput[]];
-}
-
-export interface UpdatePearlRequestBody {
-    title?: string;
-    externalId?: string;
-    doi?: string;
-    creators?: PearlCreatorInput[];
-    language?: Languages;
-    licenceType?: LicenceType;
-    topicIds?: string[];
-    sourceId?: string;
-    subPearls?: SubPearlInput[];
-}
-
-export interface DeletePearlPathParams {
-    pearlId: string;
-}
-
-export interface GetSubPearlPathParams {
-    pearlId: string;
-    subPearlId: string;
-}
-
-export interface GetPearlLinksPathParams {
-    pearlId: string;
-}
-
-export interface GetPearlsQueryStringParameters {
-    limit?: string;
-    offset?: string;
-}
-
-export interface GetPearlsByTopicQueryStringParameters {
-    topicId: string;
-}
-
-export interface PearlsByTopicItem {
-    id: string;
-    title: string;
-    earliestSubPearl: { id: string; title: string } | null;
 }
 
 export type OAIPublicationVersion = Prisma.PromiseReturnType<typeof publicationVersionService.getOAIPublicationVersion>;

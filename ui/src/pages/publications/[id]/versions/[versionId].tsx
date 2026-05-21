@@ -526,7 +526,31 @@ const Publication: Types.NextPage<Props> = (props): React.ReactElement => {
         [activeFlags]
     );
 
-    const authors = useMemo(() => publicationVersion?.coAuthors || [], [publicationVersion?.coAuthors]);
+    const authors = useMemo(() => {
+        if (publicationVersion?.publication.pearl) {
+            return publicationVersion.publication.pearl.creators.map((creator) => ({
+                id: '',
+                email: '',
+                publicationVersionId: '',
+                confirmedCoAuthor: true,
+                approvalRequested: false,
+                affiliations: [],
+                isIndependent: true,
+                retainApproval: true,
+                linkedUser: null,
+                user: {
+                    orcid: '',
+                    firstName: creator.name,
+                    lastName: '',
+                    role: 'ORGANISATION' as const,
+                    deleted: false,
+                    isSystemAccount: true,
+                    url: undefined
+                }
+            }));
+        }
+        return publicationVersion?.coAuthors || [];
+    }, [publicationVersion?.coAuthors]);
 
     const confirmedAuthors = useMemo(
         () => authors.filter((author) => author.confirmedCoAuthor && author.user),

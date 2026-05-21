@@ -78,3 +78,22 @@ export const getByMultipleIds = async (ids: string[]): Promise<I.Topic[]> => {
         }
     });
 };
+
+export const getByMultipleTitles = (titles: string[]) =>
+    client.prisma.topic.findMany({
+        where: {
+            title: {
+                in: titles
+            }
+        }
+    });
+
+export const getMappingsByTitlesAndSource = (titles: string[], source: I.PublicationImportSource) =>
+    client.prisma.topicMapping.findMany({
+        where: {
+            title: {
+                in: titles
+            },
+            source
+        }
+    });

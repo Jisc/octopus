@@ -13,6 +13,11 @@ const incrementalUKDSIngestHttpSchema: I.JSONSchemaType<I.TriggerUKDSIngestQuery
         forceUpdate: {
             type: 'boolean',
             nullable: true
+        },
+        limit: {
+            type: 'integer',
+            nullable: true,
+            minimum: 1
         }
     },
     additionalProperties: false,

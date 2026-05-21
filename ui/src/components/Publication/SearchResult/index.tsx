@@ -19,12 +19,20 @@ type Props<T extends GenericCoAuthor> = {
     title: string;
     type: Types.PublicationType;
     className?: string;
+    pearl?: {
+        id: string;
+        creators: { name: string }[];
+    };
 };
 
 const SearchResult: React.FC<Props<GenericCoAuthor>> = (props): React.ReactElement => {
     const authors = React.useMemo(() => {
+        if (props.pearl) {
+            return props.pearl.creators.map((creator) => creator.name).join(', ');
+        }
+
         return props.coAuthors.map((author) => Helpers.abbreviateUserName(author.user)).join(', ');
-    }, [props.coAuthors]);
+    }, [props.coAuthors, props.pearl]);
 
     return (
         <Components.SearchResult

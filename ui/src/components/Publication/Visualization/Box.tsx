@@ -12,11 +12,17 @@ type BoxProps = I.VisualizationBoxData;
 const Box: React.FC<BoxProps> = (props): React.ReactElement => {
     useXarrow();
     // pick main author to display on visualization box
-    const mainAuthor = {
-        id: props.createdBy,
-        firstName: props.authorFirstName,
-        lastName: props.authorLastName
-    };
+    const mainAuthor = props.pearl
+        ? {
+              id: props.createdBy,
+              firstName: props.pearl.creators[0]?.name,
+              lastName: ''
+          }
+        : {
+              id: props.createdBy,
+              firstName: props.authorFirstName,
+              lastName: props.authorLastName
+          };
 
     const { flagCount, peerReviewCount } = props;
     const hasFlagAndPeerReview = flagCount && peerReviewCount;
@@ -48,18 +54,25 @@ const Box: React.FC<BoxProps> = (props): React.ReactElement => {
                 <div
                     className={`${
                         hasFlagAndPeerReview ? 'w-1/2' : hasOneOfFlagOrPeerReview ? 'w-3/4' : 'w-full'
-                    }  space-y-1`}
+                    }  space-y-2`}
                 >
-                    <span
-                        className={`${
-                            props.isSelected
-                                ? 'font-medium text-teal-100'
-                                : 'text-grey-600 dark:font-medium dark:text-teal-50'
-                        } block overflow-hidden text-ellipsis whitespace-nowrap text-xxs transition-colors duration-500 2xl:text-xs`}
-                    >
-                        {Helpers.abbreviateUserName(mainAuthor)}
-                    </span>
-                    {props.isDraft ? <span className={publishedDateClasses}>Draft</span> : publishedDateMarkup}
+                    <div className="space-y-1">
+                        <span
+                            className={`${
+                                props.isSelected
+                                    ? 'font-medium text-teal-100'
+                                    : 'text-grey-600 dark:font-medium dark:text-teal-50'
+                            } block overflow-hidden text-ellipsis whitespace-nowrap text-xxs transition-colors duration-500 2xl:text-xs`}
+                        >
+                            {Helpers.abbreviateUserName(mainAuthor)}
+                        </span>
+                        {props.isDraft ? <span className={publishedDateClasses}>Draft</span> : publishedDateMarkup}
+                    </div>
+                    {props.pearl?.id ? (
+                        <span className="ml-auto block w-fit truncate rounded-md bg-white-50 px-1.5 text-xxs font-semibold text-teal-700 transition-colors duration-500 dark:bg-teal-600 dark:text-white-50">
+                            Part of Pearl #{props.pearl.id}
+                        </span>
+                    ) : null}
                 </div>
                 <Components.EngagementCounts
                     flagCount={props.flagCount}

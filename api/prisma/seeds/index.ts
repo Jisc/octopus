@@ -5,6 +5,7 @@ export { default as devTopicMappings } from './local/dev/topicMappings';
 export { default as devTopics } from './local/dev/topics';
 export { default as devUserMappings } from './local/dev/userMappings';
 export { default as devUsers } from './local/dev/users';
+export { default as devPearls } from './local/dev/pearls';
 export { default as prodPublications } from './prod/publications';
 export { default as prodUsers } from './prod/users';
 export { default as testBookmarks } from './local/unitTesting/bookmarks';

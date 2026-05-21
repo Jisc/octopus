@@ -327,8 +327,9 @@ export const isPublicationExemptFromReversioning = <T extends Pick<I.Publication
 ): boolean => {
     const isPeerReview = publication.type === 'PEER_REVIEW';
     const isARI = publication.externalSource === 'ARI';
+    const isUKDS = publication.externalSource === 'UKDS';
 
-    return isPeerReview || isARI;
+    return isPeerReview || isARI || isUKDS;
 };
 
 export const checkBooleanArgValue = (arg: string): void => {

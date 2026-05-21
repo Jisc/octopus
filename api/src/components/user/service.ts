@@ -191,6 +191,14 @@ export const get = (id: string, isAccountOwner = false) =>
         }
     });
 
+export const getSystemAccountByFirstName = (firstName: string) =>
+    client.prisma.user.findFirst({
+        where: {
+            firstName,
+            isSystemAccount: true
+        }
+    });
+
 export const getPublications = async (
     id: string,
     params: I.UserPublicationsFilters,

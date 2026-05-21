@@ -181,6 +181,16 @@ const defaultPublicationInclude = {
                 }
             }
         }
+    },
+    pearl: {
+        select: {
+            id: true,
+            creators: {
+                select: {
+                    name: true
+                }
+            }
+        }
     }
 } satisfies Prisma.PublicationInclude;
 
@@ -517,11 +527,27 @@ export const create = async (
     linkedPublications?: {
         publicationId: string;
         versionId: string;
-    }[]
+    }[],
+    external?: {
+        id: string;
+        doi: string;
+    }
 ) => {
-    // Create empty DOI
-    const doiRequest = await doi.createEmptyDOI();
-    const newDoi = doiRequest.data;
+    let publicationDoi: string;
+    let publicationId: string | undefined;
+    let versionId: string | undefined;
+
+    if (external) {
+        publicationDoi = external.doi;
+        publicationId = external.id;
+        versionId = external.id + '-v1';
+    } else {
+        const doiRequest = await doi.createEmptyDOI();
+        const newDoi = doiRequest.data;
+        publicationDoi = newDoi.data.attributes.doi;
+        publicationId = newDoi.data.attributes.suffix;
+        versionId = newDoi.data.attributes.suffix + '-v1';
+    }
 
     // If topics are provided, associate the publication to those.
     const topics = e.topicIds?.length
@@ -536,17 +562,19 @@ export const create = async (
         : undefined;
     const currentStatus: I.PublicationStatusEnum = directPublish ? 'LIVE' : 'DRAFT';
     const now = new Date().toISOString();
+
     const publication = await client.prisma.publication.create({
         data: {
-            id: newDoi.data.attributes.suffix,
-            doi: newDoi.data.attributes.doi,
+            id: publicationId,
+            doi: publicationDoi,
             type: e.type,
             externalId: e.externalId,
             externalSource: e.externalSource,
+            pearlId: e.pearlId,
             // Create first version when publication is created
             versions: {
                 create: {
-                    id: newDoi.data.attributes.suffix + '-v1',
+                    id: versionId,
                     versionNumber: 1,
                     isLatestLiveVersion: directPublish,
                     currentStatus,
@@ -581,7 +609,6 @@ export const create = async (
                         }
                     },
                     coAuthors: {
-                        // add main author to authors list
                         create: {
                             linkedUser: user.id,
                             email: user.email || '',
@@ -640,7 +667,7 @@ export const create = async (
     return publication;
 };
 
-export const doesDuplicateFlagExist = (publication, category, user) =>
+export const doesDuplicateFlagExist = (publication: string, category: I.PublicationFlagCategoryEnum, user: string) =>
     client.prisma.publicationFlags.findFirst({
         where: {
             publicationId: publication,
@@ -1011,6 +1038,16 @@ const populateRawLinkedPublicationData = async (
                 select: {
                     doi: true,
                     externalSource: true,
+                    pearl: {
+                        select: {
+                            id: true,
+                            creators: {
+                                select: {
+                                    name: true
+                                }
+                            }
+                        }
+                    },
                     publicationFlags: {
                         where: {
                             resolved: false
@@ -1104,6 +1141,7 @@ const populateRawLinkedPublicationData = async (
                 currentStatus: latestLiveVersion.currentStatus,
                 createdBy: latestLiveVersion.createdBy
             };
+
             authorFields = {
                 authorFirstName: latestLiveVersion.user.firstName,
                 authorLastName: latestLiveVersion.user.lastName,
@@ -1146,7 +1184,8 @@ const populateRawLinkedPublicationData = async (
             id: link.id,
             type: link.type,
             flagCount: latestLiveVersion?.publication.publicationFlags.length || 0,
-            peerReviewCount: latestLiveVersion?.publication.linkedFrom.length || 0
+            peerReviewCount: latestLiveVersion?.publication.linkedFrom.length || 0,
+            pearl: latestLiveVersion?.publication.pearl ?? draftVersion?.publication.pearl ?? null
         };
     };
 
@@ -1266,7 +1305,8 @@ export const getLinksForPublication = async (
         type: publication.type,
         doi: publication.doi,
         flagCount: publication.flagCount,
-        peerReviewCount: publication.peerReviewCount
+        peerReviewCount: publication.peerReviewCount,
+        pearl: publication.pearl
     };
 
     return {
@@ -1318,6 +1358,17 @@ export const getDirectLinksForPublication = async (
               isLatestLiveVersion: true
           };
 
+    const corePearlInclude = {
+        select: {
+            id: true,
+            creators: {
+                select: {
+                    name: true
+                }
+            }
+        }
+    };
+
     const publication = await client.prisma.publication.findUnique({
         where: {
             id
@@ -1334,6 +1385,7 @@ export const getDirectLinksForPublication = async (
                     user: true
                 }
             },
+            pearl: corePearlInclude,
             linkedTo: {
                 where: linkedToFilter,
                 select: {
@@ -1353,6 +1405,7 @@ export const getDirectLinksForPublication = async (
                             doi: true,
                             type: true,
                             externalSource: true,
+                            pearl: corePearlInclude,
                             versions: {
                                 where: linkedVersionFilter,
                                 include: {
@@ -1413,6 +1466,7 @@ export const getDirectLinksForPublication = async (
                             id: true,
                             doi: true,
                             type: true,
+                            pearl: corePearlInclude,
                             versions: {
                                 where: linkedVersionFilter,
                                 include: {
@@ -1483,7 +1537,16 @@ export const getDirectLinksForPublication = async (
 
     const linkedTo: I.LinkedToPublication[] = publication.linkedTo.map((link) => {
         const { id: linkId, publicationTo, versionTo, draft, pendingDeletion } = link;
-        const { id, type, versions, doi: publicationDoi, publicationFlags, linkedFrom, externalSource } = publicationTo;
+        const {
+            id,
+            type,
+            versions,
+            doi: publicationDoi,
+            publicationFlags,
+            linkedFrom,
+            externalSource,
+            pearl
+        } = publicationTo;
         const initialDraftVersion = versions.find(
             (version) => version.versionNumber === 1 && version.currentStatus !== 'LIVE'
         );
@@ -1535,13 +1598,14 @@ export const getDirectLinksForPublication = async (
             flagCount: publicationFlags.length,
             peerReviewCount: linkedFrom.length,
             externalSource,
+            pearl,
             ...authorFields
         };
     });
 
     const linkedFrom: I.LinkedFromPublication[] = publication.linkedFrom.map((link) => {
         const { id: linkId, publicationFrom, versionTo, draft, pendingDeletion } = link;
-        const { id, type, versions, doi: publicationDoi, publicationFlags, linkedFrom } = publicationFrom;
+        const { id, type, versions, doi: publicationDoi, publicationFlags, linkedFrom, pearl } = publicationFrom;
         const initialDraftVersion = versions.find(
             (version) => version.versionNumber === 1 && version.currentStatus !== 'LIVE'
         );
@@ -1592,6 +1656,7 @@ export const getDirectLinksForPublication = async (
             publishedDate: publishedDate?.toISOString() || null,
             flagCount: publicationFlags.length,
             peerReviewCount: linkedFrom.length,
+            pearl,
             ...authorFields
         };
     });
@@ -1620,7 +1685,8 @@ export const getDirectLinksForPublication = async (
             })),
             flagCount: publication.publicationFlags.length,
             peerReviewCount: publication.linkedFrom.filter((child) => child.publicationFrom.type === 'PEER_REVIEW')
-                .length
+                .length,
+            pearl: publication.pearl
         },
         linkedTo,
         linkedFrom

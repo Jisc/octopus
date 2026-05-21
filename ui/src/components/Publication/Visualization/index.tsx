@@ -59,7 +59,8 @@ const mapLinkedPublicationToBoxData = (
         publishedDate,
         flagCount,
         peerReviewCount,
-        childPublicationIds
+        childPublicationIds,
+        pearl: publication.pearl ?? undefined
     };
 };
 
@@ -128,6 +129,7 @@ const getBoxDataByType = (
 
 type VisualizationProps = {
     publicationId: string;
+    pearlId?: string;
 };
 
 const Visualization: React.FC<VisualizationProps> = (props): React.ReactElement => {

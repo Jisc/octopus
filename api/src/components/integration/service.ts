@@ -274,7 +274,8 @@ export const triggerAriIngest = async (dryRun?: boolean): Promise<string> => {
 export const incrementalUKDSIngest = async (
     dryRun: boolean,
     forceUpdate: boolean,
-    reportFormat: I.IngestReportFormat
+    reportFormat: I.IngestReportFormat,
+    maxStudies?: number
 ): Promise<string> => {
     const lastLog = await ingestLogService.getMostRecentLog('UKDS', true);
 
@@ -303,7 +304,7 @@ export const incrementalUKDSIngest = async (
     }
 
     let offset = 0;
-    const limit = 100;
+    const pageSize = 100;
     let totalCount = 0;
     let skippedCount = 0;
     let checkedCount = 0;
@@ -317,8 +318,14 @@ export const incrementalUKDSIngest = async (
         throw new Error('Unable to find source for UKDS');
     }
 
+    const user = await ukdsUtils.getIngestUser('UKDS');
+
+    if (!user) {
+        throw new Error('Unable to find user for UKDS ingest');
+    }
+
     do {
-        const data = await ukdsUtils.fetchStudyList(offset, limit);
+        const data = await ukdsUtils.fetchStudyList(offset, pageSize);
 
         // Set totalCount on first loop when we get it from the API. We need this to know when to stop.
         if (!totalCount) {
@@ -326,7 +333,11 @@ export const incrementalUKDSIngest = async (
         }
 
         for (const study of data.list) {
-            const handle = await ukdsUtils.handleIncomingStudy(study, source, dryRun, forceUpdate);
+            if (maxStudies && checkedCount >= maxStudies) {
+                break;
+            }
+
+            const handle = await ukdsUtils.handleIncomingStudy(study, source, user, dryRun, forceUpdate);
             checkedCount++;
 
             subpearlCount += handle.totalSubpearls || 0;
@@ -354,8 +365,8 @@ export const incrementalUKDSIngest = async (
             }
         }
 
-        offset += limit; // Next page of {limit} studies
-    } while (offset < totalCount);
+        offset += pageSize; // Next page of {pageSize} studies
+    } while (offset < totalCount && (!maxStudies || checkedCount < maxStudies));
 
     const end = new Date();
     const durationSeconds = Math.round((end.getTime() - start.getTime()) / 100) / 10;
@@ -381,7 +392,7 @@ export const incrementalUKDSIngest = async (
     return `${preamble} ${writeCount} publication${writeCount !== 1 ? 's' : ''}.`;
 };
 
-export const triggerUKDSIngest = async (dryRun?: boolean, forceUpdate?: boolean): Promise<string> => {
+export const triggerUKDSIngest = async (dryRun?: boolean, forceUpdate?: boolean, limit?: number): Promise<string> => {
     if (process.env.STAGE !== 'local') {
         // If not local, trigger task to run in ECS.
         const commandParts = [
@@ -391,6 +402,7 @@ export const triggerUKDSIngest = async (dryRun?: boolean, forceUpdate?: boolean)
             '--',
             ...(dryRun ? ['dryRun=true'] : []),
             ...(forceUpdate ? ['forceUpdate=true'] : []),
+            ...(limit ? [`limit=${limit}`] : []),
             'reportFormat=email'
         ];
         await triggerScriptECSTask(commandParts);
@@ -398,7 +410,7 @@ export const triggerUKDSIngest = async (dryRun?: boolean, forceUpdate?: boolean)
         return 'Task triggered.';
     } else {
         // If local, just run the ingest directly.
-        return await incrementalUKDSIngest(!!dryRun, !!forceUpdate, 'file');
+        return await incrementalUKDSIngest(!!dryRun, !!forceUpdate, 'file', limit);
     }
 };
 

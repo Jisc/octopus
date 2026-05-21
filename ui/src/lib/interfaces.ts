@@ -36,6 +36,10 @@ export interface CorePublication {
     flagCount?: number;
     peerReviewCount?: number;
     archived: boolean;
+    pearl?: {
+        id: string;
+        creators: { name: string }[];
+    };
 }
 
 export interface PublicationVersionUser {
@@ -139,6 +143,7 @@ export interface LinkedPublication {
     parentVersionNumber?: number;
     parentVersionIsLatestLive?: boolean;
     archived: boolean;
+    pearl?: { id: string; creators: { name: string }[] } | null;
 }
 
 export interface LinkedToPublication extends LinkedPublication {
@@ -193,6 +198,7 @@ export interface CoAuthor {
         role: Types.UserRole;
         url?: string;
         deleted: boolean;
+        isSystemAccount?: boolean;
     };
 }
 
@@ -578,6 +584,16 @@ export interface Crosslink {
     createdAt: string;
 }
 
+export interface Pearl {
+    id: string;
+    title: string;
+    doi: string | null;
+    creators: {
+        name: string;
+        type: Types.UserRole;
+    }[];
+}
+
 export interface RelativeCrosslink {
     id: string;
     linkedPublication: {
@@ -632,6 +648,10 @@ export interface VisualizationBoxData {
     childPublicationIds: string[];
     flagCount: number;
     peerReviewCount: number;
+    pearl?: {
+        id: string;
+        creators: { name: string }[];
+    };
 }
 
 export interface RORAPIOrganizationResponse {

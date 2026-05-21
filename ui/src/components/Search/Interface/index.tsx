@@ -51,21 +51,10 @@ const SearchInterface = React.forwardRef(
                     }
 
                     if (props.searchType === 'publication-versions') {
-                        const {
-                            coAuthors,
-                            content,
-                            description,
-                            publication,
-                            publishedDate,
-                            title,
-                            versionOf,
-                            isSubPearl,
-                            id
-                        } = result as Interfaces.PublicationVersion;
+                        const { coAuthors, content, description, publication, publishedDate, title, versionOf } =
+                            result as Interfaces.PublicationVersion;
 
-                        const linkDestination = isSubPearl
-                            ? `${Config.urls.viewPearl.path}/${versionOf}/${id}`
-                            : `${Config.urls.viewPublication.path}/${versionOf}`;
+                        const linkDestination = `${Config.urls.viewPublication.path}/${versionOf}`;
                         return (
                             <Components.PublicationSearchResult
                                 key={`publication-${index}-${result.id}`}
@@ -79,6 +68,7 @@ const SearchInterface = React.forwardRef(
                                 publishedDate={publishedDate}
                                 title={title}
                                 type={publication.type}
+                                pearl={publication.pearl}
                                 className={classes}
                             />
                         );

@@ -53,11 +53,25 @@ const AuthorList: React.FC<AuthorListProps> = (props) => {
                 </Components.Link>
             ));
 
+        if (author.user?.isSystemAccount) {
+            return (
+                <div key={author.id} className="flex w-fit items-center">
+                    <span
+                        key={author.id}
+                        className="author-name text-grey-800 transition-colors duration-500 dark:text-grey-100"
+                    >
+                        {author.user.firstName} {author.user.lastName}
+                    </span>
+                    {externalLink}
+                </div>
+            );
+        }
+
         if (author.user?.deleted) {
             return (
                 <span
                     key={author.id}
-                    className="author-name text-grey-800 transition-colors duration-500 dark:text-white-100"
+                    className="author-name text-grey-800 transition-colors duration-500 dark:text-grey-100"
                 >
                     {Helpers.abbreviateUserName(author.user)}
                 </span>

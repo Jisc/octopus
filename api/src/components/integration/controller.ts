@@ -23,7 +23,8 @@ export const triggerUKDSIngest = async (
 ): Promise<I.JSONResponse> => {
     const triggerTaskOutput = await integrationService.triggerUKDSIngest(
         event.queryStringParameters.dryRun,
-        event.queryStringParameters.forceUpdate
+        event.queryStringParameters.forceUpdate,
+        event.queryStringParameters.limit
     );
 
     return response.json(200, { message: triggerTaskOutput });

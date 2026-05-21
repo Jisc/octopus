@@ -89,17 +89,6 @@ const urls = {
         ],
         canonical: `${base.host}/browse`
     },
-    pearls: {
-        path: '/pearls',
-        title: `Pearls - ${base.title}`,
-        description: 'Browse scientific pearls and insights.',
-        keywords: ['pearls', 'research', 'insights'],
-        canonical: `${base.host}/pearls`
-    },
-    viewPearl: {
-        path: '/pearls',
-        canonical: `${base.host}/pearls`
-    },
     editPublication: {
         path: '/edit',
         title: `Edit draft publication - ${base.title}`,

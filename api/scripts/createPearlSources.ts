@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import * as pearlService from '../src/components/pearl/service';
+import * as pearlService from 'pearl/service';
 import * as I from 'interface';
 import * as fs from 'fs';
 import * as Helpers from 'lib/helpers';

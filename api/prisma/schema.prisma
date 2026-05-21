@@ -43,6 +43,7 @@ model User {
     notifications       Notification[]
     settings            UserSettings?
     lastBulletinSentAt  DateTime?
+    isSystemAccount     Boolean              @default(false)
 }
 
 model UserSettings {
@@ -97,6 +98,9 @@ model Publication {
     // Populated when a publication has been imported from an external source.
     externalId         String?
     externalSource     PublicationImportSource?
+    // A publication may be a result of importing a pearl from an external source.
+    pearlId            String?
+    pearl              Pearl?                   @relation(fields: [pearlId], references: [id], onDelete: Cascade)
     // Currently only used for imported publications.
     archived           Boolean                  @default(false)
 }
@@ -376,19 +380,19 @@ model PublicationBundleEntry {
 }
 
 model Pearl {
-    id          String         @id
-    doi         String?
-    externalId  String?
-    title       String
-    creators    PearlCreator[]
-    language    Languages      @default(en)
-    licenceType LicenceType    @default(CC_BY)
-    topics      Topic[]
-    source      PearlSource?   @relation(fields: [sourceId], references: [id])
-    sourceId    String?
-    subPearls   SubPearl[]
-    createdAt   DateTime       @default(now())
-    updatedAt   DateTime       @updatedAt
+    id           String         @id
+    doi          String?
+    externalId   String?
+    title        String
+    creators     PearlCreator[]
+    language     Languages      @default(en)
+    licenceType  LicenceType    @default(CC_BY)
+    topics       Topic[]
+    source       PearlSource?   @relation(fields: [sourceId], references: [id])
+    sourceId     String?
+    publications Publication[]
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
 }
 
 model PearlSource {
@@ -425,16 +429,6 @@ enum PearlSourceIdentifierType {
     ISNI
     CROSSREF_FUNDER
     WIKIDATA
-}
-
-model SubPearl {
-    id      String          @id
-    doi     String
-    title   String
-    content String
-    type    PublicationType
-    Pearl   Pearl?          @relation(fields: [pearlId], references: [id], onDelete: Cascade)
-    pearlId String?
 }
 
 enum PearlCreatorType {

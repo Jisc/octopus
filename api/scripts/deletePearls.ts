@@ -1,3 +1,5 @@
+// @ts-nocheck -- This script will be deleted once we remove all pearls from the system
+
 import 'dotenv/config';
 import * as client from '../src/lib/client';
 import * as Helpers from 'lib/helpers';

@@ -30,10 +30,9 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
 
     const token = Helpers.getJWT(context);
 
-    const [topicResult, bookmarkResult, pearlsResult] = await Promise.allSettled([
+    const [topicResult, bookmarkResult] = await Promise.allSettled([
         api.get(`${Config.endpoints.topics}/${id}`, token),
-        api.get(`${Config.endpoints.bookmarks}?type=TOPIC&entityId=${id}`, token),
-        api.get(`${Config.endpoints.pearls}/by-topic?topicId=${id}`, token)
+        api.get(`${Config.endpoints.bookmarks}?type=TOPIC&entityId=${id}`, token)
     ]);
 
     if (topicResult.status === 'fulfilled') {
@@ -50,19 +49,6 @@ export const getServerSideProps: Types.GetServerSideProps = async (context) => {
                 : null;
     } else {
         console.log(bookmarkResult.reason);
-    }
-
-    if (pearlsResult.status === 'fulfilled') {
-        const fetchedPearls = pearlsResult.value.data.pearls || [];
-
-        pearls = fetchedPearls.map((pearl: any) => ({
-            id: pearl.id,
-            title: pearl.title,
-            earliestSubPearlId: pearl.earliestSubPearl?.id,
-            earliestSubPearlTitle: pearl.earliestSubPearl?.title
-        }));
-    } else {
-        console.log('Error fetching pearls:', pearlsResult.reason);
     }
 
     if (!topic || error) {
@@ -96,7 +82,6 @@ const Topic: Types.NextPage<Props> = (props): React.ReactElement => {
     const showChildren = Boolean(topic.children.length);
     const showParents = Boolean(topic.parents.length);
     const showPublications = Boolean(topic.publicationVersions.length);
-    const showPearls = Boolean(props.pearls.length);
 
     // if current topic has only one parent, fetch the parent and check if it's the god topic
     const { data: parentTopic } = useSWR<Interfaces.Topic>(
@@ -276,31 +261,6 @@ const Topic: Types.NextPage<Props> = (props): React.ReactElement => {
                                             >
                                                 {publicationVersion.title}
                                             </Components.Link>
-                                        </Components.ListItem>
-                                    ))}
-                                </Components.List>
-                            </Components.ContentSection>
-                        </div>
-                    )}
-
-                    {showPearls && (
-                        <div className="border-t border-grey-200">
-                            <Components.ContentSection id="pearls" title="Pearls below this in the hierarchy">
-                                <Components.List ordered={false}>
-                                    {props.pearls.map((pearl) => (
-                                        <Components.ListItem key={pearl.id}>
-                                            {pearl.earliestSubPearlId ? (
-                                                <Components.Link
-                                                    href={`${Config.urls.viewPearl.path}/${pearl.id}/${pearl.earliestSubPearlId}`}
-                                                    className="mb-2 text-teal-600 transition-colors duration-500 hover:underline dark:text-teal-400"
-                                                >
-                                                    {pearl.title}
-                                                </Components.Link>
-                                            ) : (
-                                                <span className="mb-2 text-grey-800 dark:text-grey-100">
-                                                    {pearl.title}
-                                                </span>
-                                            )}
                                         </Components.ListItem>
                                     ))}
                                 </Components.List>
