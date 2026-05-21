@@ -1283,6 +1283,7 @@ export interface PearlSourceInput {
 export interface PearlInput {
     doi: string;
     title: string;
+    publicationDate: string | null;
     externalId: string;
     creators: [PearlCreatorInput, ...PearlCreatorInput[]];
     topicIds: [string, ...string[]];

@@ -74,7 +74,7 @@ const createPublicationHTMLTemplate = (
     publicationVersion: I.PublicationVersion,
     references: I.Reference[],
     linkedTo: I.LinkedToPublication[],
-    isPearl = false
+    pearl: { id: string; creators: { name: string }[] } | null
 ): string => {
     const {
         title,
@@ -96,6 +96,8 @@ const createPublicationHTMLTemplate = (
     // cheerio uses htmlparser2
     // parsing the publication content can sometimes help with unpaired opening/closing tags
     const mainText = content ? cheerio.load(content).html() : '';
+
+    const isPearl = !!pearl;
 
     // For setting lang attribute on HTML
     const languageIfNotEnglish = language !== 'en' ? language : undefined;
@@ -143,6 +145,19 @@ const createPublicationHTMLTemplate = (
             affiliationNumbers
         };
     });
+
+    const displayedAuthors = pearl
+        ? pearl.creators.map((creator) => creator.name).join(', ')
+        : authorsWithAffiliationNumbers
+              .map(
+                  (author) =>
+                      `<a href="${process.env.BASE_URL}/authors/${author.linkedUser}">${Helpers.getUserFullName(
+                          author.user
+                      )}` +
+                      (author.affiliationNumbers.length ? `<sup>${author.affiliationNumbers}</sup>` : '') +
+                      '</a>'
+              )
+              .join(', ');
 
     const base64InterRegular = fs.readFileSync('assets/fonts/Inter-Regular.ttf', { encoding: 'base64' });
     const base64InterSemiBold = fs.readFileSync('assets/fonts/Inter-SemiBold.ttf', { encoding: 'base64' });
@@ -344,16 +359,7 @@ const createPublicationHTMLTemplate = (
             <body>
             <h1 id="title" lang=${languageIfNotEnglish}>${title}</h1>
                 <p class="metadata">
-                    <strong>Authors:</strong> ${authorsWithAffiliationNumbers
-                        .map(
-                            (author) =>
-                                `<a href="${process.env.BASE_URL}/authors/${
-                                    author.linkedUser
-                                }">${Helpers.getUserFullName(author.user)}` +
-                                (author.affiliationNumbers.length ? `<sup>${author.affiliationNumbers}</sup>` : '') +
-                                '</a>'
-                        )
-                        .join(', ')}
+                    <strong>Authors:</strong> ${displayedAuthors}
                 </p>
                 <p class="metadata">
                     <strong>Publication Type:</strong> ${Helpers.formatPublicationType(
@@ -687,7 +693,7 @@ export const generatePublicationVersionPDF = async (
         true
     );
 
-    let htmlTemplate = createPublicationHTMLTemplate(publicationVersion, references, linkedTo, !!pearl);
+    let htmlTemplate = createPublicationHTMLTemplate(publicationVersion, references, linkedTo, pearl);
     const isLocal = process.env.STAGE === 'local';
 
     let browser: Browser | null = null;

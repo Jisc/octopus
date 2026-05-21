@@ -110,6 +110,7 @@ export const fetchStudyItem = async (friendlyId: string): Promise<StudyItem | nu
         NumberOfVariables
         ObservationUnit
         ObservationUnitLocation
+        PublicationDate
         Region
         SamplingProcedure
         SpatialUnit
@@ -559,7 +560,8 @@ async function createPearlSubPublications(
 
         const publication = await publicationService.create(publicationBody, user, true, prevLinkedPublications, {
             id: pearlService.generatePublicationId(subPearl.doi, subPearl.type),
-            doi: pearlData.doi
+            doi: pearlData.doi,
+            publicationDate: pearlData.publicationDate
         });
 
         if (!publication) {
@@ -679,6 +681,7 @@ export const handleIncomingStudy = async (
             doi: doi,
             title: getTitle(record),
             externalId: study.FriendlyId,
+            publicationDate: record.PublicationDate,
             creators: creators as [I.PearlCreatorInput, ...I.PearlCreatorInput[]],
             topicIds: topicIds as [string, ...string[]],
             subPearls: subPearls as [I.SubPearlInput, ...I.SubPearlInput[]]

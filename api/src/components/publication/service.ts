@@ -531,6 +531,7 @@ export const create = async (
     external?: {
         id: string;
         doi: string;
+        publicationDate: string | null;
     }
 ) => {
     let publicationDoi: string;
@@ -563,6 +564,8 @@ export const create = async (
     const currentStatus: I.PublicationStatusEnum = directPublish ? 'LIVE' : 'DRAFT';
     const now = new Date().toISOString();
 
+    const publishedDate = external ? external.publicationDate || now : directPublish ? now : undefined;
+
     const publication = await client.prisma.publication.create({
         data: {
             id: publicationId,
@@ -582,7 +585,7 @@ export const create = async (
                     // make sure these are the same so it isn't confusing. Otherwise, there may be a few milliseconds' difference.
                     createdAt: now,
                     updatedAt: now,
-                    publishedDate: directPublish ? now : undefined,
+                    publishedDate,
                     title: e.title,
                     licence: e.licence,
                     conflictOfInterestStatus: e.conflictOfInterestStatus,

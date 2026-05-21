@@ -380,19 +380,20 @@ model PublicationBundleEntry {
 }
 
 model Pearl {
-    id           String         @id
-    doi          String?
-    externalId   String?
-    title        String
-    creators     PearlCreator[]
-    language     Languages      @default(en)
-    licenceType  LicenceType    @default(CC_BY)
-    topics       Topic[]
-    source       PearlSource?   @relation(fields: [sourceId], references: [id])
-    sourceId     String?
-    publications Publication[]
-    createdAt    DateTime       @default(now())
-    updatedAt    DateTime       @updatedAt
+    id              String         @id
+    doi             String?
+    externalId      String?
+    title           String
+    creators        PearlCreator[]
+    language        Languages      @default(en)
+    licenceType     LicenceType    @default(CC_BY)
+    topics          Topic[]
+    source          PearlSource?   @relation(fields: [sourceId], references: [id])
+    sourceId        String?
+    publications    Publication[]
+    publicationDate DateTime?
+    createdAt       DateTime       @default(now())
+    updatedAt       DateTime       @updatedAt
 }
 
 model PearlSource {
