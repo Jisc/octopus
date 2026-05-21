@@ -22,7 +22,8 @@ const formatPDFDate = (date: Date): string => {
     return `${day}<sup>${nthNumber}</sup> ${month} ${year}`;
 };
 
-const doiLinkBase = `https://${process.env.STAGE === 'prod' ? 'doi.org' : 'handle.test.datacite.org'}/`;
+const doiLinkBase = (isPearl = false) =>
+    isPearl ? `https://doi.org/` : `https://${process.env.STAGE === 'prod' ? 'doi.org' : 'handle.test.datacite.org'}/`;
 
 async function processVideos(htmlTemplate: string): Promise<string> {
     const vimeoElemRegex = /<div[^>]*data-vimeo-video[^>]*>[\s\S]*?<\/div>/g;
@@ -72,7 +73,8 @@ async function processVideos(htmlTemplate: string): Promise<string> {
 const createPublicationHTMLTemplate = (
     publicationVersion: I.PublicationVersion,
     references: I.Reference[],
-    linkedTo: I.LinkedToPublication[]
+    linkedTo: I.LinkedToPublication[],
+    isPearl = false
 ): string => {
     const {
         title,
@@ -373,7 +375,7 @@ const createPublicationHTMLTemplate = (
                 </p>
                 <p class="metadata">
                     <strong>DOI:</strong> 
-                    <a href="${doiLinkBase + publicationVersion.publication.doi}">
+                    <a href="${doiLinkBase(isPearl) + publicationVersion.publication.doi}">
                         ${publicationVersion.publication.doi}
                     </a>
                 </p>
@@ -456,9 +458,9 @@ const createPublicationHTMLTemplate = (
                                 ${linkedTo
                                     .map(
                                         (link) =>
-                                            `<p style="margin-bottom: 1rem"><a href="${doiLinkBase + link.doi}">${
-                                                link.title
-                                            }</a></p>`
+                                            `<p style="margin-bottom: 1rem"><a href="${
+                                                doiLinkBase(isPearl) + link.doi
+                                            }">${link.title}</a></p>`
                                     )
                                     .join('')}
                             </div>`
@@ -549,9 +551,16 @@ const createPublicationHTMLTemplate = (
     return htmlTemplate;
 };
 
-const createPublicationHeaderTemplate = (publicationVersion: I.PublicationVersion): string => {
+const createPublicationHeaderTemplate = (
+    publicationVersion: I.PublicationVersion,
+    pearl: { id: string; creators: { name: string }[] } | null
+): string => {
     const authors = publicationVersion.coAuthors.filter((author) => author.confirmedCoAuthor && author.linkedUser);
     const base64InterRegular = fs.readFileSync('assets/fonts/Inter-Regular.ttf', { encoding: 'base64' });
+
+    const authorName = pearl
+        ? pearl.creators[0]?.name + (pearl.creators.length > 1 ? ' et al.' : '')
+        : Helpers.getUserFullName(authors[0]?.user) + (authors.length > 1 ? ' et al.' : '');
 
     return `
     <style>
@@ -583,7 +592,7 @@ const createPublicationHeaderTemplate = (publicationVersion: I.PublicationVersio
     </style>
     <div class="header">
         <span>
-            ${Helpers.getUserFullName(authors[0]?.user) + (authors.length > 1 ? ' et al.' : '')}
+            ${authorName}
         </span>
         <span>
             Published ${
@@ -596,6 +605,7 @@ const createPublicationHeaderTemplate = (publicationVersion: I.PublicationVersio
 };
 
 const createPublicationFooterTemplate = (publicationVersion: I.PublicationVersion): string => {
+    const isPearl = !!publicationVersion.publication.pearl;
     const base64InterRegular = fs.readFileSync('assets/fonts/Inter-Regular.ttf', { encoding: 'base64' });
     const base64OctopusLogo = fs.readFileSync('assets/img/OCTOPUS_LOGO_ILLUSTRATION_WHITE_500PX.svg', {
         encoding: 'base64'
@@ -649,7 +659,7 @@ const createPublicationFooterTemplate = (publicationVersion: I.PublicationVersio
     </style>
     <div class="footer">            
         <div>
-            <span>DOI: <a href="${doiLinkBase + publicationVersion.publication.doi}">${
+            <span>DOI: <a href="${doiLinkBase(isPearl) + publicationVersion.publication.doi}">${
         publicationVersion.publication.doi
     }</a></span>
         </div>
@@ -669,13 +679,15 @@ const createPublicationFooterTemplate = (publicationVersion: I.PublicationVersio
 export const generatePublicationVersionPDF = async (
     publicationVersion: I.PublicationVersion
 ): Promise<string | null> => {
+    const pearl = publicationVersion.publication.pearl;
     const references = await referenceService.getAllByPublicationVersion(publicationVersion.id);
     const { linkedTo } = await publicationService.getDirectLinksForPublication(
         publicationVersion.versionOf,
         null,
         true
     );
-    let htmlTemplate = createPublicationHTMLTemplate(publicationVersion, references, linkedTo);
+
+    let htmlTemplate = createPublicationHTMLTemplate(publicationVersion, references, linkedTo, !!pearl);
     const isLocal = process.env.STAGE === 'local';
 
     let browser: Browser | null = null;
@@ -709,7 +721,7 @@ export const generatePublicationVersionPDF = async (
             preferCSSPageSize: true,
             printBackground: true,
             displayHeaderFooter: true,
-            headerTemplate: createPublicationHeaderTemplate(publicationVersion),
+            headerTemplate: createPublicationHeaderTemplate(publicationVersion, pearl),
             footerTemplate: createPublicationFooterTemplate(publicationVersion)
         });
         console.log('Page exported to PDF');

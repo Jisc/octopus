@@ -982,5 +982,7 @@ export const blogContentType = 'octopusBlog';
 
 export const doiBaseUrl = `https://${process.env.NEXT_PUBLIC_STAGE === 'prod' ? 'doi.org' : 'handle.test.datacite.org'}/`;
 
+export const pearlDoiBaseUrl = `https://doi.org/`;
+
 // Defines the boundaries for LaTeX expressions in publication content. Expressions are enclosed on both ends by "$$".
 export const latexRegex = /\$\$([^$]*)\$\$/gi;

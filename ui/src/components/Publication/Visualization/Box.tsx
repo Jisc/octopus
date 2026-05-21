@@ -70,7 +70,8 @@ const Box: React.FC<BoxProps> = (props): React.ReactElement => {
                     </div>
                     {props.pearl?.id ? (
                         <span className="ml-auto block w-fit truncate rounded-md bg-white-50 px-1.5 text-xxs font-semibold text-teal-700 transition-colors duration-500 dark:bg-teal-600 dark:text-white-50">
-                            Part of Pearl #{props.pearl.id}
+                            <span className="hidden xl:inline">Part of </span>
+                            <span className="hidden lg:inline">Pearl </span>#{props.pearl.id}
                         </span>
                     ) : null}
                 </div>
