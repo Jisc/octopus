@@ -104,6 +104,7 @@ export const mapPearlDataToPublicationVersionBody = (
         ...(source.licenceType ? { licence: source.licenceType } : {}),
         conflictOfInterestStatus: false,
         conflictOfInterestText: null,
+        publishedDate: pearlData.publicationDate,
         ...(subPearl.type === I.PublicationType.HYPOTHESIS && {
             topics: {
                 set: pearlData.topicIds.map((id) => ({ id }))
