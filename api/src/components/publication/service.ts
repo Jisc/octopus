@@ -380,6 +380,7 @@ export const getOpenSearchPublications = (filters: I.OpenSearchPublicationFilter
     const query = {
         index: 'publications',
         body: {
+            track_total_hits: true,
             from: filters.offset,
             size: filters.limit,
             sort: [orderBy || '_score'],
